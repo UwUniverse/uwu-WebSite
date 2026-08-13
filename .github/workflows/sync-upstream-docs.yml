@@ -2,8 +2,8 @@ name: Sync upstream documentation
 
 on:
   schedule:
-    # 02:00 Asia/Shanghai = 18:00 UTC on the previous day.
-    - cron: '0 18 * * *'
+    # 02:07 Asia/Shanghai = 18:07 UTC on the previous day.
+    - cron: '7 18 * * *'
   workflow_dispatch:
 
 permissions:

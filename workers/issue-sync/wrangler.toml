@@ -1,0 +1,15 @@
+name = "uwuaosp-issue-sync"
+main = "src/index.js"
+compatibility_date = "2026-08-14"
+
+[triggers]
+# 02:07 Asia/Shanghai = 18:07 UTC on the previous day.
+crons = ["7 18 * * *"]
+
+[[d1_databases]]
+binding = "ISSUE_DB"
+database_name = "uwuaosp-issue"
+database_id = "ea7bdb45-e46f-4c05-b8a2-c0554ad49364"
+
+[vars]
+GITHUB_REPOSITORY = "uwuAOSP/issue_tracker"
