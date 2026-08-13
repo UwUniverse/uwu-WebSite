@@ -4,7 +4,8 @@ const PAGE_SIZE = 100
 const DEFAULT_REPOSITORY = 'uwuAOSP/issue_tracker'
 const SESSION_COOKIE = 'uwu_session'
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30
-const PASSWORD_ITERATIONS = 120000
+// Cloudflare Workers Web Crypto currently supports at most 100000 PBKDF2 iterations.
+const PASSWORD_ITERATIONS = 100000
 const ISSUE_STATUSES = new Set(['open', 'in_progress', 'closed', 'invalid'])
 
 const UPSERT_ISSUE_SQL = [
@@ -479,6 +480,13 @@ function validateBody(body) {
   return body.trim()
 }
 
+function validateCommentBody(body) {
+  if (typeof body !== 'string' || !body.trim() || body.length > 10000) {
+    throw new HttpError(400, 'Comment must be 1 to 10000 characters')
+  }
+  return body.trim()
+}
+
 function validateIssueStatus(status) {
   if (typeof status !== 'string' || !ISSUE_STATUSES.has(status)) {
     throw new HttpError(400, 'Invalid issue status')
@@ -548,7 +556,7 @@ async function login(request, env) {
   const row = await env.ISSUE_DB.prepare([
     'SELECT id, username, email, password_salt, password_hash, role, created_at',
     'FROM users WHERE lower(email) = ? OR lower(username) = ?'
-  ].join('\n')).bind(emailOrUsername.toLowerCase(), emailOrUsername).first()
+  ].join('\n')).bind(emailOrUsername.toLowerCase(), emailOrUsername.toLowerCase()).first()
   if (!row) throw new HttpError(401, 'Invalid email, username or password')
 
   const passwordHash = await derivePassword(data.password, base64UrlToBytes(row.password_salt))
@@ -624,6 +632,29 @@ function serializeWebsiteIssue(issue, includeContact = false) {
   return output
 }
 
+function serializeWebsiteComment(comment) {
+  return {
+    id: Number(comment.id),
+    body: comment.body,
+    author: {
+      id: Number(comment.author_id),
+      username: comment.author_name
+    },
+    created_at: comment.created_at,
+    updated_at: comment.updated_at
+  }
+}
+
+async function websiteIssueComments(env, issueId) {
+  const result = await env.ISSUE_DB.prepare([
+    'SELECT id, author_id, author_name, body, created_at, updated_at',
+    'FROM website_issue_comments',
+    'WHERE issue_id = ?',
+    'ORDER BY created_at ASC, id ASC'
+  ].join('\n')).bind(issueId).all()
+  return (result.results || []).map(serializeWebsiteComment)
+}
+
 async function getWebsiteIssue(request, env, id) {
   const issue = await env.ISSUE_DB.prepare([
     'SELECT website_issues.*, users.username AS current_username',
@@ -632,7 +663,38 @@ async function getWebsiteIssue(request, env, id) {
   ].join('\n')).bind(id).first()
   if (!issue) return json({ error: 'WebSite issue not found' }, 404, request, env)
 
-  return json(serializeWebsiteIssue(issue, true), 200, request, env)
+  return json({
+    ...serializeWebsiteIssue(issue, true),
+    comments: await websiteIssueComments(env, id)
+  }, 200, request, env)
+}
+
+async function createWebsiteIssueComment(request, env, id) {
+  assertAllowedOrigin(request, env)
+  const user = await currentUser(request, env)
+  if (!user) throw new HttpError(401, 'Login required')
+
+  const issue = await env.ISSUE_DB.prepare(
+    'SELECT id FROM website_issues WHERE id = ? AND hidden = 0'
+  ).bind(id).first()
+  if (!issue) return json({ error: 'WebSite issue not found' }, 404, request, env)
+
+  const data = await readJson(request)
+  const body = validateCommentBody(data.body)
+  const now = new Date().toISOString()
+  const result = await env.ISSUE_DB.prepare([
+    'INSERT INTO website_issue_comments (issue_id, author_id, author_name, body, created_at, updated_at)',
+    'VALUES (?, ?, ?, ?, ?, ?)'
+  ].join('\n')).bind(id, user.id, user.username, body, now, now).run()
+
+  await env.ISSUE_DB.prepare(
+    'UPDATE website_issues SET updated_at = ? WHERE id = ?'
+  ).bind(now, id).run()
+
+  const comment = await env.ISSUE_DB.prepare(
+    'SELECT id, author_id, author_name, body, created_at, updated_at FROM website_issue_comments WHERE id = ?'
+  ).bind(result.meta?.last_row_id).first()
+  return json(serializeWebsiteComment(comment), 201, request, env)
 }
 
 async function createWebsiteIssue(request, env) {
@@ -904,6 +966,11 @@ export default {
       }
       if (websiteIssueMatch && request.method === 'PATCH') {
         return await updateWebsiteIssue(request, env, Number(websiteIssueMatch[1]))
+      }
+
+      const websiteIssueCommentsMatch = url.pathname.match(/^\/api\/website-issues\/(\d+)\/comments$/)
+      if (websiteIssueCommentsMatch && request.method === 'POST') {
+        return await createWebsiteIssueComment(request, env, Number(websiteIssueCommentsMatch[1]))
       }
 
       const websiteIssueStatusMatch = url.pathname.match(/^\/api\/website-issues\/(\d+)\/status$/)

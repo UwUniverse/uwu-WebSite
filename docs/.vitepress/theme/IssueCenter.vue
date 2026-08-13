@@ -29,6 +29,15 @@ type Issue = {
   created_at: string
   closed_at?: string | null
   html_url?: string
+  comments?: WebsiteComment[]
+}
+
+type WebsiteComment = {
+  id: number
+  body: string
+  author: { id?: number; username?: string }
+  created_at: string
+  updated_at: string
 }
 
 const props = withDefaults(defineProps<{ locale?: Locale; mode: Mode }>(), {
@@ -51,6 +60,7 @@ const user = ref<User | null>(null)
 const panel = ref<'auth' | 'create' | 'edit' | null>(null)
 const authMode = ref<'login' | 'register'>('login')
 const afterAuth = ref<'create' | 'edit' | null>(null)
+const statusFilter = ref<'all' | IssueStatus>('all')
 
 const authForm = ref({
   emailOrUsername: '',
@@ -63,6 +73,8 @@ const issueForm = ref({
   title: '',
   body: ''
 })
+const commentForm = ref('')
+const commentLoading = ref(false)
 
 const copy = computed(() => ({
   'zh-CN': {
@@ -71,6 +83,7 @@ const copy = computed(() => ({
     empty: '暂无 issue',
     refresh: '刷新',
     count: '条目',
+    all: '全部',
     open: '开放',
     inProgress: '处理中',
     closed: '已关闭',
@@ -106,7 +119,11 @@ const copy = computed(() => ({
     setStatus: '设置状态',
     administrator: '管理员',
     passwordHint: '至少 8 个字符',
-    contact: '联系信息'
+    contact: '联系信息',
+    noComments: '暂无评论',
+    commentPlaceholder: '写下评论',
+    commentLogin: '登录后评论',
+    commentSent: '评论已发送'
   },
   'zh-TW': {
     loading: '正在載入',
@@ -114,6 +131,7 @@ const copy = computed(() => ({
     empty: '暫無 issue',
     refresh: '重新整理',
     count: '個項目',
+    all: '全部',
     open: '開放',
     inProgress: '處理中',
     closed: '已關閉',
@@ -149,7 +167,11 @@ const copy = computed(() => ({
     setStatus: '設定狀態',
     administrator: '管理員',
     passwordHint: '至少 8 個字元',
-    contact: '聯絡資訊'
+    contact: '聯絡資訊',
+    noComments: '暫無留言',
+    commentPlaceholder: '寫下留言',
+    commentLogin: '登入後留言',
+    commentSent: '留言已發送'
   },
   en: {
     loading: 'Loading',
@@ -157,6 +179,7 @@ const copy = computed(() => ({
     empty: 'No issues yet',
     refresh: 'Refresh',
     count: 'items',
+    all: 'All',
     open: 'Open',
     inProgress: 'In progress',
     closed: 'Closed',
@@ -192,7 +215,11 @@ const copy = computed(() => ({
     setStatus: 'Set status',
     administrator: 'Administrator',
     passwordHint: 'At least 8 characters',
-    contact: 'Contact'
+    contact: 'Contact',
+    noComments: 'No comments yet',
+    commentPlaceholder: 'Write a comment',
+    commentLogin: 'Log in to comment',
+    commentSent: 'Comment sent'
   }
 }[props.locale]))
 
@@ -200,6 +227,17 @@ const isWebsite = computed(() => props.mode === 'website')
 const isAdmin = computed(() => Boolean(user.value?.is_admin || user.value?.role === 'admin'))
 const statusFor = (issue: Issue): IssueStatus => issue.status || issue.state || 'open'
 const adminStatuses: IssueStatus[] = ['open', 'in_progress', 'closed', 'invalid']
+const statusFilters: Array<'all' | IssueStatus> = ['all', ...adminStatuses]
+
+const issueGroups = computed(() => {
+  const statuses = statusFilter.value === 'all' ? adminStatuses : [statusFilter.value]
+  return statuses
+    .map((status) => ({
+      status,
+      items: issues.value.filter((issue) => statusFor(issue) === status)
+    }))
+    .filter((group) => group.items.length > 0)
+})
 
 function statusLabel(status: IssueStatus) {
   if (status === 'in_progress') return copy.value.inProgress
@@ -266,6 +304,7 @@ async function loadIssues() {
 
 async function selectIssue(issue: Issue) {
   selectedIssue.value = issue
+  commentForm.value = ''
   detailLoading.value = true
   try {
     const path = isWebsite.value
@@ -276,6 +315,29 @@ async function selectIssue(issue: Issue) {
     errorMessage.value = error instanceof Error ? error.message : copy.value.unavailable
   } finally {
     detailLoading.value = false
+  }
+}
+
+async function submitComment() {
+  if (!user.value) return startAuth()
+  if (!selectedIssue.value || !isWebsite.value) return
+  commentLoading.value = true
+  feedbackMessage.value = ''
+  try {
+    const comment = await apiFetch<WebsiteComment>(
+      `/api/website-issues/${selectedIssue.value.id}/comments`,
+      { method: 'POST', body: JSON.stringify({ body: commentForm.value }) }
+    )
+    selectedIssue.value = {
+      ...selectedIssue.value,
+      comments: [...(selectedIssue.value.comments || []), comment]
+    }
+    commentForm.value = ''
+    feedbackMessage.value = copy.value.commentSent
+  } catch (error) {
+    feedbackMessage.value = error instanceof Error ? error.message : copy.value.unavailable
+  } finally {
+    commentLoading.value = false
   }
 }
 
@@ -458,48 +520,72 @@ onMounted(() => {
       <button class="uwu-issue-text-button" type="button" @click="logout">{{ copy.logout }}</button>
     </div>
 
+    <div v-if="!loading && issues.length" class="uwu-issue-filters" role="tablist" :aria-label="copy.count">
+      <button
+        v-for="status in statusFilters"
+        :key="status"
+        :class="['uwu-issue-filter', { 'is-active': statusFilter === status }]"
+        type="button"
+        role="tab"
+        :aria-selected="statusFilter === status"
+        @click="statusFilter = status"
+      >
+        {{ status === 'all' ? copy.all : statusLabel(status) }}
+      </button>
+    </div>
+
     <p v-if="errorMessage" class="uwu-issue-center__message is-error">{{ errorMessage }}</p>
     <p v-if="feedbackMessage" class="uwu-issue-center__message is-success">{{ feedbackMessage }}</p>
     <p v-if="loading" class="uwu-issue-center__empty">{{ copy.loading }}</p>
     <p v-else-if="!issues.length" class="uwu-issue-center__empty">{{ copy.empty }}</p>
+    <p v-else-if="!issueGroups.length" class="uwu-issue-center__empty">{{ copy.empty }}</p>
 
-    <div v-else class="uwu-issue-center__list">
-      <button
-        v-for="issue in issues"
-        :key="issue.id"
-        class="uwu-issue-row"
-        type="button"
-        :aria-label="`${issue.title} — ${statusLabel(statusFor(issue))}`"
-        @click="selectIssue(issue)"
-      >
-        <span :class="['uwu-issue-status-icon', statusClass(statusFor(issue))]" aria-hidden="true">
-          <svg v-if="statusFor(issue) === 'open'" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="7" />
-          </svg>
-          <svg v-else-if="statusFor(issue) === 'in_progress'" viewBox="0 0 24 24">
-            <path d="M12 4a8 8 0 1 0 7.2 4.5" />
-            <path d="M12 8v4l2.5 1.5" />
-          </svg>
-          <svg v-else-if="statusFor(issue) === 'closed'" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8" />
-            <path d="m8 12 2.6 2.6L16.5 9" />
-          </svg>
-          <svg v-else viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8" />
-            <path d="m8.5 8.5 7 7" />
-          </svg>
-        </span>
-        <span class="uwu-issue-row__main">
-          <span class="uwu-issue-row__title">{{ issue.title }}</span>
-          <span class="uwu-issue-row__meta">
-            <span>{{ statusLabel(statusFor(issue)) }}</span>
-            <span v-if="isWebsite">{{ issue.author?.username }}</span>
-            <span v-else>{{ issue.author_login }}</span>
-            <span>{{ formatDate(issue.updated_at) }}</span>
-          </span>
-        </span>
-        <span class="uwu-issue-row__arrow" aria-hidden="true" />
-      </button>
+    <div v-else class="uwu-issue-center__groups">
+      <section v-for="group in issueGroups" :key="group.status" class="uwu-issue-group">
+        <h3 class="uwu-issue-group__title">
+          <span :class="['uwu-issue-group__dot', statusClass(group.status)]" aria-hidden="true" />
+          {{ statusLabel(group.status) }}
+          <span>{{ group.items.length }}</span>
+        </h3>
+        <div class="uwu-issue-center__list">
+          <button
+            v-for="issue in group.items"
+            :key="issue.id"
+            class="uwu-issue-row"
+            type="button"
+            :aria-label="`${issue.title} — ${statusLabel(statusFor(issue))}`"
+            @click="selectIssue(issue)"
+          >
+            <span :class="['uwu-issue-status-icon', statusClass(statusFor(issue))]" aria-hidden="true">
+              <svg v-if="statusFor(issue) === 'open'" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="7" />
+              </svg>
+              <svg v-else-if="statusFor(issue) === 'in_progress'" viewBox="0 0 24 24">
+                <path d="M12 4a8 8 0 1 0 7.2 4.5" />
+                <path d="M12 8v4l2.5 1.5" />
+              </svg>
+              <svg v-else-if="statusFor(issue) === 'closed'" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" />
+                <path d="m8 12 2.6 2.6L16.5 9" />
+              </svg>
+              <svg v-else viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" />
+                <path d="m8.5 8.5 7 7" />
+              </svg>
+            </span>
+            <span class="uwu-issue-row__main">
+              <span class="uwu-issue-row__title">{{ issue.title }}</span>
+              <span class="uwu-issue-row__meta">
+                <span v-if="isWebsite">{{ issue.author?.username }}</span>
+                <span v-else>{{ issue.author_login }}</span>
+                <span>{{ formatDate(issue.updated_at) }}</span>
+                <span v-for="label in labelsFor(issue)" :key="label" class="uwu-issue-tag">{{ label }}</span>
+              </span>
+            </span>
+            <span class="uwu-issue-row__arrow" aria-hidden="true" />
+          </button>
+        </div>
+      </section>
     </div>
 
     <div v-if="selectedIssue" class="uwu-issue-detail" aria-labelledby="uwu-issue-detail-title">
@@ -584,6 +670,34 @@ onMounted(() => {
             <dd>{{ formatDate(selectedIssue.updated_at) }}</dd>
           </div>
         </dl>
+        <section v-if="isWebsite" class="uwu-issue-comments" aria-labelledby="uwu-issue-comments-title">
+          <div class="uwu-issue-comments__header">
+            <h3 id="uwu-issue-comments-title">{{ copy.comments }}</h3>
+            <span>{{ selectedIssue.comments?.length || 0 }}</span>
+          </div>
+          <p v-if="!selectedIssue.comments?.length" class="uwu-issue-comments__empty">{{ copy.noComments }}</p>
+          <div v-else class="uwu-issue-comments__list">
+            <article v-for="comment in selectedIssue.comments" :key="comment.id" class="uwu-issue-comment">
+              <div class="uwu-issue-comment__meta">
+                <strong>{{ comment.author.username || '—' }}</strong>
+                <time :datetime="comment.created_at">{{ formatDate(comment.created_at) }}</time>
+              </div>
+              <p>{{ comment.body }}</p>
+            </article>
+          </div>
+          <form v-if="user" class="uwu-issue-comment-form" @submit.prevent="submitComment">
+            <label>
+              <span>{{ copy.commentPlaceholder }}</span>
+              <textarea v-model="commentForm" rows="4" maxlength="10000" required />
+            </label>
+            <button class="uwu-m3-button uwu-m3-button--filled" type="submit" :disabled="commentLoading">
+              {{ commentLoading ? copy.loading : copy.submit }}
+            </button>
+          </form>
+          <button v-else class="uwu-m3-button uwu-m3-button--tonal" type="button" @click="startAuth()">
+            {{ copy.commentLogin }}
+          </button>
+        </section>
         <a v-if="!isWebsite && selectedIssue.html_url" class="uwu-m3-button uwu-m3-button--tonal uwu-issue-external" :href="selectedIssue.html_url" target="_blank" rel="noreferrer">
           {{ copy.githubOpen }} <span class="uwu-issue-external-icon" aria-hidden="true" />
         </a>

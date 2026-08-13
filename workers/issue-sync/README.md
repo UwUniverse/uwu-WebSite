@@ -49,6 +49,7 @@ PATCH /api/website-issues/:id
 POST  /api/website-issues/:id/close
 POST  /api/website-issues/:id/reopen
 PATCH /api/website-issues/:id/status
+POST  /api/website-issues/:id/comments
 GET   /api/github-issues
 GET   /api/github-issues/:number
 GET   /api/sync-status
