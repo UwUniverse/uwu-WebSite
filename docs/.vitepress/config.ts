@@ -59,6 +59,10 @@ const englishIssueSidebar = {
 const baseTheme: DefaultTheme.Config = {
   siteTitle: 'uwuAOSP',
   socialLinks: [{ icon: 'github', link: githubUrl }],
+  footer: {
+    message: '<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noreferrer">GPL-3.0 Licensed</a>',
+    copyright: 'Copyright © 2026 UwUniverse'
+  },
   i18nRouting: true,
   sidebar: {
     '/guide/': [
@@ -166,6 +170,9 @@ const englishTheme: DefaultTheme.Config = {
 export default defineConfig({
   title: 'uwuAOSP',
   description: '开盖即食的 AOSP',
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/turtle-cheese-wedge.png' }]
+  ],
   themeConfig: simplifiedChineseTheme,
   locales: {
     root: {
