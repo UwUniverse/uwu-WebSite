@@ -5,6 +5,7 @@ const DEFAULT_REPOSITORY = 'uwuAOSP/issue_tracker'
 const SESSION_COOKIE = 'uwu_session'
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30
 const PASSWORD_ITERATIONS = 120000
+const ISSUE_STATUSES = new Set(['open', 'in_progress', 'closed', 'invalid'])
 
 const UPSERT_ISSUE_SQL = [
   'INSERT INTO issues (',
@@ -352,6 +353,8 @@ function publicUser(row) {
     id: Number(row.id ?? row.user_id),
     username: row.username,
     email: row.email,
+    role: row.role || 'player',
+    is_admin: row.role === 'admin',
     created_at: row.created_at
   }
 }
@@ -445,7 +448,7 @@ async function currentUser(request, env) {
 
   const tokenHash = await digestHex('SHA-256', rawToken)
   const row = await env.ISSUE_DB.prepare([
-    'SELECT users.id, users.username, users.email, users.created_at',
+    'SELECT users.id, users.username, users.email, users.role, users.created_at',
     'FROM sessions JOIN users ON users.id = sessions.user_id',
     'WHERE sessions.token_hash = ? AND sessions.expires_at > ?'
   ].join('\n')).bind(tokenHash, new Date().toISOString()).first()
@@ -476,6 +479,17 @@ function validateBody(body) {
   return body.trim()
 }
 
+function validateIssueStatus(status) {
+  if (typeof status !== 'string' || !ISSUE_STATUSES.has(status)) {
+    throw new HttpError(400, 'Invalid issue status')
+  }
+  return status
+}
+
+function isAdmin(user) {
+  return user?.role === 'admin'
+}
+
 async function register(request, env) {
   assertAllowedOrigin(request, env)
   const data = await readJson(request)
@@ -487,8 +501,13 @@ async function register(request, env) {
   if (!validateEmail(email)) throw new HttpError(400, 'A valid email is required')
   validatePassword(data.password)
 
+  const reserved = await env.ISSUE_DB.prepare(
+    'SELECT username FROM reserved_usernames WHERE username_key = lower(?)'
+  ).bind(username).first()
+  if (reserved) throw new HttpError(409, 'This username is reserved')
+
   const existing = await env.ISSUE_DB.prepare(
-    'SELECT id FROM users WHERE username = ? OR email = ?'
+    'SELECT id FROM users WHERE lower(username) = lower(?) OR email = ?'
   ).bind(username, email).first()
   if (existing) throw new HttpError(409, 'Username or email is already registered')
 
@@ -496,8 +515,8 @@ async function register(request, env) {
   const passwordHash = await derivePassword(data.password, salt)
   const createdAt = new Date().toISOString()
   const result = await env.ISSUE_DB.prepare([
-    'INSERT INTO users (username, email, password_salt, password_hash, created_at)',
-    'VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO users (username, email, password_salt, password_hash, role, created_at)',
+    "VALUES (?, ?, ?, ?, 'player', ?)"
   ].join('\n')).bind(
     username,
     email,
@@ -527,8 +546,8 @@ async function login(request, env) {
   if (!emailOrUsername) throw new HttpError(400, 'Email or username is required')
 
   const row = await env.ISSUE_DB.prepare([
-    'SELECT id, username, email, password_salt, password_hash, created_at',
-    'FROM users WHERE email = ? OR username = ?'
+    'SELECT id, username, email, password_salt, password_hash, role, created_at',
+    'FROM users WHERE lower(email) = ? OR lower(username) = ?'
   ].join('\n')).bind(emailOrUsername.toLowerCase(), emailOrUsername).first()
   if (!row) throw new HttpError(401, 'Invalid email, username or password')
 
@@ -650,7 +669,9 @@ async function updateWebsiteIssue(request, env, id) {
     'SELECT * FROM website_issues WHERE id = ? AND hidden = 0'
   ).bind(id).first()
   if (!existing) return json({ error: 'WebSite issue not found' }, 404, request, env)
-  if (Number(existing.author_id) !== user.id) throw new HttpError(403, 'Only the issue author can edit it')
+  if (Number(existing.author_id) !== user.id && !isAdmin(user)) {
+    throw new HttpError(403, 'Only the issue author or an administrator can edit it')
+  }
 
   const data = await readJson(request)
   const title = validateTitle(data.title)
@@ -665,6 +686,75 @@ async function updateWebsiteIssue(request, env, id) {
     'SELECT * FROM website_issues WHERE id = ?'
   ).bind(id).first()
   return json(serializeWebsiteIssue(issue, true), 200, request, env)
+}
+
+async function updateWebsiteIssueStatus(request, env, id, status) {
+  assertAllowedOrigin(request, env)
+  const user = await currentUser(request, env)
+  if (!user) throw new HttpError(401, 'Login required')
+  if (!isAdmin(user)) throw new HttpError(403, 'Administrator access required')
+
+  return writeWebsiteIssueStatus(request, env, id, status)
+}
+
+async function writeWebsiteIssueStatus(request, env, id, status) {
+  const nextStatus = validateIssueStatus(status)
+
+  const existing = await env.ISSUE_DB.prepare(
+    'SELECT * FROM website_issues WHERE id = ? AND hidden = 0'
+  ).bind(id).first()
+  if (!existing) return json({ error: 'WebSite issue not found' }, 404, request, env)
+
+  const updatedAt = new Date().toISOString()
+  const closedAt = nextStatus === 'closed' ? (existing.closed_at || updatedAt) : null
+  await env.ISSUE_DB.prepare([
+    'UPDATE website_issues',
+    'SET status = ?, closed_at = ?, updated_at = ?',
+    'WHERE id = ?'
+  ].join('\n')).bind(nextStatus, closedAt, updatedAt, id).run()
+
+  const issue = await env.ISSUE_DB.prepare(
+    'SELECT * FROM website_issues WHERE id = ?'
+  ).bind(id).first()
+  return json(serializeWebsiteIssue(issue, true), 200, request, env)
+}
+
+async function closeWebsiteIssue(request, env, id) {
+  assertAllowedOrigin(request, env)
+  const user = await currentUser(request, env)
+  if (!user) throw new HttpError(401, 'Login required')
+
+  const existing = await env.ISSUE_DB.prepare(
+    'SELECT * FROM website_issues WHERE id = ? AND hidden = 0'
+  ).bind(id).first()
+  if (!existing) return json({ error: 'WebSite issue not found' }, 404, request, env)
+  if (Number(existing.author_id) !== user.id && !isAdmin(user)) {
+    throw new HttpError(403, 'Only the issue author or an administrator can close it')
+  }
+  if (!['open', 'in_progress'].includes(existing.status)) {
+    throw new HttpError(409, 'Only open or in-progress issues can be closed')
+  }
+
+  return writeWebsiteIssueStatus(request, env, id, 'closed')
+}
+
+async function reopenWebsiteIssue(request, env, id) {
+  assertAllowedOrigin(request, env)
+  const user = await currentUser(request, env)
+  if (!user) throw new HttpError(401, 'Login required')
+
+  const existing = await env.ISSUE_DB.prepare(
+    'SELECT * FROM website_issues WHERE id = ? AND hidden = 0'
+  ).bind(id).first()
+  if (!existing) return json({ error: 'WebSite issue not found' }, 404, request, env)
+  if (Number(existing.author_id) !== user.id && !isAdmin(user)) {
+    throw new HttpError(403, 'Only the issue author or an administrator can reopen it')
+  }
+  if (existing.status !== 'closed' && !(existing.status === 'invalid' && isAdmin(user))) {
+    throw new HttpError(409, 'Only closed issues can be reopened')
+  }
+
+  return writeWebsiteIssueStatus(request, env, id, 'open')
 }
 
 async function getStatus(request, env) {
@@ -780,44 +870,58 @@ export default {
       }
 
       if (request.method === 'POST' && url.pathname === '/api/auth/register') {
-        return register(request, env)
+        return await register(request, env)
       }
 
       if (request.method === 'POST' && url.pathname === '/api/auth/login') {
-        return login(request, env)
+        return await login(request, env)
       }
 
       if (request.method === 'POST' && url.pathname === '/api/auth/logout') {
-        return logout(request, env)
+        return await logout(request, env)
       }
 
       if (request.method === 'GET' && (url.pathname === '/api/issues' || url.pathname === '/api/github-issues')) {
-        return listGithubIssues(request, env)
+        return await listGithubIssues(request, env)
       }
 
       const githubIssueMatch = url.pathname.match(/^\/api\/(?:issues|github-issues)\/(\d+)$/)
       if (request.method === 'GET' && githubIssueMatch) {
-        return getGithubIssue(request, env, Number(githubIssueMatch[1]))
+        return await getGithubIssue(request, env, Number(githubIssueMatch[1]))
       }
 
       if (request.method === 'GET' && url.pathname === '/api/website-issues') {
-        return listWebsiteIssues(request, env)
+        return await listWebsiteIssues(request, env)
       }
 
       if (request.method === 'POST' && url.pathname === '/api/website-issues') {
-        return createWebsiteIssue(request, env)
+        return await createWebsiteIssue(request, env)
       }
 
       const websiteIssueMatch = url.pathname.match(/^\/api\/website-issues\/(\d+)$/)
       if (websiteIssueMatch && request.method === 'GET') {
-        return getWebsiteIssue(request, env, Number(websiteIssueMatch[1]))
+        return await getWebsiteIssue(request, env, Number(websiteIssueMatch[1]))
       }
       if (websiteIssueMatch && request.method === 'PATCH') {
-        return updateWebsiteIssue(request, env, Number(websiteIssueMatch[1]))
+        return await updateWebsiteIssue(request, env, Number(websiteIssueMatch[1]))
+      }
+
+      const websiteIssueStatusMatch = url.pathname.match(/^\/api\/website-issues\/(\d+)\/status$/)
+      if (websiteIssueStatusMatch && request.method === 'PATCH') {
+        const data = await readJson(request)
+        return await updateWebsiteIssueStatus(request, env, Number(websiteIssueStatusMatch[1]), data.status)
+      }
+
+      const websiteIssueActionMatch = url.pathname.match(/^\/api\/website-issues\/(\d+)\/(close|reopen)$/)
+      if (websiteIssueActionMatch && request.method === 'POST') {
+        const id = Number(websiteIssueActionMatch[1])
+        return await (websiteIssueActionMatch[2] === 'close'
+          ? closeWebsiteIssue(request, env, id)
+          : reopenWebsiteIssue(request, env, id))
       }
 
       if (request.method === 'GET' && url.pathname === '/api/sync-status') {
-        return getStatus(request, env)
+        return await getStatus(request, env)
       }
 
       if (request.method === 'POST' && url.pathname === '/api/sync') {
@@ -828,7 +932,7 @@ export default {
       }
 
       if (request.method === 'POST' && url.pathname === '/webhooks/github') {
-        return handleGithubWebhook(request, env)
+        return await handleGithubWebhook(request, env)
       }
 
       return json({ error: 'Not found' }, 404, request, env)

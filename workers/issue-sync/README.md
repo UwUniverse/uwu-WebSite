@@ -46,6 +46,9 @@ GET   /api/website-issues
 GET   /api/website-issues/:id
 POST  /api/website-issues
 PATCH /api/website-issues/:id
+POST  /api/website-issues/:id/close
+POST  /api/website-issues/:id/reopen
+PATCH /api/website-issues/:id/status
 GET   /api/github-issues
 GET   /api/github-issues/:number
 GET   /api/sync-status
@@ -53,7 +56,9 @@ POST  /api/sync
 POST  /webhooks/github
 ```
 
-WebSite-issue 的新增和修改要求登录。修改只允许当前 issue 的发送者操作。详情接口会返回发送者用户名和邮箱，供宜修页面展开显示。
+WebSite-issue 的新增和修改要求登录。普通用户只能修改、关闭和重新打开自己发送的 issue。管理员可以修改全部 issue，并切换 `open`、`in_progress`、`closed` 和 `invalid` 状态。详情接口会返回发送者用户名和邮箱，供宜修页面展开显示。
+
+`RinnRei`、`uwugl` 和 `likw233` 是保留管理员用户名，禁止再次注册。已存在的同名账户会在迁移时提升为管理员。
 
 Cron 是 `7 18 * * *`，对应北京时间每天 02:07。Webhook 到达后会即时更新 GitHub issue 的状态，不等待 Cron。
 

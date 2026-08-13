@@ -759,6 +759,13 @@
   font-weight: 650;
 }
 
+.uwu-issue-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0 0 1.25rem;
+}
+
 .uwu-issue-detail__body {
   padding: 1rem;
   border-radius: 16px;

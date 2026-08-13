@@ -8,6 +8,8 @@ type User = {
   id: number
   username: string
   email: string
+  role?: 'player' | 'admin'
+  is_admin?: boolean
 }
 
 type IssueStatus = 'open' | 'in_progress' | 'closed' | 'invalid' | string
@@ -33,7 +35,9 @@ const props = withDefaults(defineProps<{ locale?: Locale; mode: Mode }>(), {
   locale: 'zh-CN'
 })
 
-const apiBase = String(import.meta.env.VITE_ISSUES_API || 'http://127.0.0.1:8787').replace(/\/$/, '')
+const apiBase = String(
+  import.meta.env.VITE_ISSUES_API || 'https://uwuaosp-issue-sync.uwuaosp-website.workers.dev'
+).replace(/\/$/, '')
 const loading = ref(true)
 const detailLoading = ref(false)
 const formLoading = ref(false)
@@ -97,6 +101,10 @@ const copy = computed(() => ({
     authFailed: '登录或注册失败',
     issueSent: 'issue 已发送',
     issueSaved: 'issue 已更新',
+    close: '关闭 issue',
+    reopen: '重新打开',
+    setStatus: '设置状态',
+    administrator: '管理员',
     passwordHint: '至少 8 个字符',
     contact: '联系信息'
   },
@@ -136,6 +144,10 @@ const copy = computed(() => ({
     authFailed: '登入或註冊失敗',
     issueSent: 'issue 已發送',
     issueSaved: 'issue 已更新',
+    close: '關閉 issue',
+    reopen: '重新開啟',
+    setStatus: '設定狀態',
+    administrator: '管理員',
     passwordHint: '至少 8 個字元',
     contact: '聯絡資訊'
   },
@@ -175,13 +187,19 @@ const copy = computed(() => ({
     authFailed: 'Login or registration failed',
     issueSent: 'Issue sent',
     issueSaved: 'Issue updated',
+    close: 'Close issue',
+    reopen: 'Reopen issue',
+    setStatus: 'Set status',
+    administrator: 'Administrator',
     passwordHint: 'At least 8 characters',
     contact: 'Contact'
   }
 }[props.locale]))
 
 const isWebsite = computed(() => props.mode === 'website')
+const isAdmin = computed(() => Boolean(user.value?.is_admin || user.value?.role === 'admin'))
 const statusFor = (issue: Issue): IssueStatus => issue.status || issue.state || 'open'
+const adminStatuses: IssueStatus[] = ['open', 'in_progress', 'closed', 'invalid']
 
 function statusLabel(status: IssueStatus) {
   if (status === 'in_progress') return copy.value.inProgress
@@ -366,6 +384,49 @@ async function submitIssue() {
   }
 }
 
+function canManageSelectedIssue() {
+  if (!selectedIssue.value || !user.value || !isWebsite.value) return false
+  return isAdmin.value || selectedIssue.value.author?.id === user.value.id
+}
+
+async function changeIssueStatus(status: IssueStatus) {
+  if (!selectedIssue.value || !isAdmin.value) return
+  formLoading.value = true
+  feedbackMessage.value = ''
+  try {
+    const updated = await apiFetch<Issue>(
+      `/api/website-issues/${selectedIssue.value.id}/status`,
+      { method: 'PATCH', body: JSON.stringify({ status }) }
+    )
+    selectedIssue.value = updated
+    const index = issues.value.findIndex((issue) => issue.id === updated.id)
+    if (index !== -1) issues.value[index] = updated
+  } catch (error) {
+    feedbackMessage.value = error instanceof Error ? error.message : copy.value.unavailable
+  } finally {
+    formLoading.value = false
+  }
+}
+
+async function issueAction(action: 'close' | 'reopen') {
+  if (!selectedIssue.value || !canManageSelectedIssue()) return
+  formLoading.value = true
+  feedbackMessage.value = ''
+  try {
+    const updated = await apiFetch<Issue>(
+      `/api/website-issues/${selectedIssue.value.id}/${action}`,
+      { method: 'POST' }
+    )
+    selectedIssue.value = updated
+    const index = issues.value.findIndex((issue) => issue.id === updated.id)
+    if (index !== -1) issues.value[index] = updated
+  } catch (error) {
+    feedbackMessage.value = error instanceof Error ? error.message : copy.value.unavailable
+  } finally {
+    formLoading.value = false
+  }
+}
+
 onMounted(() => {
   void Promise.all([loadUser(), loadIssues()])
 })
@@ -469,6 +530,40 @@ onMounted(() => {
             </svg>
           </span>
           <span>{{ statusLabel(statusFor(selectedIssue)) }}</span>
+        </div>
+        <div v-if="isWebsite && canManageSelectedIssue()" class="uwu-issue-detail__actions">
+          <template v-if="isAdmin">
+            <button
+              v-for="status in adminStatuses"
+              :key="status"
+              class="uwu-m3-button uwu-m3-button--tonal"
+              type="button"
+              :disabled="formLoading || statusFor(selectedIssue) === status"
+              @click="changeIssueStatus(status)"
+            >
+              {{ statusLabel(status) }}
+            </button>
+          </template>
+          <template v-else>
+            <button
+              v-if="statusFor(selectedIssue) === 'open' || statusFor(selectedIssue) === 'in_progress'"
+              class="uwu-m3-button uwu-m3-button--tonal"
+              type="button"
+              :disabled="formLoading"
+              @click="issueAction('close')"
+            >
+              {{ copy.close }}
+            </button>
+            <button
+              v-if="statusFor(selectedIssue) === 'closed'"
+              class="uwu-m3-button uwu-m3-button--tonal"
+              type="button"
+              :disabled="formLoading"
+              @click="issueAction('reopen')"
+            >
+              {{ copy.reopen }}
+            </button>
+          </template>
         </div>
         <div class="uwu-issue-detail__body">{{ selectedIssue.body || '—' }}</div>
         <dl class="uwu-issue-detail__contact">

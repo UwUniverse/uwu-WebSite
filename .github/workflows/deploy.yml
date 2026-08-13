@@ -40,7 +40,7 @@ jobs:
 
       - name: Build site
         env:
-          VITE_ISSUES_API: ${{ vars.VITE_ISSUES_API }}
+          VITE_ISSUES_API: ${{ vars.VITE_ISSUES_API || 'https://uwuaosp-issue-sync.uwuaosp-website.workers.dev' }}
         run: pnpm run docs:build
 
       - name: Upload Pages artifact
