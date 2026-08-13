@@ -694,7 +694,7 @@
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.9rem;
   color: var(--vp-c-text-1);
   font-size: 1rem;
 }
