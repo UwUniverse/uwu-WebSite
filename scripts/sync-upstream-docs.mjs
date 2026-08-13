@@ -22,6 +22,14 @@ function cloneBranch(repository, branch, directory) {
   return target
 }
 
+function listBranches(repository) {
+  return run('git', ['ls-remote', '--heads', repository])
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => line.replace(/^\S+\s+refs\/heads\//, ''))
+    .filter(Boolean)
+}
+
 function markdownFiles(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const source = path.join(directory, entry.name)
@@ -65,67 +73,127 @@ function copyMarkdownIfPresent(sourceRoot, sourceName, destination, replacements
   return true
 }
 
+function branchDirectory(branch) {
+  const segments = branch.split('/')
+
+  if (segments.some((segment) => !segment || segment === '.' || segment === '..')) {
+    throw new Error(`Unsafe upstream branch name: ${branch}`)
+  }
+
+  return destination(path.join('docs', 'docs', ...segments))
+}
+
+function branchLink(branch) {
+  return `/docs/${branch}/`
+}
+
+function fileLink(branch, file) {
+  const relative = file.split(path.sep).join('/')
+  return relative === 'index.md'
+    ? branchLink(branch)
+    : `/docs/${branch}/${relative.replace(/\.md$/, '')}`
+}
+
+function sidebarItems(sourceRoot, branch) {
+  const preferredFiles = branch === 'moment'
+    ? [
+        'index.md',
+        'launching-apps.md',
+        'navigation-handle.md',
+        'moment-arc.md',
+        'notifications.md',
+        'recents-gesture.md',
+        'multiple-windows.md',
+        'move-and-resize.md',
+        'controls.md',
+        'compact-mode.md',
+        'landscape.md',
+        'back.md',
+        'settings.md',
+        'debugging.md'
+      ]
+    : []
+
+  return markdownFiles(sourceRoot)
+    .map((file) => path.relative(sourceRoot, file))
+    .sort((left, right) => {
+      const leftIndex = preferredFiles.indexOf(left)
+      const rightIndex = preferredFiles.indexOf(right)
+      return (leftIndex < 0 ? Number.MAX_SAFE_INTEGER : leftIndex)
+        - (rightIndex < 0 ? Number.MAX_SAFE_INTEGER : rightIndex)
+        || left.localeCompare(right)
+    })
+    .map((file) => {
+      const content = fs.readFileSync(path.join(sourceRoot, file), 'utf8')
+      const title = branch === 'uwuBackGroundManager' && file === 'index.md'
+        ? '文档'
+        : branch === 'uwuBackGroundManager' && file === 'english.md'
+          ? 'English'
+          : file === 'index.md'
+            ? '概览'
+            : content.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? path.basename(file, '.md')
+
+      return {
+        text: title,
+        link: fileLink(branch, file)
+      }
+    })
+}
+
+function writeSidebarFile(sidebars) {
+  fs.writeFileSync(
+    destination('docs/.vitepress/generated-upstream-docs.ts'),
+    `export const upstreamDocsSidebars = ${JSON.stringify(sidebars, null, 2)}\n`
+  )
+}
+
 function destination(relativePath) {
   return path.join(workspace, relativePath)
 }
 
 try {
-  const moment = cloneBranch(docsRepository, 'moment', 'docs-moment')
-  replaceMarkdownDirectory(moment, destination('docs/docs/moment'))
-
-  const backgroundManager = cloneBranch(docsRepository, 'uwuBackGroundManager', 'docs-background-manager')
-  copyMarkdownIfPresent(
-    backgroundManager,
-    'CN.md',
-    destination('docs/docs/uwuBackGroundManager/index.md')
-  )
-  copyMarkdownIfPresent(
-    backgroundManager,
-    'README.md',
-    destination('docs/docs/uwuBackGroundManager/english.md'),
-    [['[English](./README.md) | [简体中文](./CN.md)', '']]
-  )
-
-  const momentDestination = destination('docs/docs/moment')
-  const momentOrder = [
-    'index.md',
-    'launching-apps.md',
-    'navigation-handle.md',
-    'moment-arc.md',
-    'notifications.md',
-    'recents-gesture.md',
-    'multiple-windows.md',
-    'move-and-resize.md',
-    'controls.md',
-    'compact-mode.md',
-    'landscape.md',
-    'back.md',
-    'settings.md',
-    'debugging.md'
+  const upstreamBranches = listBranches(docsRepository)
+    .filter((branch) => branch !== 'main')
+  const preferredOrder = ['moment', 'uwuBackGroundManager']
+  const docsBranches = [
+    ...preferredOrder.filter((branch) => upstreamBranches.includes(branch)),
+    ...upstreamBranches
+      .filter((branch) => !preferredOrder.includes(branch))
+      .sort((left, right) => left.localeCompare(right))
   ]
-  const momentFiles = markdownFiles(momentDestination)
-    .map((file) => path.relative(momentDestination, file))
-    .sort((left, right) => {
-      const leftIndex = momentOrder.indexOf(left)
-      const rightIndex = momentOrder.indexOf(right)
-      return (leftIndex < 0 ? Number.MAX_SAFE_INTEGER : leftIndex)
-        - (rightIndex < 0 ? Number.MAX_SAFE_INTEGER : rightIndex)
-        || left.localeCompare(right)
+  const docsSidebars = []
+
+  for (const branch of docsBranches) {
+    const cloneDirectory = `docs-${branch.replaceAll('/', '-')}`
+    const upstream = cloneBranch(docsRepository, branch, cloneDirectory)
+    const branchDestination = branchDirectory(branch)
+
+    if (branch === 'uwuBackGroundManager') {
+      fs.rmSync(branchDestination, { recursive: true, force: true })
+      fs.mkdirSync(branchDestination, { recursive: true })
+      copyMarkdownIfPresent(upstream, 'CN.md', path.join(branchDestination, 'index.md'))
+      copyMarkdownIfPresent(
+        upstream,
+        'README.md',
+        path.join(branchDestination, 'english.md'),
+        [[/\[English\]\(\.\/README\.md\)\s*\|\s*\[简体中文\]\(\.\/CN\.md\)/g, '']]
+      )
+    } else {
+      replaceMarkdownDirectory(upstream, branchDestination)
+    }
+
+    const items = sidebarItems(branchDestination, branch)
+    if (items.length === 0) continue
+
+    docsSidebars.push({
+      text: branch,
+      link: branchLink(branch),
+      collapsed: false,
+      items
     })
-  const momentItems = momentFiles.map((file) => {
-    const content = fs.readFileSync(path.join(momentDestination, file), 'utf8')
-    const title = file === 'index.md'
-      ? '概览'
-      : content.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? path.basename(file, '.md')
-    const link = file === 'index.md'
-      ? '/docs/moment/'
-      : `/docs/moment/${file.replace(/\.md$/, '')}`
-    return `  { text: ${JSON.stringify(title)}, link: ${JSON.stringify(link)} }`
-  })
-  fs.writeFileSync(
-    destination('docs/.vitepress/generated-upstream-docs.ts'),
-    `export const momentDocsItems = [\n${momentItems.join(',\n')}\n]\n`
-  )
+  }
+
+  writeSidebarFile(docsSidebars)
 
   const manifestBranches = [
     ['uwu-16.2', 'docs/guide/platform-manifests/uwu-16.2.md'],

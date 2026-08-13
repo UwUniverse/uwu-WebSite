@@ -1,25 +1,9 @@
 import { defineConfig, type DefaultTheme } from 'vitepress'
-import { momentDocsItems } from './generated-upstream-docs'
+import { upstreamDocsSidebars } from './generated-upstream-docs'
 
 const githubUrl = 'https://github.com/uwuAOSP'
 
-const docsSidebar = [
-  {
-    text: 'moment',
-    link: '/docs/moment/',
-    collapsed: false,
-    items: momentDocsItems
-  },
-  {
-    text: 'uwuBackGroundManager',
-    link: '/docs/uwuBackGroundManager/',
-    collapsed: false,
-    items: [
-      { text: '文档', link: '/docs/uwuBackGroundManager/' },
-      { text: 'English', link: '/docs/uwuBackGroundManager/english' }
-    ]
-  }
-]
+const docsSidebar = upstreamDocsSidebars
 
 const manifestSidebar = {
   text: 'platform_manifests',
