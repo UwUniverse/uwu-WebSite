@@ -39,6 +39,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build site
+        env:
+          VITE_ISSUES_API: ${{ vars.VITE_ISSUES_API }}
         run: pnpm run docs:build
 
       - name: Upload Pages artifact

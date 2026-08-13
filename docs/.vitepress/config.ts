@@ -29,6 +29,33 @@ const traditionalManifestSidebar = {
   ]
 }
 
+const issueSidebar = {
+  text: '宜修',
+  collapsed: false,
+  items: [
+    { text: 'WebSite-issue', link: '/issues/website/' },
+    { text: 'Github issue', link: '/issues/github/' }
+  ]
+}
+
+const traditionalIssueSidebar = {
+  text: '宜修',
+  collapsed: false,
+  items: [
+    { text: 'WebSite-issue', link: '/zh-tw/issues/website/' },
+    { text: 'Github issue', link: '/zh-tw/issues/github/' }
+  ]
+}
+
+const englishIssueSidebar = {
+  text: '宜修',
+  collapsed: false,
+  items: [
+    { text: 'WebSite-issue', link: '/en/issues/website/' },
+    { text: 'Github issue', link: '/en/issues/github/' }
+  ]
+}
+
 const baseTheme: DefaultTheme.Config = {
   siteTitle: 'uwuAOSP',
   socialLinks: [{ icon: 'github', link: githubUrl }],
@@ -40,7 +67,8 @@ const baseTheme: DefaultTheme.Config = {
         items: [{ text: '快速开始', link: '/guide/' }]
       },
       manifestSidebar
-    ]
+    ],
+    '/issues/': [issueSidebar]
   }
 }
 
@@ -50,7 +78,7 @@ const simplifiedChineseTheme: DefaultTheme.Config = {
     { text: '关于项目', link: '/about/' },
     { text: '文档', link: '/docs/' },
     { text: '用户交流', link: '/community/' },
-    { text: '宜修', link: '/issues/' }
+    { text: '宜修', link: '/issues/website/' }
   ],
   langMenuLabel: '切换语言',
   darkModeSwitchLabel: '外观',
@@ -69,7 +97,8 @@ const simplifiedChineseTheme: DefaultTheme.Config = {
     '/docs/': docsSidebar,
     '/docs/main/': docsSidebar,
     '/docs/moment/': docsSidebar,
-    '/docs/uwuBackGroundManager/': docsSidebar
+    '/docs/uwuBackGroundManager/': docsSidebar,
+    '/issues/': [issueSidebar]
   }
 }
 
@@ -79,7 +108,7 @@ const traditionalChineseTheme: DefaultTheme.Config = {
     { text: '關於專案', link: '/zh-tw/about/' },
     { text: '文件', link: '/zh-tw/docs/' },
     { text: '使用者交流', link: '/zh-tw/community/' },
-    { text: '宜修', link: '/zh-tw/issues/' }
+    { text: '宜修', link: '/zh-tw/issues/website/' }
   ],
   langMenuLabel: '切換語言',
   darkModeSwitchLabel: '外觀',
@@ -99,7 +128,8 @@ const traditionalChineseTheme: DefaultTheme.Config = {
     '/zh-tw/docs/': docsSidebar,
     '/docs/main/': docsSidebar,
     '/docs/moment/': docsSidebar,
-    '/docs/uwuBackGroundManager/': docsSidebar
+    '/docs/uwuBackGroundManager/': docsSidebar,
+    '/zh-tw/issues/': [traditionalIssueSidebar]
   }
 }
 
@@ -109,7 +139,7 @@ const englishTheme: DefaultTheme.Config = {
     { text: 'About', link: '/en/about/' },
     { text: 'Docs', link: '/en/docs/' },
     { text: 'Community', link: '/en/community/' },
-    { text: '宜修', link: '/en/issues/' }
+    { text: '宜修', link: '/en/issues/website/' }
   ],
   langMenuLabel: 'Change language',
   darkModeSwitchLabel: 'Appearance',
@@ -128,7 +158,8 @@ const englishTheme: DefaultTheme.Config = {
     '/en/docs/': docsSidebar,
     '/docs/main/': docsSidebar,
     '/docs/moment/': docsSidebar,
-    '/docs/uwuBackGroundManager/': docsSidebar
+    '/docs/uwuBackGroundManager/': docsSidebar,
+    '/en/issues/': [englishIssueSidebar]
   }
 }
 

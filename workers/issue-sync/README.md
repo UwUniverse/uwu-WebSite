@@ -1,57 +1,74 @@
-# uwuAOSP Issue Sync Worker
+# uwuAOSP 宜修 Worker
 
-这个 Worker 从 uwuAOSP/issue_tracker 同步全部 Issue 和评论到 D1。
+这个 Worker 从 `uwuAOSP/issue_tracker` 同步 GitHub issue 和评论到 D1，同时提供 WebSite-issue、账户登录和 GitHub webhook 接口。
 
-## 数据库
+## 首次部署
 
-数据库绑定名称是 ISSUE_DB：
-
-- 数据库名称：uwuaosp-issue
-- 数据库 ID：ea7bdb45-e46f-4c05-b8a2-c0554ad49364
-
-首次部署前执行迁移：
-
-~~~powershell
+```powershell
 npx wrangler d1 migrations apply ISSUE_DB --remote --config workers/issue-sync/wrangler.toml
-~~~
-
-## 部署
-
-~~~powershell
 npx wrangler deploy --config workers/issue-sync/wrangler.toml
-~~~
+```
 
-Worker 的 Cron 是 7 18 * * *，对应北京时间每天凌晨 02:07。
+D1 数据库名称是 `uwuaosp-issue`，ID 是 `ea7bdb45-e46f-4c05-b8a2-c0554ad49364`。
 
-Worker 运行时可选配置：
+## Secret
 
-- GITHUB_TOKEN：提高 GitHub API 限额，使用 Cloudflare Secret 保存
-- SYNC_TOKEN：保护 POST /api/sync 手动同步接口，使用 Cloudflare Secret 保存
+GitHub 仓库 webhook 选择 `issues` 和 `issue_comment`，Payload URL 为：
 
-~~~powershell
+```text
+https://<worker-domain>/webhooks/github
+```
+
+Webhook Secret 必须保存为 Cloudflare Worker Secret：
+
+```powershell
+npx wrangler secret put GITHUB_WEBHOOK_SECRET --config workers/issue-sync/wrangler.toml
+```
+
+可选 Secret：
+
+```powershell
 npx wrangler secret put GITHUB_TOKEN --config workers/issue-sync/wrangler.toml
 npx wrangler secret put SYNC_TOKEN --config workers/issue-sync/wrangler.toml
-~~~
+```
 
-## 接口
+`GITHUB_TOKEN` 用于提高 API 限额，`SYNC_TOKEN` 保护手动同步接口。
 
-~~~text
-GET  /api/health
-GET  /api/issues?limit=50&offset=0
-GET  /api/issues/:number
-GET  /api/sync-status
-POST /api/sync
-~~~
+## API
 
-手动同步需要请求头：
+```text
+GET   /api/health
+GET   /api/auth/me
+POST  /api/auth/register
+POST  /api/auth/login
+POST  /api/auth/logout
+GET   /api/website-issues
+GET   /api/website-issues/:id
+POST  /api/website-issues
+PATCH /api/website-issues/:id
+GET   /api/github-issues
+GET   /api/github-issues/:number
+GET   /api/sync-status
+POST  /api/sync
+POST  /webhooks/github
+```
 
-~~~text
-Authorization: Bearer <SYNC_TOKEN>
-~~~
+WebSite-issue 的新增和修改要求登录。修改只允许当前 issue 的发送者操作。详情接口会返回发送者用户名和邮箱，供宜修页面展开显示。
+
+Cron 是 `7 18 * * *`，对应北京时间每天 02:07。Webhook 到达后会即时更新 GitHub issue 的状态，不等待 Cron。
 
 ## 本地测试
 
-~~~powershell
+```powershell
+npx wrangler d1 migrations apply ISSUE_DB --local --config workers/issue-sync/wrangler.toml
 npx wrangler dev --config workers/issue-sync/wrangler.toml
-curl "http://localhost:8787/cdn-cgi/handler/scheduled?format=json"
-~~~
+```
+
+网站本地开发时设置：
+
+```powershell
+$env:VITE_ISSUES_API = 'http://127.0.0.1:8787'
+pnpm run docs:dev
+```
+
+GitHub Pages 构建需要在仓库 `Settings → Secrets and variables → Actions → Variables` 添加 `VITE_ISSUES_API`，值为 Worker 根地址，例如 `https://<worker-domain>`。`WEB_ORIGINS` 也要包含实际 Pages 或自定义域名的 origin。

@@ -507,3 +507,399 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* 宜修 follows the VitePress guide layout while using Material 3 surfaces. */
+.uwu-issue-center {
+  max-width: 900px;
+  margin: 2rem 0 5rem;
+}
+
+.uwu-issue-center__toolbar,
+.uwu-issue-detail__header,
+.uwu-issue-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.uwu-issue-center__toolbar {
+  margin-bottom: 1.15rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.uwu-issue-center__eyebrow {
+  margin: 0;
+  color: var(--vp-c-brand-1);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.uwu-issue-center__count {
+  margin: 0.35rem 0 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+.uwu-issue-center__toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.uwu-m3-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.uwu-m3-button:hover:not(:disabled),
+.uwu-m3-button:focus-visible {
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--vp-c-text-1) 16%, transparent);
+  transform: translateY(-1px);
+}
+
+.uwu-m3-button:focus-visible,
+.uwu-issue-row:focus-visible,
+.uwu-issue-text-button:focus-visible,
+.uwu-issue-tab:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--uwu-blue-bright) 72%, transparent);
+  outline-offset: 3px;
+}
+
+.uwu-m3-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.uwu-m3-button--filled {
+  background: var(--uwu-button);
+  color: var(--uwu-button-text) !important;
+}
+
+.uwu-m3-button--filled:hover:not(:disabled) {
+  background: var(--uwu-blue-soft);
+}
+
+.uwu-m3-button--tonal {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1) !important;
+}
+
+.uwu-m3-button--tonal:hover:not(:disabled) {
+  background: var(--vp-c-bg-elv);
+}
+
+.uwu-issue-center__account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 16px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+}
+
+.uwu-issue-text-button {
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.uwu-issue-center__message,
+.uwu-issue-center__empty {
+  margin: 1rem 0;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+}
+
+.uwu-issue-center__message.is-error {
+  background: color-mix(in srgb, #ba1a1a 12%, var(--vp-c-bg-soft));
+  color: var(--vp-c-text-1);
+}
+
+.uwu-issue-center__message.is-success {
+  background: color-mix(in srgb, var(--uwu-blue-bright) 18%, var(--vp-c-bg-soft));
+  color: var(--vp-c-text-1);
+}
+
+.uwu-issue-center__list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.uwu-issue-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  min-height: 72px;
+  padding: 0.85rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.uwu-issue-row:hover {
+  border-color: color-mix(in srgb, var(--vp-c-brand-1) 55%, transparent);
+  background: var(--vp-c-bg-elv);
+  transform: translateX(2px);
+}
+
+.uwu-issue-status-icon {
+  display: inline-flex;
+  flex: 0 0 1.45rem;
+  align-items: center;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+}
+
+.uwu-issue-status-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.uwu-issue-status-icon.is-open { color: #2f7d32; }
+.uwu-issue-status-icon.is-in_progress { color: #a15c00; }
+.uwu-issue-status-icon.is-closed { color: #7652a8; }
+.uwu-issue-status-icon.is-invalid { color: var(--vp-c-text-3); }
+
+.uwu-issue-row__main {
+  display: grid;
+  min-width: 0;
+  gap: 0.3rem;
+}
+
+.uwu-issue-row__title {
+  overflow: hidden;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uwu-issue-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.8rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.82rem;
+}
+
+.uwu-issue-row__arrow {
+  flex: 0 0 1.05rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-left: auto;
+  background: var(--vp-c-brand-1);
+  -webkit-mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+  mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+}
+
+.uwu-issue-detail,
+.uwu-issue-panel {
+  margin-top: 1.25rem;
+  padding: 1.35rem;
+  border-radius: 24px;
+  background: var(--vp-c-bg-alt);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--vp-c-text-1) 5%, transparent);
+}
+
+.uwu-issue-detail h2,
+.uwu-issue-panel h2 {
+  margin: 0.35rem 0 0;
+  color: var(--vp-c-text-1);
+  font-size: 1.45rem;
+  line-height: 1.25;
+}
+
+.uwu-issue-detail__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 1.25rem 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.uwu-issue-detail__body {
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.uwu-issue-detail__contact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+}
+
+.uwu-issue-detail__contact div {
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.uwu-issue-detail__contact dt {
+  color: var(--vp-c-text-2);
+  font-size: 0.8rem;
+}
+
+.uwu-issue-detail__contact dd {
+  margin: 0.35rem 0 0;
+  color: var(--vp-c-text-1);
+  overflow-wrap: anywhere;
+}
+
+.uwu-issue-external {
+  margin-top: 1.25rem;
+}
+
+.uwu-issue-external-icon {
+  display: inline-block;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-left: 0.35rem;
+  background: currentColor;
+  -webkit-mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+  mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+}
+
+.uwu-issue-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin: 1.25rem 0;
+  padding: 0.25rem;
+  border-radius: 16px;
+  background: var(--vp-c-bg-soft);
+}
+
+.uwu-issue-tab {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--vp-c-text-2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.uwu-issue-tab.is-active {
+  background: var(--uwu-m3-primary-container);
+  color: var(--vp-c-brand-1);
+  font-weight: 700;
+}
+
+.uwu-issue-form,
+.uwu-issue-form__select {
+  display: grid;
+  gap: 1rem;
+}
+
+.uwu-issue-form label,
+.uwu-issue-form__select {
+  color: var(--vp-c-text-2);
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.uwu-issue-form label > span,
+.uwu-issue-form__select > span {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.uwu-issue-form small {
+  color: var(--vp-c-text-3);
+  font-weight: 400;
+}
+
+.uwu-issue-form input,
+.uwu-issue-form textarea,
+.uwu-issue-form__select select {
+  width: 100%;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  font-weight: 400;
+}
+
+.uwu-issue-form input,
+.uwu-issue-form__select select {
+  min-height: 44px;
+  padding: 0 0.85rem;
+}
+
+.uwu-issue-form textarea {
+  min-height: 150px;
+  padding: 0.75rem 0.85rem;
+  resize: vertical;
+}
+
+.uwu-issue-form input:focus,
+.uwu-issue-form textarea:focus,
+.uwu-issue-form__select select:focus {
+  border-color: var(--vp-c-brand-1);
+  outline: 3px solid color-mix(in srgb, var(--uwu-blue-bright) 42%, transparent);
+  outline-offset: 0;
+}
+
+@media (max-width: 720px) {
+  .uwu-issue-center__toolbar,
+  .uwu-issue-detail__header,
+  .uwu-issue-panel__header,
+  .uwu-issue-center__account {
+    flex-direction: column;
+  }
+
+  .uwu-issue-center__toolbar-actions {
+    justify-content: flex-start;
+  }
+
+  .uwu-issue-detail__contact {
+    grid-template-columns: 1fr;
+  }
+}

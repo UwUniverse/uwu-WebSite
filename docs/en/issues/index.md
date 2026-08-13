@@ -1,7 +1,6 @@
-# Issues
+# 宜修
 
-<script setup>
-import IssueBoard from '../../.vitepress/theme/IssueBoard.vue'
-</script>
+Select an issue source to begin.
 
-<IssueBoard locale="en" />
+- [WebSite-issue](./website/)
+- [Github issue](./github/)
