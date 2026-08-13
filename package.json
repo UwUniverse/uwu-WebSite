@@ -1,0 +1,18 @@
+{
+  "name": "uwuaosp-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "issues:server": "node server/issue-webhook.mjs"
+  },
+  "devDependencies": {
+    "vitepress": "1.6.4"
+  },
+  "dependencies": {
+    "vue": "^3.5.0"
+  }
+}

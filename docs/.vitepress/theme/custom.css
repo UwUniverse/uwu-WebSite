@@ -1,0 +1,479 @@
+:root {
+  --uwu-blue-bright: #8DE3FD;
+  --uwu-blue-mid: #9BC3FB;
+  --uwu-blue-soft: #BCDBFD;
+  --uwu-button: #9CB6F9;
+  --uwu-button-text: #1b1b1f;
+  --uwu-m3-primary: #496db4;
+  --uwu-m3-primary-container: #d8e2ff;
+  --uwu-m3-surface: #f9f9ff;
+  --uwu-m3-surface-container-low: #f3f3fa;
+  --uwu-m3-surface-container: #ededf4;
+  --uwu-m3-surface-container-high: #e7e7ee;
+  --vp-c-brand-1: #496db4;
+  --vp-c-brand-2: #5a7ac6;
+  --vp-c-brand-3: #6d8dd8;
+  --vp-c-brand-soft: rgba(141, 227, 253, 0.16);
+  --vp-button-brand-bg: var(--uwu-button);
+  --vp-button-brand-text: var(--uwu-button-text);
+  --vp-button-brand-hover-bg: var(--uwu-blue-soft);
+  --vp-button-brand-hover-text: var(--uwu-button-text);
+  --vp-button-brand-active-bg: var(--uwu-blue-bright);
+  --vp-button-brand-active-text: var(--uwu-button-text);
+  --vp-button-alt-bg: #e7e7e8;
+  --vp-button-alt-text: #3c3c43;
+  --vp-button-alt-hover-bg: #e2e2e3;
+  --vp-button-alt-hover-text: #3c3c43;
+  --vp-button-alt-active-bg: #dededf;
+  --vp-button-alt-active-text: #3c3c43;
+  --vp-c-bg: var(--uwu-m3-surface);
+  --vp-c-bg-alt: var(--uwu-m3-surface-container-low);
+  --vp-c-bg-soft: var(--uwu-m3-surface-container);
+  --vp-c-bg-elv: var(--uwu-m3-surface-container-high);
+  --vp-c-divider: #dfe2ea;
+  --vp-c-gutter: #e8e9f1;
+  --vp-c-text-1: #3c3c43;
+  --vp-c-text-2: #67676c;
+  --vp-c-text-3: #929295;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #8DE3FD 20%, #9BC3FB 55%, #BCDBFD 90%);
+  --uwu-hero-text: #213547;
+  --uwu-cyan: var(--vp-c-brand-1);
+}
+
+.dark {
+  --vp-c-brand-1: var(--uwu-blue-bright);
+  --vp-c-brand-2: var(--uwu-blue-mid);
+  --vp-c-brand-3: var(--uwu-blue-soft);
+  --vp-c-brand-soft: rgba(141, 227, 253, 0.16);
+  --vp-button-brand-bg: var(--uwu-button);
+  --vp-button-brand-text: var(--uwu-button-text);
+  --vp-button-brand-hover-bg: var(--uwu-blue-soft);
+  --vp-button-brand-hover-text: var(--uwu-button-text);
+  --vp-button-brand-active-bg: var(--uwu-blue-bright);
+  --vp-button-brand-active-text: var(--uwu-button-text);
+  --vp-button-alt-bg: #32363f;
+  --vp-button-alt-text: #dfdfd6;
+  --vp-button-alt-hover-bg: #3b404a;
+  --vp-button-alt-hover-text: #dfdfd6;
+  --vp-button-alt-active-bg: #454b57;
+  --vp-button-alt-active-text: #dfdfd6;
+  --uwu-m3-primary: #a9c7ff;
+  --uwu-m3-primary-container: #2e4777;
+  --uwu-m3-surface: #14161d;
+  --uwu-m3-surface-container-low: #1c1e26;
+  --uwu-m3-surface-container: #22252e;
+  --uwu-m3-surface-container-high: #2c2f39;
+  --vp-c-bg: var(--uwu-m3-surface);
+  --vp-c-bg-alt: var(--uwu-m3-surface-container-low);
+  --vp-c-bg-soft: var(--uwu-m3-surface-container);
+  --vp-c-bg-elv: var(--uwu-m3-surface-container-high);
+  --vp-c-divider: #44474f;
+  --vp-c-gutter: #101218;
+  --vp-c-text-1: #dfdfd6;
+  --vp-c-text-2: #98989f;
+  --vp-c-text-3: #6a6a71;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #8DE3FD 20%, #9BC3FB 55%, #BCDBFD 90%);
+  --uwu-hero-text: #dfdfd6;
+  --uwu-cyan: var(--uwu-blue-bright);
+}
+
+.VPHero .text {
+  color: var(--uwu-hero-text);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.VPApp {
+  background: var(--vp-c-bg);
+}
+
+.VPHome {
+  background: var(--vp-c-bg);
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .VPNavBarMenuLink {
+    padding-right: 8px !important;
+    padding-left: 8px !important;
+    font-size: 13px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .VPNavBarTranslations,
+  .VPNavBarAppearance,
+  .VPNavBarSocialLinks {
+    display: flex !important;
+    align-items: center;
+  }
+
+  .VPNavBarExtra {
+    display: none !important;
+  }
+}
+
+.VPHero .image-src {
+  width: 680px;
+  height: 240px;
+  max-width: 680px;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (min-width: 960px) and (max-width: 1100px) {
+  .VPHero .image-src {
+    width: 400px;
+    max-width: 400px;
+    height: 200px;
+  }
+}
+
+.dark .VPHero .image-src {
+  mix-blend-mode: screen;
+}
+
+.VPHero .image-container {
+  position: relative;
+  animation: uwu-logo-float 5s ease-in-out infinite;
+}
+
+.VPHero .actions .action:nth-child(2) .VPButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.VPHero .actions .action:nth-child(2) .VPButton::after,
+.uwu-external-arrow,
+.uwu-card-arrow {
+  display: inline-block;
+  flex: 0 0 1rem;
+  width: 1rem;
+  height: 1rem;
+  background-color: currentColor;
+  content: '';
+  -webkit-mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+  mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+}
+
+.uwu-external-arrow {
+  margin-left: 0.35rem;
+  vertical-align: -0.15em;
+}
+
+@keyframes uwu-logo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.vp-doc h1,
+.vp-doc h2 {
+  letter-spacing: -0.025em;
+}
+
+.vp-doc a {
+  text-underline-offset: 0.18em;
+}
+
+.vp-doc a:focus-visible,
+.VPButton:focus-visible,
+.VPNavBarMenuLink:focus-visible,
+.VPNavBarTitle:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--uwu-cyan) 76%, white);
+  outline-offset: 4px;
+}
+
+.uwu-page-intro {
+  max-width: 700px;
+  margin-bottom: 2.75rem;
+}
+
+.uwu-eyebrow {
+  color: var(--uwu-cyan);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.uwu-branch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 2rem 0 3.5rem;
+}
+
+.uwu-branch-card {
+  display: flex;
+  min-height: 122px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1) !important;
+  text-decoration: none !important;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.uwu-branch-card:hover {
+  border-color: var(--vp-c-divider);
+  background: var(--vp-c-bg-alt);
+}
+
+.uwu-branch-card strong {
+  font-family: var(--vp-font-family-mono);
+  font-size: 1.05rem;
+}
+
+.uwu-branch-card small {
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+.uwu-card-arrow {
+  align-self: flex-end;
+  flex: 0 0 1.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--uwu-cyan);
+}
+
+.uwu-demo-shell {
+  max-width: 760px;
+  margin: 2.25rem 0 3rem;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: #161618;
+}
+
+.uwu-demo-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  color: #a8b1bf;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.82rem;
+}
+
+.uwu-demo-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ea668d;
+  box-shadow: 14px 0 #f0b863, 28px 0 #8bd3df;
+}
+
+.uwu-demo-path {
+  margin-left: 2.2rem;
+}
+
+.uwu-demo-shell pre {
+  margin: 0;
+  padding: 1.5rem;
+  overflow-x: auto;
+  color: #dce5ef;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.uwu-code-entry {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  color: var(--vp-c-text-1) !important;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.9rem;
+  text-decoration: none !important;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.uwu-code-entry:hover {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+}
+
+.uwu-note {
+  padding: 1rem 1.15rem;
+  border-left: 3px solid var(--uwu-cyan);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+}
+
+.uwu-issues-board {
+  max-width: 860px;
+  margin: 2rem 0 4rem;
+}
+
+.uwu-issues-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.uwu-issues-status {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+.uwu-issues-refresh {
+  min-height: 42px;
+  padding: 0 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.uwu-issues-refresh:hover:not(:disabled),
+.uwu-issues-refresh:focus-visible {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-alt);
+}
+
+.uwu-issues-refresh:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.uwu-issues-note,
+.uwu-issues-empty {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+}
+
+.uwu-issues-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.uwu-issue-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 118px;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1) !important;
+  text-decoration: none !important;
+  transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+}
+
+.uwu-issue-item:hover {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-alt);
+  transform: translateY(-2px);
+}
+
+.uwu-issue-main {
+  min-width: 0;
+}
+
+.uwu-issue-repository {
+  color: var(--vp-c-text-2);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.82rem;
+}
+
+.uwu-issue-item h2 {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--vp-c-text-1);
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.uwu-issue-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+}
+
+.uwu-issue-state,
+.uwu-issue-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uwu-blue-bright) 18%, transparent);
+  color: var(--vp-c-brand-1);
+}
+
+.uwu-issue-state.is-closed {
+  background: color-mix(in srgb, var(--vp-c-text-2) 18%, transparent);
+  color: var(--vp-c-text-2);
+}
+
+.uwu-issue-arrow {
+  flex: 0 0 1.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  background: currentColor;
+  -webkit-mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+  mask: url('/arrow-right-up-line.svg') center / contain no-repeat;
+  color: var(--uwu-cyan);
+}
+
+@media (max-width: 720px) {
+  .VPHero .image-src {
+    width: 320px;
+    height: 120px;
+    max-width: 320px;
+  }
+
+  .uwu-branch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .uwu-issue-item {
+    align-items: flex-start;
+  }
+
+  .uwu-issue-arrow {
+    margin-top: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

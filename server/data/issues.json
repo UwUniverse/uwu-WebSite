@@ -1,0 +1,18 @@
+{
+  "issues": [
+    {
+      "id": "uwuAOSP/issue_tracker#1",
+      "repository": "uwuAOSP/issue_tracker",
+      "number": 1,
+      "title": "示例 Issue：设备树适配反馈",
+      "state": "open",
+      "author": "uwuAOSP",
+      "comments": 0,
+      "labels": ["demo"],
+      "updated_at": "2026-08-14T00:00:00.000Z",
+      "html_url": "https://github.com/uwuAOSP",
+      "last_event": "demo.seed"
+    }
+  ],
+  "deliveries": []
+}
