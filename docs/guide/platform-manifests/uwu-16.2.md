@@ -1,4 +1,4 @@
-# uwu-16.2
+# uwuAOSP
 
 ## Downloading:
 
@@ -23,7 +23,6 @@ source build/envsetup.sh
 ```
 
 2. lunch device:
-
 ```bash
 lunch custom_devicecode-bp4a-user
 ```

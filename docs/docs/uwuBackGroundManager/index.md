@@ -44,7 +44,7 @@ Full 模式不使用 freezer。它会将进程的 OOM 调整值限制在“可�
 - 用户空间与内核 Binder 接口一致
   内核中的 ioctl 结构体和命令编号必须与调用它们的 Android 用户空间匹配。
 
-Full 模式不需要专用内核 hook。
+Full 模式不需要专用内核hook
 
 ### 墓碑模式
 
@@ -76,8 +76,4 @@ Full 模式不需要专用内核 hook。
 
 ### 感谢
 
-非常感谢 Cirno 项目给本功能的启发：https://github.com/Freezer-Team/Cirno.git
-
----
-
-[阅读 English 版本](/docs/uwuBackGroundManager/english)
+非常感谢Cirno项目给本功能的启发：https://github.com/Freezer-Team/Cirno.git

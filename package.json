@@ -7,6 +7,7 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "docs:sync": "node scripts/sync-upstream-docs.mjs",
     "issues:server": "node server/issue-webhook.mjs"
   },
   "devDependencies": {

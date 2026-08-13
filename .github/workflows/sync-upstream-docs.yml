@@ -1,0 +1,44 @@
+name: Sync upstream documentation
+
+on:
+  schedule:
+    # 02:00 Asia/Shanghai = 18:00 UTC on the previous day.
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream-docs
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Sync upstream documentation
+        run: node scripts/sync-upstream-docs.mjs
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/docs docs/guide/platform-manifests docs/.vitepress/generated-upstream-docs.ts
+
+          if git diff --cached --quiet; then
+            echo "No upstream documentation changes."
+            exit 0
+          fi
+
+          git commit -m "Sync upstream documentation"
+          git push

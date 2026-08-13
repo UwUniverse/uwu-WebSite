@@ -1,4 +1,6 @@
-# uwuBackGroundManager
+# uwuBackGroundManagerDocs
+
+
 
 uwuBackGroundManager is a system feature that manages background policies on a per-app basis. It can freeze idle apps or improve their ability to remain alive in the background.
 
@@ -26,22 +28,22 @@ The optional “Ignore launcher task card removal” setting only applies to app
 
 ### Tombstone Mode Requirements
 
-- `CONFIG_CGROUP_FREEZER=y`
+- `CONFIG_CGROUP_FREEZER=y`  
   Provides the cgroup freezer required to pause and resume app processes. The active cgroup hierarchy must expose a writable `cgroup.freeze` interface to Android userspace.
 
-- `CONFIG_ANDROID_BINDER_IPC=y`
+- `CONFIG_ANDROID_BINDER_IPC=y`  
   Provides the Android Binder IPC driver used by app and system processes.
 
-- `BINDER_FREEZE`
+- `BINDER_FREEZE`  
   The Binder UAPI and driver must implement this ioctl. Android uses it to freeze Binder delivery to the target process, keeping the Binder state consistent with the cgroup frozen state.
 
-- `BINDER_GET_FROZEN_INFO`
+- `BINDER_GET_FROZEN_INFO`  
   The Binder UAPI and driver must implement this ioctl and report synchronous and asynchronous transactions received while the process is frozen. The framework relies on this information to safely unfreeze Tombstone apps when Binder activity occurs.
 
-- Binder frozen-transaction tracking
+- Binder frozen-transaction tracking  
   The driver must track pending synchronous transactions and asynchronous traffic while a process is frozen. Defining the ioctl numbers in the header alone is insufficient; the corresponding driver implementation is also required.
 
-- Consistent userspace and kernel Binder interfaces
+- Consistent userspace and kernel Binder interfaces  
   The ioctl structures and command numbers in the kernel must match those used by Android userspace.
 
 Full mode does not require dedicated kernel hooks.
@@ -72,12 +74,8 @@ Suitable for apps that need to continuously perform background tasks.
 
 ### Default
 
-Default mode removes the app's uwuBackGroundManager policy and restores Android's native process management.
+Default mode removes the app’s uwuBackGroundManager policy and restores Android’s native process management.
 
 ### Thanks
 
 Many thanks to the Cirno project for inspiring this feature: https://github.com/Freezer-Team/Cirno.git
-
----
-
-[Read the Chinese version](/docs/uwuBackGroundManager/)

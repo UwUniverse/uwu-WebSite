@@ -1,4 +1,4 @@
-# wip/uwu-16.2-tesseract-ocr-deps
+# uwuAOSP
 
 ## Downloading:
 
@@ -23,7 +23,6 @@ source build/envsetup.sh
 ```
 
 2. lunch device:
-
 ```bash
 lunch custom_devicecode-bp4a-user
 ```

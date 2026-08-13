@@ -291,6 +291,36 @@
   line-height: 1.8;
 }
 
+.uwu-demo-video-card {
+  max-width: 960px;
+  margin: 3.5rem 0 5rem;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 24px;
+  background: var(--vp-c-bg-soft);
+  box-shadow: 0 18px 48px rgba(17, 28, 45, 0.12);
+}
+
+.uwu-demo-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #101217;
+}
+
+.uwu-demo-video-card figcaption {
+  padding: 0.9rem 1.2rem 1rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .uwu-demo-video-card {
+    margin: 2.5rem 0 3.5rem;
+    border-radius: 16px;
+  }
+}
+
 .uwu-code-entry {
   display: inline-flex;
   align-items: center;

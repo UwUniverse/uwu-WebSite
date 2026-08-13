@@ -1,6 +1,7 @@
-# uwu-17.0
+# uwuAOSP
 
 1. Initialize
+
 
 ```bash
 repo init -u https://github.com/uwuAOSP/platform_manifests.git -b uwu-17.0 --git-lfs
