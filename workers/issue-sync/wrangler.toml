@@ -14,4 +14,4 @@ database_id = "ea7bdb45-e46f-4c05-b8a2-c0554ad49364"
 
 [vars]
 GITHUB_REPOSITORY = "uwuAOSP/issue_tracker"
-WEB_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173,https://uwuniverse.org,https://www.uwuniverse.org,https://uwuniverse.github.io"
+WEB_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173,https://uwuniverse.org,https://uwuaosp.uwuniverse.org,https://uwuniverse.github.io"
