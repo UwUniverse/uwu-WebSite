@@ -163,6 +163,7 @@ const englishTheme: DefaultTheme.Config = {
 }
 
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? '/uwu-WebSite/' : '/',
   title: 'uwuAOSP',
   description: '开盖即食的 AOSP',
   themeConfig: simplifiedChineseTheme,
