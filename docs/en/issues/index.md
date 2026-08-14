@@ -1,6 +1,6 @@
-# 宜修
+# Issue
 
 Select an issue source to begin.
 
-- [WebSite-issue](./website/)
-- [Github issue](./github/)
+- [WebSite issue](./website/)
+- [GitHub issue](./github/)

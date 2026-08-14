@@ -39,7 +39,7 @@ const issueSidebar = {
 }
 
 const traditionalIssueSidebar = {
-  text: '宜修',
+  text: '議題',
   collapsed: false,
   items: [
     { text: 'WebSite-issue', link: '/zh-tw/issues/website/' },
@@ -48,7 +48,7 @@ const traditionalIssueSidebar = {
 }
 
 const englishIssueSidebar = {
-  text: '宜修',
+  text: 'Issue',
   collapsed: false,
   items: [
     { text: 'WebSite-issue', link: '/en/issues/website/' },
@@ -112,7 +112,7 @@ const traditionalChineseTheme: DefaultTheme.Config = {
     { text: '關於專案', link: '/zh-tw/about/' },
     { text: '文件', link: '/zh-tw/docs/' },
     { text: '使用者交流', link: '/zh-tw/community/' },
-    { text: '宜修', link: '/zh-tw/issues/website/' }
+    { text: '議題', link: '/zh-tw/issues/website/' }
   ],
   langMenuLabel: '切換語言',
   darkModeSwitchLabel: '外觀',
@@ -143,7 +143,7 @@ const englishTheme: DefaultTheme.Config = {
     { text: 'About', link: '/en/about/' },
     { text: 'Docs', link: '/en/docs/' },
     { text: 'Community', link: '/en/community/' },
-    { text: '宜修', link: '/en/issues/website/' }
+    { text: 'Issue', link: '/en/issues/website/' }
   ],
   langMenuLabel: 'Change language',
   darkModeSwitchLabel: 'Appearance',

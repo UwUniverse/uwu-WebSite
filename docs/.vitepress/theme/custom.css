@@ -687,14 +687,14 @@
 
 .uwu-issue-center__groups {
   display: grid;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .uwu-issue-group__title {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin: 0 0 1.5rem;
+  margin: 0 0 2rem;
   color: var(--vp-c-text-1);
   font-size: 1rem;
 }
