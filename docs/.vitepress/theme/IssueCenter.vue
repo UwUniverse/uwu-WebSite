@@ -548,14 +548,13 @@ onMounted(() => {
           <span>{{ group.items.length }}</span>
         </h3>
         <div class="uwu-issue-center__list">
-          <button
-            v-for="issue in group.items"
-            :key="issue.id"
-            class="uwu-issue-row"
-            type="button"
-            :aria-label="`${issue.title} — ${statusLabel(statusFor(issue))}`"
-            @click="selectIssue(issue)"
-          >
+          <template v-for="issue in group.items" :key="issue.id">
+            <button
+              class="uwu-issue-row"
+              type="button"
+              :aria-label="`${issue.title} — ${statusLabel(statusFor(issue))}`"
+              @click="selectIssue(issue)"
+            >
             <span :class="['uwu-issue-status-icon', statusClass(statusFor(issue))]" aria-hidden="true">
               <svg v-if="statusFor(issue) === 'open'" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="7" />
@@ -583,125 +582,129 @@ onMounted(() => {
               </span>
             </span>
             <span class="uwu-issue-row__arrow" aria-hidden="true" />
-          </button>
+            </button>
+            <div
+              v-if="selectedIssue && String(selectedIssue.id) === String(issue.id)"
+              class="uwu-issue-detail uwu-issue-detail--inline"
+              aria-labelledby="uwu-issue-detail-title"
+            >
+              <div class="uwu-issue-detail__header">
+                <div>
+                  <h2 id="uwu-issue-detail-title">{{ selectedIssue.title }}</h2>
+                </div>
+                <button class="uwu-issue-text-button" type="button" @click="selectedIssue = null">{{ copy.back }}</button>
+              </div>
+              <p v-if="detailLoading" class="uwu-issue-center__empty">{{ copy.loading }}</p>
+              <template v-else>
+                <div class="uwu-issue-detail__status">
+                  <span :class="['uwu-issue-status-icon', statusClass(statusFor(selectedIssue))]" aria-hidden="true">
+                    <svg v-if="statusFor(selectedIssue) === 'open'" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="7" />
+                    </svg>
+                    <svg v-else-if="statusFor(selectedIssue) === 'in_progress'" viewBox="0 0 24 24">
+                      <path d="M12 4a8 8 0 1 0 7.2 4.5" />
+                      <path d="M12 8v4l2.5 1.5" />
+                    </svg>
+                    <svg v-else-if="statusFor(selectedIssue) === 'closed'" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="8" />
+                      <path d="m8 12 2.6 2.6L16.5 9" />
+                    </svg>
+                    <svg v-else viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="8" />
+                      <path d="m8.5 8.5 7 7" />
+                    </svg>
+                  </span>
+                  <span>{{ statusLabel(statusFor(selectedIssue)) }}</span>
+                </div>
+                <div v-if="isWebsite && canManageSelectedIssue()" class="uwu-issue-detail__actions">
+                  <template v-if="isAdmin">
+                    <button
+                      v-for="status in adminStatuses"
+                      :key="status"
+                      class="uwu-m3-button uwu-m3-button--tonal"
+                      type="button"
+                      :disabled="formLoading || statusFor(selectedIssue) === status"
+                      @click="changeIssueStatus(status)"
+                    >
+                      {{ statusLabel(status) }}
+                    </button>
+                  </template>
+                  <template v-else>
+                    <button
+                      v-if="statusFor(selectedIssue) === 'open' || statusFor(selectedIssue) === 'in_progress'"
+                      class="uwu-m3-button uwu-m3-button--tonal"
+                      type="button"
+                      :disabled="formLoading"
+                      @click="issueAction('close')"
+                    >
+                      {{ copy.close }}
+                    </button>
+                    <button
+                      v-if="statusFor(selectedIssue) === 'closed'"
+                      class="uwu-m3-button uwu-m3-button--tonal"
+                      type="button"
+                      :disabled="formLoading"
+                      @click="issueAction('reopen')"
+                    >
+                      {{ copy.reopen }}
+                    </button>
+                  </template>
+                </div>
+                <div class="uwu-issue-detail__body">{{ selectedIssue.body || '—' }}</div>
+                <dl class="uwu-issue-detail__contact">
+                  <div>
+                    <dt>{{ copy.author }}</dt>
+                    <dd>{{ selectedIssue.author?.username || selectedIssue.author_login || '—' }}</dd>
+                  </div>
+                  <div v-if="isWebsite">
+                    <dt>{{ copy.email }}</dt>
+                    <dd>{{ selectedIssue.author?.email || '—' }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ copy.created }}</dt>
+                    <dd>{{ formatDate(selectedIssue.created_at) }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ copy.updated }}</dt>
+                    <dd>{{ formatDate(selectedIssue.updated_at) }}</dd>
+                  </div>
+                </dl>
+                <section v-if="isWebsite" class="uwu-issue-comments" aria-labelledby="uwu-issue-comments-title">
+                  <div class="uwu-issue-comments__header">
+                    <h3 id="uwu-issue-comments-title">{{ copy.comments }}</h3>
+                    <span>{{ selectedIssue.comments?.length || 0 }}</span>
+                  </div>
+                  <p v-if="!selectedIssue.comments?.length" class="uwu-issue-comments__empty">{{ copy.noComments }}</p>
+                  <div v-else class="uwu-issue-comments__list">
+                    <article v-for="comment in selectedIssue.comments" :key="comment.id" class="uwu-issue-comment">
+                      <div class="uwu-issue-comment__meta">
+                        <strong>{{ comment.author.username || '—' }}</strong>
+                        <time :datetime="comment.created_at">{{ formatDate(comment.created_at) }}</time>
+                      </div>
+                      <p>{{ comment.body }}</p>
+                    </article>
+                  </div>
+                  <form v-if="user" class="uwu-issue-comment-form" @submit.prevent="submitComment">
+                    <label>
+                      <span>{{ copy.commentPlaceholder }}</span>
+                      <textarea v-model="commentForm" rows="4" maxlength="10000" required />
+                    </label>
+                    <button class="uwu-m3-button uwu-m3-button--filled" type="submit" :disabled="commentLoading">
+                      {{ commentLoading ? copy.loading : copy.submit }}
+                    </button>
+                  </form>
+                  <button v-else class="uwu-m3-button uwu-m3-button--tonal" type="button" @click="startAuth()">
+                    {{ copy.commentLogin }}
+                  </button>
+                </section>
+                <a v-if="!isWebsite && selectedIssue.html_url" class="uwu-m3-button uwu-m3-button--tonal uwu-issue-external" :href="selectedIssue.html_url" target="_blank" rel="noreferrer">
+                  {{ copy.githubOpen }} <span class="uwu-issue-external-icon" aria-hidden="true" />
+                </a>
+              </template>
+            </div>
+          </template>
         </div>
       </section>
-    </div>
-
-    <div v-if="selectedIssue" class="uwu-issue-detail" aria-labelledby="uwu-issue-detail-title">
-      <div class="uwu-issue-detail__header">
-        <div>
-          <h2 id="uwu-issue-detail-title">{{ selectedIssue.title }}</h2>
-        </div>
-        <button class="uwu-issue-text-button" type="button" @click="selectedIssue = null">{{ copy.back }}</button>
-      </div>
-      <p v-if="detailLoading" class="uwu-issue-center__empty">{{ copy.loading }}</p>
-      <template v-else>
-        <div class="uwu-issue-detail__status">
-          <span :class="['uwu-issue-status-icon', statusClass(statusFor(selectedIssue))]" aria-hidden="true">
-            <svg v-if="statusFor(selectedIssue) === 'open'" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="7" />
-            </svg>
-            <svg v-else-if="statusFor(selectedIssue) === 'in_progress'" viewBox="0 0 24 24">
-              <path d="M12 4a8 8 0 1 0 7.2 4.5" />
-              <path d="M12 8v4l2.5 1.5" />
-            </svg>
-            <svg v-else-if="statusFor(selectedIssue) === 'closed'" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="8" />
-              <path d="m8 12 2.6 2.6L16.5 9" />
-            </svg>
-            <svg v-else viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="8" />
-              <path d="m8.5 8.5 7 7" />
-            </svg>
-          </span>
-          <span>{{ statusLabel(statusFor(selectedIssue)) }}</span>
-        </div>
-        <div v-if="isWebsite && canManageSelectedIssue()" class="uwu-issue-detail__actions">
-          <template v-if="isAdmin">
-            <button
-              v-for="status in adminStatuses"
-              :key="status"
-              class="uwu-m3-button uwu-m3-button--tonal"
-              type="button"
-              :disabled="formLoading || statusFor(selectedIssue) === status"
-              @click="changeIssueStatus(status)"
-            >
-              {{ statusLabel(status) }}
-            </button>
-          </template>
-          <template v-else>
-            <button
-              v-if="statusFor(selectedIssue) === 'open' || statusFor(selectedIssue) === 'in_progress'"
-              class="uwu-m3-button uwu-m3-button--tonal"
-              type="button"
-              :disabled="formLoading"
-              @click="issueAction('close')"
-            >
-              {{ copy.close }}
-            </button>
-            <button
-              v-if="statusFor(selectedIssue) === 'closed'"
-              class="uwu-m3-button uwu-m3-button--tonal"
-              type="button"
-              :disabled="formLoading"
-              @click="issueAction('reopen')"
-            >
-              {{ copy.reopen }}
-            </button>
-          </template>
-        </div>
-        <div class="uwu-issue-detail__body">{{ selectedIssue.body || '—' }}</div>
-        <dl class="uwu-issue-detail__contact">
-          <div>
-            <dt>{{ copy.author }}</dt>
-            <dd>{{ selectedIssue.author?.username || selectedIssue.author_login || '—' }}</dd>
-          </div>
-          <div v-if="isWebsite">
-            <dt>{{ copy.email }}</dt>
-            <dd>{{ selectedIssue.author?.email || '—' }}</dd>
-          </div>
-          <div>
-            <dt>{{ copy.created }}</dt>
-            <dd>{{ formatDate(selectedIssue.created_at) }}</dd>
-          </div>
-          <div>
-            <dt>{{ copy.updated }}</dt>
-            <dd>{{ formatDate(selectedIssue.updated_at) }}</dd>
-          </div>
-        </dl>
-        <section v-if="isWebsite" class="uwu-issue-comments" aria-labelledby="uwu-issue-comments-title">
-          <div class="uwu-issue-comments__header">
-            <h3 id="uwu-issue-comments-title">{{ copy.comments }}</h3>
-            <span>{{ selectedIssue.comments?.length || 0 }}</span>
-          </div>
-          <p v-if="!selectedIssue.comments?.length" class="uwu-issue-comments__empty">{{ copy.noComments }}</p>
-          <div v-else class="uwu-issue-comments__list">
-            <article v-for="comment in selectedIssue.comments" :key="comment.id" class="uwu-issue-comment">
-              <div class="uwu-issue-comment__meta">
-                <strong>{{ comment.author.username || '—' }}</strong>
-                <time :datetime="comment.created_at">{{ formatDate(comment.created_at) }}</time>
-              </div>
-              <p>{{ comment.body }}</p>
-            </article>
-          </div>
-          <form v-if="user" class="uwu-issue-comment-form" @submit.prevent="submitComment">
-            <label>
-              <span>{{ copy.commentPlaceholder }}</span>
-              <textarea v-model="commentForm" rows="4" maxlength="10000" required />
-            </label>
-            <button class="uwu-m3-button uwu-m3-button--filled" type="submit" :disabled="commentLoading">
-              {{ commentLoading ? copy.loading : copy.submit }}
-            </button>
-          </form>
-          <button v-else class="uwu-m3-button uwu-m3-button--tonal" type="button" @click="startAuth()">
-            {{ copy.commentLogin }}
-          </button>
-        </section>
-        <a v-if="!isWebsite && selectedIssue.html_url" class="uwu-m3-button uwu-m3-button--tonal uwu-issue-external" :href="selectedIssue.html_url" target="_blank" rel="noreferrer">
-          {{ copy.githubOpen }} <span class="uwu-issue-external-icon" aria-hidden="true" />
-        </a>
-      </template>
     </div>
 
     <div v-if="panel === 'auth'" class="uwu-issue-panel" aria-labelledby="uwu-issue-panel-title">
