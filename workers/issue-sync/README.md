@@ -1,4 +1,4 @@
-# uwuAOSP 宜修 Worker
+# uwuAOSP issue Worker
 
 这个 Worker 从 `uwuAOSP/issue_tracker` 同步 GitHub issue 和评论到 D1，同时提供 WebSite-issue、账户登录和 GitHub webhook 接口。
 
@@ -57,7 +57,7 @@ POST  /api/sync
 POST  /webhooks/github
 ```
 
-WebSite-issue 的新增和修改要求登录。普通用户只能修改、关闭和重新打开自己发送的 issue。管理员可以修改全部 issue，并切换 `open`、`in_progress`、`closed` 和 `invalid` 状态。详情接口会返回发送者用户名和邮箱，供宜修页面展开显示。
+WebSite-issue 的新增和修改要求登录。普通用户只能修改、关闭和重新打开自己发送的 issue。管理员可以修改全部 issue，并切换 `open`、`in_progress`、`closed` 和 `invalid` 状态。详情接口会返回发送者用户名和邮箱，供 Issue 页面展开显示。
 
 `RinnRei`、`uwugl` 和 `likw233` 是保留管理员用户名，禁止再次注册。已存在的同名账户会在迁移时提升为管理员。
 
