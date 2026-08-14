@@ -651,7 +651,7 @@
 
 .uwu-issue-center__list {
   display: grid;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .uwu-issue-filters {
@@ -687,16 +687,17 @@
 
 .uwu-issue-center__groups {
   display: grid;
-  gap: 2rem;
+  gap: 3rem;
 }
 
-.uwu-issue-group__title {
+.vp-doc .uwu-issue-group__title {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin: 0 0 2rem;
+  margin: 0 0 2.5rem;
   color: var(--vp-c-text-1);
-  font-size: 1rem;
+  font-size: 1.5rem;
+  line-height: 1.25;
 }
 
 .uwu-issue-group__title > span:last-child {
@@ -729,8 +730,8 @@
   align-items: center;
   gap: 0.9rem;
   width: 100%;
-  min-height: 72px;
-  padding: 0.85rem 1rem;
+  min-height: 92px;
+  padding: 1.2rem 1.25rem;
   border: 1px solid transparent;
   border-radius: 18px;
   background: var(--vp-c-bg-soft);

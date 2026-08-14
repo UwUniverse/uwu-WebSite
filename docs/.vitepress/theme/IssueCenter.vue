@@ -60,7 +60,7 @@ const user = ref<User | null>(null)
 const panel = ref<'auth' | 'create' | 'edit' | null>(null)
 const authMode = ref<'login' | 'register'>('login')
 const afterAuth = ref<'create' | 'edit' | null>(null)
-const statusFilter = ref<'all' | IssueStatus>('all')
+const statusFilter = ref<IssueStatus>('open')
 
 const authForm = ref({
   emailOrUsername: '',
@@ -79,7 +79,7 @@ const commentLoading = ref(false)
 const copy = computed(() => ({
   'zh-CN': {
     loading: '正在加载',
-    unavailable: '暂时无法连接 issue 服务，请确认 Worker 和 D1 已部署。',
+    unavailable: '暂时无法连接 issue 服务，请稍后重试。',
     empty: '暂无 issue',
     refresh: '刷新',
     count: '条目',
@@ -127,7 +127,7 @@ const copy = computed(() => ({
   },
   'zh-TW': {
     loading: '正在載入',
-    unavailable: '暫時無法連線 issue 服務，請確認 Worker 和 D1 已部署。',
+    unavailable: '暫時無法連線 issue 服務，請稍後再試。',
     empty: '暫無 issue',
     refresh: '重新整理',
     count: '個項目',
@@ -175,7 +175,7 @@ const copy = computed(() => ({
   },
   en: {
     loading: 'Loading',
-    unavailable: 'The issue service is unavailable. Check the Worker and D1 deployment.',
+    unavailable: 'The issue service is temporarily unavailable. Please try again.',
     empty: 'No issues yet',
     refresh: 'Refresh',
     count: 'items',
@@ -227,16 +227,13 @@ const isWebsite = computed(() => props.mode === 'website')
 const isAdmin = computed(() => Boolean(user.value?.is_admin || user.value?.role === 'admin'))
 const statusFor = (issue: Issue): IssueStatus => issue.status || issue.state || 'open'
 const adminStatuses: IssueStatus[] = ['open', 'in_progress', 'closed', 'invalid']
-const statusFilters: Array<'all' | IssueStatus> = ['all', ...adminStatuses]
+const statusFilters: IssueStatus[] = adminStatuses
 
 const issueGroups = computed(() => {
-  const statuses = statusFilter.value === 'all' ? adminStatuses : [statusFilter.value]
-  return statuses
-    .map((status) => ({
-      status,
-      items: issues.value.filter((issue) => statusFor(issue) === status)
-    }))
-    .filter((group) => group.items.length > 0)
+  return [{
+    status: statusFilter.value,
+    items: issues.value.filter((issue) => statusFor(issue) === statusFilter.value)
+  }].filter((group) => group.items.length > 0)
 })
 
 function statusLabel(status: IssueStatus) {
@@ -292,6 +289,9 @@ async function loadIssues() {
   try {
     const data = await apiFetch<{ items: Issue[] }>(path)
     issues.value = Array.isArray(data.items) ? data.items : []
+    if (!issues.value.some((issue) => statusFor(issue) === statusFilter.value)) {
+      statusFilter.value = adminStatuses.find((status) => issues.value.some((issue) => statusFor(issue) === status)) || 'open'
+    }
   } catch (error) {
     issues.value = []
     errorMessage.value = error instanceof Error && error.message !== 'Failed to fetch'
@@ -530,7 +530,7 @@ onMounted(() => {
         :aria-selected="statusFilter === status"
         @click="statusFilter = status"
       >
-        {{ status === 'all' ? copy.all : statusLabel(status) }}
+        {{ statusLabel(status) }}
       </button>
     </div>
 
