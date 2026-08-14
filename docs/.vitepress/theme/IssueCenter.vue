@@ -226,6 +226,10 @@ const copy = computed(() => ({
 const isWebsite = computed(() => props.mode === 'website')
 const isAdmin = computed(() => Boolean(user.value?.is_admin || user.value?.role === 'admin'))
 const statusFor = (issue: Issue): IssueStatus => issue.status || issue.state || 'open'
+function issueKey(issue?: Issue | null) {
+  if (!issue) return ''
+  return String(isWebsite.value ? issue.id ?? issue.number : issue.number ?? issue.id)
+}
 const adminStatuses: IssueStatus[] = ['open', 'in_progress', 'closed', 'invalid']
 const statusFilters: IssueStatus[] = adminStatuses
 
@@ -548,7 +552,7 @@ onMounted(() => {
           <span>{{ group.items.length }}</span>
         </h3>
         <div class="uwu-issue-center__list">
-          <template v-for="issue in group.items" :key="issue.id">
+          <template v-for="issue in group.items" :key="issueKey(issue)">
             <button
               class="uwu-issue-row"
               type="button"
@@ -584,7 +588,7 @@ onMounted(() => {
             <span class="uwu-issue-row__arrow" aria-hidden="true" />
             </button>
             <div
-              v-if="selectedIssue && String(selectedIssue.id) === String(issue.id)"
+              v-if="selectedIssue && issueKey(selectedIssue) === issueKey(issue)"
               class="uwu-issue-detail uwu-issue-detail--inline"
               aria-labelledby="uwu-issue-detail-title"
             >
