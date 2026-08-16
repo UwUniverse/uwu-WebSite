@@ -31,7 +31,7 @@ const traditionalManifestSidebar = {
 }
 
 const issueSidebar = {
-  text: '宜修',
+  text: 'Issue',
   collapsed: false,
   items: [
     { text: 'WebSite-issue', link: '/issues/website/' },
@@ -83,7 +83,7 @@ const simplifiedChineseTheme: DefaultTheme.Config = {
     { text: '关于项目', link: '/about/' },
     { text: '文档', link: '/docs/' },
     { text: '用户交流', link: '/community/' },
-    { text: '宜修', link: '/issues/website/' }
+    { text: 'Issue', link: '/issues/website/' }
   ],
   langMenuLabel: '切换语言',
   darkModeSwitchLabel: '外观',
