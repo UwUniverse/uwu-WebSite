@@ -1,32 +1,33 @@
 import { defineConfig, type DefaultTheme } from 'vitepress'
-import { upstreamDocsSidebars } from './generated-upstream-docs'
+import {
+  upstreamDocsSidebars,
+  upstreamManifestBranches
+} from './generated-upstream-docs'
 
 const githubUrl = 'https://github.com/uwuAOSP'
 
 const docsSidebar = upstreamDocsSidebars
 
+const manifestItems = upstreamManifestBranches.map(({ text, file }) => ({
+  text,
+  link: `/guide/platform-manifests/${file}`
+}))
+
+const traditionalManifestItems = upstreamManifestBranches.map(({ text, file }) => ({
+  text,
+  link: `/zh-tw/guide/platform-manifests/${file}`
+}))
+
 const manifestSidebar = {
   text: 'platform_manifests',
   collapsed: false,
-  items: [
-    { text: 'ciallo', link: '/guide/platform-manifests/ciallo' },
-    { text: 'uwu-16.2', link: '/guide/platform-manifests/uwu-16.2' },
-    { text: 'uwu-17.0', link: '/guide/platform-manifests/uwu-17.0' },
-    { text: 'uwu-17.0-wip', link: '/guide/platform-manifests/uwu-17.0-wip' },
-    { text: 'wip/uwu-16.2-tesseract-ocr-deps', link: '/guide/platform-manifests/tesseract-ocr-deps' }
-  ]
+  items: manifestItems
 }
 
 const traditionalManifestSidebar = {
   text: 'platform_manifests',
   collapsed: false,
-  items: [
-    { text: 'ciallo', link: '/zh-tw/guide/platform-manifests/ciallo' },
-    { text: 'uwu-16.2', link: '/zh-tw/guide/platform-manifests/uwu-16.2' },
-    { text: 'uwu-17.0', link: '/zh-tw/guide/platform-manifests/uwu-17.0' },
-    { text: 'uwu-17.0-wip', link: '/zh-tw/guide/platform-manifests/uwu-17.0-wip' },
-    { text: 'wip/uwu-16.2-tesseract-ocr-deps', link: '/zh-tw/guide/platform-manifests/tesseract-ocr-deps' }
-  ]
+  items: traditionalManifestItems
 }
 
 const issueSidebar = {

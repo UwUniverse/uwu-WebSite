@@ -149,3 +149,13 @@ export const upstreamDocsSidebars = [
     ]
   }
 ]
+export const upstreamManifestBranches = [
+  {
+    "text": "uwu-16.2",
+    "file": "uwu-16.2"
+  },
+  {
+    "text": "uwu-17.0",
+    "file": "uwu-17.0"
+  }
+]

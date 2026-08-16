@@ -140,11 +140,32 @@ function sidebarItems(sourceRoot, branch) {
     })
 }
 
-function writeSidebarFile(sidebars) {
+function writeSidebarFile(sidebars, manifestBranches) {
   fs.writeFileSync(
     destination('docs/.vitepress/generated-upstream-docs.ts'),
-    `export const upstreamDocsSidebars = ${JSON.stringify(sidebars, null, 2)}\n`
+    [
+      `export const upstreamDocsSidebars = ${JSON.stringify(sidebars, null, 2)}`,
+      `export const upstreamManifestBranches = ${JSON.stringify(manifestBranches, null, 2)}`
+    ].join('\n') + '\n'
   )
+}
+
+function clearMarkdownFiles(directory) {
+  fs.mkdirSync(directory, { recursive: true })
+
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      fs.rmSync(path.join(directory, entry.name), { force: true })
+    }
+  }
+}
+
+function manifestFileName(branch) {
+  const knownNames = {
+    'wip/uwu-16.2-tesseract-ocr-deps': 'tesseract-ocr-deps.md'
+  }
+
+  return knownNames[branch] ?? `${branch.replaceAll('/', '-')}.md`
 }
 
 function destination(relativePath) {
@@ -193,21 +214,35 @@ try {
     })
   }
 
-  writeSidebarFile(docsSidebars)
+  const manifestBranches = listBranches(manifestsRepository)
+    .sort((left, right) => left.localeCompare(right))
+  const manifests = manifestBranches.map((branch) => ({
+    branch,
+    relativeDestination: path.join(
+      'docs',
+      'guide',
+      'platform-manifests',
+      manifestFileName(branch)
+    )
+  }))
 
-  const manifestBranches = [
-    ['uwu-16.2', 'docs/guide/platform-manifests/uwu-16.2.md'],
-    ['uwu-17.0', 'docs/guide/platform-manifests/uwu-17.0.md'],
-    ['uwu-17.0-wip', 'docs/guide/platform-manifests/uwu-17.0-wip.md'],
-    ['wip/uwu-16.2-tesseract-ocr-deps', 'docs/guide/platform-manifests/tesseract-ocr-deps.md'],
-    ['ciallo', 'docs/guide/platform-manifests/ciallo.md']
-  ]
-
-  for (const [branch, relativeDestination] of manifestBranches) {
+  const manifestSources = []
+  for (const { branch, relativeDestination } of manifests) {
     const cloneDirectory = `manifests-${branch.replaceAll('/', '-')}`
     const manifest = cloneBranch(manifestsRepository, branch, cloneDirectory)
+    manifestSources.push({ manifest, relativeDestination })
+  }
+
+  clearMarkdownFiles(destination(path.join('docs', 'guide', 'platform-manifests')))
+
+  for (const { manifest, relativeDestination } of manifestSources) {
     copyMarkdownIfPresent(manifest, 'README.md', destination(relativeDestination))
   }
+
+  writeSidebarFile(docsSidebars, manifests.map(({ branch, relativeDestination }) => ({
+    text: branch,
+    file: path.basename(relativeDestination, '.md')
+  })))
 } finally {
   fs.rmSync(tempRoot, { recursive: true, force: true })
 }
