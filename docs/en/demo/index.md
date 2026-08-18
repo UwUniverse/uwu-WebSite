@@ -2,6 +2,6 @@
 
 <DemoVideo
   src="/videos/uwuAOSP-16.2-demo.mp4"
-  caption="A partial system feature demonstration from uwuAOSP-16.2"
-  label="A partial system feature demonstration from uwuAOSP-16.2"
+  caption="A demonstration of selected system features from uwuAOSP-16.2"
+  label="A demonstration of selected system features from uwuAOSP-16.2"
 />

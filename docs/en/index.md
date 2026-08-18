@@ -4,7 +4,7 @@ layout: home
 hero:
   name: uwuAOSP
   text: "OMG, it’s uwu."
-  tagline: AOSP, ready to boot.
+  tagline: AOSP, ready to use out of the box.
   image:
     src: /uwuAOSP-LOGO.png
     alt: uwuAOSP logo
@@ -21,9 +21,9 @@ hero:
 
 features:
   - title: Simple
-    details: Drop complex design in favor of Google Material Design
+    details: Leave complicated design behind and use Google Material Design
   - title: Easy to use
-    details: Localized by default, with the features you need
+    details: Integrate localization and extend the features you need
   - title: Freedom
-    details: Everyone can fork organization repositories, develop them, and submit PRs
+    details: Everyone can fork repositories in the organization, develop them further, and submit PRs
 ---

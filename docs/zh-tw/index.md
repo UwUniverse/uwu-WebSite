@@ -4,7 +4,7 @@ layout: home
 hero:
   name: uwuAOSP
   text: "OMG, it’s uwu."
-  tagline: 開蓋即食的 AOSP
+  tagline: 開箱即用的 AOSP
   image:
     src: /uwuAOSP-LOGO.png
     alt: uwuAOSP logo
@@ -16,14 +16,14 @@ hero:
       text: GitHub
       link: https://github.com/uwuAOSP
     - theme: alt
-      text: 功能演示
+      text: 功能展示
       link: /zh-tw/demo/
 
 features:
   - title: 簡單
-    details: 拋棄繁雜設計，使用 Google Material Design
+    details: 捨棄繁複設計，採用 Google Material Design
   - title: 易用
-    details: 整合本地化，並拓展需要的功能
+    details: 整合本地化，並擴充所需功能
   - title: 自由
-    details: 所有人都可以 fork 組織中的儲存庫二次開發並提交 PR
+    details: 所有人都可以 fork 組織中的儲存庫進行二次開發並提交 PR
 ---

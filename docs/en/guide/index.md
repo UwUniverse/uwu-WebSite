@@ -2,17 +2,17 @@
 
 ## Build uwuAOSP
 
-If there is no OTA package for your device, or you want to develop it yourself, start here.
+If you cannot find an OTA package for your device or want to develop it yourself, this is where to start.
 
-For users building 16.2, you need to bring up the device manually. This means adapting your Lineage device tree to uwuAOSP. It should not be difficult; only a small part needs to be changed.
+For users building 16.2, you need to perform a manual bring-up. This means adapting your Lineage device tree to uwuAOSP. Do not worry; only a small part needs to be changed.
 
-For users building 17.0, uwuAOSP-Script will be released with the official release. Clone it into the local uwuAOSP source directory and run it to complete the adaptation.
+For users building 17.0, we will release uwuAOSP-Script alongside the official release. Clone it into the local uwuAOSP source directory and run it to complete the adaptation.
 
 ## Prepare the source
 
 ### 1. Prepare the uwuAOSP source and device tree source
 
-Find the device tree source for your device CodeName on Github and clone it into the corresponding location in the uwuAOSP source directory.
+Find the device tree source for your device CodeName on GitHub and clone it into the corresponding location in the uwuAOSP source directory.
 
 ## uwuAOSP
 

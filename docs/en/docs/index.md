@@ -1,3 +1,3 @@
 # Docs
 
-Choose a document to start reading
+Choose a document entry to start reading

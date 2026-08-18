@@ -1,6 +1,6 @@
 # Issue
 
-Select an issue source to begin.
+Select an entry to begin.
 
 - [WebSite issue](./website/)
 - [GitHub issue](./github/)
