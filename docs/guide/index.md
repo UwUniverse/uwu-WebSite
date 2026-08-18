@@ -6,4 +6,4 @@
 
 16.2：您需要手动 bringup（也就是将您的 lineage 设备树适配到 uwuAOSP 上）。这只是很简单的 lineage_ -> custom_ 改名。
 
-17.0：请使用 uwuCLI 转换您的设备树。如有问题，请向[uwuCLI](https://github.com/UwUniverse/uwuCLI] 提出 Issue。
+17.0：请使用 uwuCLI 转换您的设备树。如有问题，请向 [uwuCLI](https://github.com/UwUniverse/uwuCLI) 提出 Issue。
