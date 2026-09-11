@@ -138,6 +138,49 @@ export const upstreamDocsSidebars = [
     ]
   },
   {
+    "text": "soong-only",
+    "link": "/docs/soong-only/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Soong-only 构建流程",
+        "link": "/docs/soong-only/build-flow"
+      },
+      {
+        "text": "Soong-only 镜像生成",
+        "link": "/docs/soong-only/image-generation"
+      },
+      {
+        "text": "概览",
+        "link": "/docs/soong-only/"
+      },
+      {
+        "text": "uwu_kernel 配置参考",
+        "link": "/docs/soong-only/uwu_kernel/configuration"
+      },
+      {
+        "text": "uwu_kernel 构建系统",
+        "link": "/docs/soong-only/uwu_kernel/index"
+      },
+      {
+        "text": "从 Make 内核构建迁移到 uwu_kernel",
+        "link": "/docs/soong-only/uwu_kernel/migration"
+      },
+      {
+        "text": "uwu_kernel 输出与依赖",
+        "link": "/docs/soong-only/uwu_kernel/outputs"
+      },
+      {
+        "text": "uwu_kernel 故障排查",
+        "link": "/docs/soong-only/uwu_kernel/troubleshooting"
+      },
+      {
+        "text": "Soong-only 构建验证",
+        "link": "/docs/soong-only/validation"
+      }
+    ]
+  },
+  {
     "text": "StatusBarLyric",
     "link": "/docs/StatusBarLyric/",
     "collapsed": false,
