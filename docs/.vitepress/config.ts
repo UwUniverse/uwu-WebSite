@@ -4,7 +4,15 @@ import {
   upstreamManifestBranches
 } from './generated-upstream-docs'
 
-const githubUrl = 'https://github.com/uwuAOSP'
+const githubUrl = 'https://github.com/UwUniverse'
+
+function normalizeBase(value: string | undefined) {
+  const trimmed = value?.trim() ?? ''
+  if (!trimmed || trimmed === '/') return '/'
+  return `/${trimmed.replace(/^\/+|\/+$/g, '')}/`
+}
+
+const base = normalizeBase(process.env.VITEPRESS_BASE)
 
 const docsSidebar = upstreamDocsSidebars
 
@@ -82,6 +90,8 @@ const simplifiedChineseTheme: DefaultTheme.Config = {
   nav: [
     { text: '关于项目', link: '/about/' },
     { text: '文档', link: '/docs/' },
+    { text: '快速开始', link: '/guide/' },
+    { text: '功能演示', link: '/demo/' },
     { text: '用户交流', link: '/community/' },
     { text: 'Issue', link: '/issues/website/' }
   ],
@@ -112,6 +122,8 @@ const traditionalChineseTheme: DefaultTheme.Config = {
   nav: [
     { text: '關於專案', link: '/zh-tw/about/' },
     { text: '文件', link: '/zh-tw/docs/' },
+    { text: '快速開始', link: '/zh-tw/guide/' },
+    { text: '功能展示', link: '/zh-tw/demo/' },
     { text: '使用者交流', link: '/zh-tw/community/' },
     { text: '議題', link: '/zh-tw/issues/website/' }
   ],
@@ -143,6 +155,8 @@ const englishTheme: DefaultTheme.Config = {
   nav: [
     { text: 'About', link: '/en/about/' },
     { text: 'Docs', link: '/en/docs/' },
+    { text: 'Quick start', link: '/en/guide/' },
+    { text: 'Feature demo', link: '/en/demo/' },
     { text: 'Community', link: '/en/community/' },
     { text: 'Issue', link: '/en/issues/website/' }
   ],
@@ -169,10 +183,11 @@ const englishTheme: DefaultTheme.Config = {
 }
 
 export default defineConfig({
+  base,
   title: 'uwuAOSP',
-  description: '开盖即食的 AOSP',
+  description: 'uwuAOSP',
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/turtle-cheese-wedge.png' }]
+    ['link', { rel: 'icon', type: 'image/png', href: `${base}turtle-cheese-wedge.png` }]
   ],
   themeConfig: simplifiedChineseTheme,
   locales: {

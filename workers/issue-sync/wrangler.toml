@@ -4,6 +4,10 @@ compatibility_date = "2026-08-13"
 account_id = "2b9f36a4adc839f176e3c78b8a5882a3"
 workers_dev = true
 
+routes = [
+  { pattern = "uwuaosp.uwuniverse.org/api/*", zone_name = "uwuniverse.org" }
+]
+
 [triggers]
 # 02:07 Asia/Shanghai = 18:07 UTC on the previous day.
 crons = ["7 18 * * *"]

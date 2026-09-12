@@ -33,6 +33,7 @@ jobs:
           cache: pnpm
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
@@ -40,7 +41,8 @@ jobs:
 
       - name: Build site
         env:
-          VITE_ISSUES_API: ${{ vars.VITE_ISSUES_API || 'https://uwuaosp-issue-sync.uwuaosp-website.workers.dev' }}
+          VITEPRESS_BASE: ${{ steps.pages.outputs.base_path }}
+          VITE_ISSUES_API: ${{ vars.VITE_ISSUES_API || 'https://uwuaosp.uwuniverse.org' }}
         run: pnpm run docs:build
 
       - name: Upload Pages artifact

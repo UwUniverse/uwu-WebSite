@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<{ locale?: Locale; mode: Mode }>(), {
 })
 
 const apiBase = String(
-  import.meta.env.VITE_ISSUES_API || 'https://uwuaosp-issue-sync.uwuaosp-website.workers.dev'
+  import.meta.env.VITE_ISSUES_API || 'https://uwuaosp.uwuniverse.org'
 ).replace(/\/$/, '')
 const loading = ref(true)
 const detailLoading = ref(false)
