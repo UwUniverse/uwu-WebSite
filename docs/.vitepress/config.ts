@@ -16,74 +16,99 @@ const base = normalizeBase(process.env.VITEPRESS_BASE)
 
 const docsSidebar = upstreamDocsSidebars
 
-const soongOnlySidebarText = {
+const localizedDocsText = {
   en: {
-    section: 'Soong-only',
-    overview: 'Overview',
-    buildFlow: 'Soong-only build flow',
-    imageGeneration: 'Soong-only image generation',
-    kernelConfiguration: 'uwu_kernel configuration reference',
-    kernelIndex: 'uwu_kernel build system',
-    kernelMigration: 'Migrating from Make kernel builds to uwu_kernel',
-    kernelOutputs: 'uwu_kernel outputs and dependencies',
-    kernelTroubleshooting: 'uwu_kernel troubleshooting',
-    validation: 'Soong-only build validation'
+    '/docs/moment/': ['Moment', 'Overview'],
+    '/docs/moment/launching-apps': 'Launch apps',
+    '/docs/moment/navigation-handle': 'Double-tap navigation bar',
+    '/docs/moment/moment-arc': 'MomentArc',
+    '/docs/moment/notifications': 'Open notifications',
+    '/docs/moment/recents-gesture': 'Swipe up in Recents',
+    '/docs/moment/multiple-windows': 'Multiple windows and focus',
+    '/docs/moment/move-and-resize': 'Move and resize',
+    '/docs/moment/controls': 'Controls menu',
+    '/docs/moment/compact-mode': 'Compact mode',
+    '/docs/moment/landscape': 'Landscape support',
+    '/docs/moment/back': 'Back action',
+    '/docs/moment/settings': 'Settings and scope',
+    '/docs/moment/debugging': 'Debug commands',
+    '/docs/uwuBackGroundManager/': ['uwuBackGroundManager', 'Documentation'],
+    '/docs/appjumpinjection/': ['App jump injection', 'Overview'],
+    '/docs/AppSensorPolicy/': ['App sensor access', 'Overview'],
+    '/docs/Prism/': ['Prism', 'Overview'],
+    '/docs/SmartSuggestions/': ['Smart suggestions', 'Overview'],
+    '/docs/SmartSuggestions/clipboard-apps': 'Clipboard app suggestions',
+    '/docs/SmartSuggestions/music': 'Music suggestions',
+    '/docs/SmartSuggestions/sms-codes': 'SMS code suggestions',
+    '/docs/SmartSuggestions/torch': 'Flashlight suggestions',
+    '/docs/soong-only/': ['Soong-only', 'Overview'],
+    '/docs/soong-only/build-flow': 'Soong-only build flow',
+    '/docs/soong-only/image-generation': 'Soong-only image generation',
+    '/docs/soong-only/uwu_kernel/configuration': 'uwu_kernel configuration reference',
+    '/docs/soong-only/uwu_kernel/index': 'uwu_kernel build system',
+    '/docs/soong-only/uwu_kernel/migration': 'Migrating from Make kernel builds to uwu_kernel',
+    '/docs/soong-only/uwu_kernel/outputs': 'uwu_kernel outputs and dependencies',
+    '/docs/soong-only/uwu_kernel/troubleshooting': 'uwu_kernel troubleshooting',
+    '/docs/soong-only/validation': 'Soong-only build validation',
+    '/docs/StatusBarLyric/': ['StatusBarLyric', 'Overview']
   },
   'zh-tw': {
-    section: 'Soong-only',
-    overview: '概覽',
-    buildFlow: 'Soong-only 建置流程',
-    imageGeneration: 'Soong-only 映像檔生成',
-    kernelConfiguration: 'uwu_kernel 設定參考',
-    kernelIndex: 'uwu_kernel 建置系統',
-    kernelMigration: '從 Make 核心建置遷移至 uwu_kernel',
-    kernelOutputs: 'uwu_kernel 輸出與相依性',
-    kernelTroubleshooting: 'uwu_kernel 疑難排解',
-    validation: 'Soong-only 建置驗證'
+    '/docs/moment/': ['Moment', '概覽'],
+    '/docs/moment/launching-apps': '啟動應用程式',
+    '/docs/moment/navigation-handle': '導覽列雙擊',
+    '/docs/moment/moment-arc': 'MomentArc',
+    '/docs/moment/notifications': '開啟通知',
+    '/docs/moment/recents-gesture': '最近工作上滑手勢',
+    '/docs/moment/multiple-windows': '多視窗與焦點',
+    '/docs/moment/move-and-resize': '移動與縮放',
+    '/docs/moment/controls': '操作選單',
+    '/docs/moment/compact-mode': '摺疊模式',
+    '/docs/moment/landscape': '橫向螢幕適配',
+    '/docs/moment/back': '返回操作',
+    '/docs/moment/settings': '設定與適用範圍',
+    '/docs/moment/debugging': '除錯指令',
+    '/docs/uwuBackGroundManager/': ['uwuBackGroundManager', '文件'],
+    '/docs/appjumpinjection/': ['應用程式跳轉控制', '概覽'],
+    '/docs/AppSensorPolicy/': ['應用程式感測器存取', '概覽'],
+    '/docs/Prism/': ['Prism', '概覽'],
+    '/docs/SmartSuggestions/': ['智慧建議', '概覽'],
+    '/docs/SmartSuggestions/clipboard-apps': '剪貼簿應用程式建議',
+    '/docs/SmartSuggestions/music': '音樂建議',
+    '/docs/SmartSuggestions/sms-codes': 'SMS 驗證碼建議',
+    '/docs/SmartSuggestions/torch': '手電筒建議',
+    '/docs/soong-only/': ['Soong-only', '概覽'],
+    '/docs/soong-only/build-flow': 'Soong-only 建置流程',
+    '/docs/soong-only/image-generation': 'Soong-only 映像檔生成',
+    '/docs/soong-only/uwu_kernel/configuration': 'uwu_kernel 設定參考',
+    '/docs/soong-only/uwu_kernel/index': 'uwu_kernel 建置系統',
+    '/docs/soong-only/uwu_kernel/migration': '從 Make 核心建置遷移至 uwu_kernel',
+    '/docs/soong-only/uwu_kernel/outputs': 'uwu_kernel 輸出與相依性',
+    '/docs/soong-only/uwu_kernel/troubleshooting': 'uwu_kernel 疑難排解',
+    '/docs/soong-only/validation': 'Soong-only 建置驗證',
+    '/docs/StatusBarLyric/': ['StatusBarLyric', '概覽']
   }
 } as const
 
 function localizeDocsSidebar(locale: 'en' | 'zh-tw') {
-  const text = soongOnlySidebarText[locale]
+  const labels = localizedDocsText[locale]
   const prefix = `/${locale}`
 
   function visit(items: typeof docsSidebar): typeof docsSidebar {
-    return items.map((item) => {
-      const isSoongOnly = item.link?.startsWith('/docs/soong-only')
-      const localizedLink = isSoongOnly ? `${prefix}${item.link}` : item.link
+    return items.flatMap((item) => {
+      if (item.link?.endsWith('/uwuBackGroundManager/english')) return []
 
-      if (!isSoongOnly && !item.items) return item
+      const isDocLink = item.link?.startsWith('/docs/')
+      const label = item.link ? labels[item.link as keyof typeof labels] : undefined
+      const text = Array.isArray(label)
+        ? label[item.items ? 0 : 1]
+        : label ?? item.text
 
-      const soongText = item.link === '/docs/soong-only'
-        ? text.section
-        : item.link === '/docs/soong-only/' && item.items
-          ? text.section
-          : item.link === '/docs/soong-only/'
-          ? text.overview
-          : item.link?.endsWith('/build-flow')
-            ? text.buildFlow
-            : item.link?.endsWith('/image-generation')
-              ? text.imageGeneration
-              : item.link?.endsWith('/uwu_kernel/configuration')
-                ? text.kernelConfiguration
-                : item.link?.endsWith('/uwu_kernel/index')
-                  ? text.kernelIndex
-                  : item.link?.endsWith('/uwu_kernel/migration')
-                    ? text.kernelMigration
-                    : item.link?.endsWith('/uwu_kernel/outputs')
-                      ? text.kernelOutputs
-                      : item.link?.endsWith('/uwu_kernel/troubleshooting')
-                        ? text.kernelTroubleshooting
-                        : item.link?.endsWith('/validation')
-                          ? text.validation
-                          : item.text
-
-      return {
+      return [{
         ...item,
-        text: isSoongOnly ? soongText : item.text,
-        link: localizedLink,
+        text: isDocLink ? text : item.text,
+        link: isDocLink ? `${prefix}${item.link}` : item.link,
         items: item.items ? visit(item.items as typeof docsSidebar) : item.items
-      }
+      }]
     })
   }
 
