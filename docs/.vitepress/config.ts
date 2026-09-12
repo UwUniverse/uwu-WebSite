@@ -16,6 +16,83 @@ const base = normalizeBase(process.env.VITEPRESS_BASE)
 
 const docsSidebar = upstreamDocsSidebars
 
+const soongOnlySidebarText = {
+  en: {
+    section: 'Soong-only',
+    overview: 'Overview',
+    buildFlow: 'Soong-only build flow',
+    imageGeneration: 'Soong-only image generation',
+    kernelConfiguration: 'uwu_kernel configuration reference',
+    kernelIndex: 'uwu_kernel build system',
+    kernelMigration: 'Migrating from Make kernel builds to uwu_kernel',
+    kernelOutputs: 'uwu_kernel outputs and dependencies',
+    kernelTroubleshooting: 'uwu_kernel troubleshooting',
+    validation: 'Soong-only build validation'
+  },
+  'zh-tw': {
+    section: 'Soong-only',
+    overview: '概覽',
+    buildFlow: 'Soong-only 建置流程',
+    imageGeneration: 'Soong-only 映像檔生成',
+    kernelConfiguration: 'uwu_kernel 設定參考',
+    kernelIndex: 'uwu_kernel 建置系統',
+    kernelMigration: '從 Make 核心建置遷移至 uwu_kernel',
+    kernelOutputs: 'uwu_kernel 輸出與相依性',
+    kernelTroubleshooting: 'uwu_kernel 疑難排解',
+    validation: 'Soong-only 建置驗證'
+  }
+} as const
+
+function localizeDocsSidebar(locale: 'en' | 'zh-tw') {
+  const text = soongOnlySidebarText[locale]
+  const prefix = `/${locale}`
+
+  function visit(items: typeof docsSidebar): typeof docsSidebar {
+    return items.map((item) => {
+      const isSoongOnly = item.link?.startsWith('/docs/soong-only')
+      const localizedLink = isSoongOnly ? `${prefix}${item.link}` : item.link
+
+      if (!isSoongOnly && !item.items) return item
+
+      const soongText = item.link === '/docs/soong-only'
+        ? text.section
+        : item.link === '/docs/soong-only/' && item.items
+          ? text.section
+          : item.link === '/docs/soong-only/'
+          ? text.overview
+          : item.link?.endsWith('/build-flow')
+            ? text.buildFlow
+            : item.link?.endsWith('/image-generation')
+              ? text.imageGeneration
+              : item.link?.endsWith('/uwu_kernel/configuration')
+                ? text.kernelConfiguration
+                : item.link?.endsWith('/uwu_kernel/index')
+                  ? text.kernelIndex
+                  : item.link?.endsWith('/uwu_kernel/migration')
+                    ? text.kernelMigration
+                    : item.link?.endsWith('/uwu_kernel/outputs')
+                      ? text.kernelOutputs
+                      : item.link?.endsWith('/uwu_kernel/troubleshooting')
+                        ? text.kernelTroubleshooting
+                        : item.link?.endsWith('/validation')
+                          ? text.validation
+                          : item.text
+
+      return {
+        ...item,
+        text: isSoongOnly ? soongText : item.text,
+        link: localizedLink,
+        items: item.items ? visit(item.items as typeof docsSidebar) : item.items
+      }
+    })
+  }
+
+  return visit(docsSidebar)
+}
+
+const traditionalDocsSidebar = localizeDocsSidebar('zh-tw')
+const englishDocsSidebar = localizeDocsSidebar('en')
+
 const manifestItems = upstreamManifestBranches.map(({ text, file }) => ({
   text,
   link: `/guide/platform-manifests/${file}`
@@ -142,7 +219,7 @@ const traditionalChineseTheme: DefaultTheme.Config = {
       },
       traditionalManifestSidebar
     ],
-    '/zh-tw/docs/': docsSidebar,
+    '/zh-tw/docs/': traditionalDocsSidebar,
     '/docs/main/': docsSidebar,
     '/docs/moment/': docsSidebar,
     '/docs/uwuBackGroundManager/': docsSidebar,
@@ -174,7 +251,7 @@ const englishTheme: DefaultTheme.Config = {
       },
       manifestSidebar
     ],
-    '/en/docs/': docsSidebar,
+    '/en/docs/': englishDocsSidebar,
     '/docs/main/': docsSidebar,
     '/docs/moment/': docsSidebar,
     '/docs/uwuBackGroundManager/': docsSidebar,
