@@ -78,6 +78,17 @@ export const upstreamDocsSidebars = [
     ]
   },
   {
+    "text": "AboutDevice",
+    "link": "/docs/AboutDevice/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/AboutDevice/"
+      }
+    ]
+  },
+  {
     "text": "appjumpinjection",
     "link": "/docs/appjumpinjection/",
     "collapsed": false,
@@ -96,6 +107,83 @@ export const upstreamDocsSidebars = [
       {
         "text": "概览",
         "link": "/docs/AppSensorPolicy/"
+      }
+    ]
+  },
+  {
+    "text": "ClipboardAccess",
+    "link": "/docs/ClipboardAccess/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/ClipboardAccess/"
+      }
+    ]
+  },
+  {
+    "text": "CustomFonts",
+    "link": "/docs/CustomFonts/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/CustomFonts/"
+      }
+    ]
+  },
+  {
+    "text": "ExternalDesktop",
+    "link": "/docs/ExternalDesktop/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/ExternalDesktop/"
+      }
+    ]
+  },
+  {
+    "text": "Kotj",
+    "link": "/docs/Kotj/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/Kotj/"
+      }
+    ]
+  },
+  {
+    "text": "LauncherAtAGlance",
+    "link": "/docs/LauncherAtAGlance/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/LauncherAtAGlance/"
+      }
+    ]
+  },
+  {
+    "text": "MaintainerMetadata",
+    "link": "/docs/MaintainerMetadata/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/MaintainerMetadata/"
+      }
+    ]
+  },
+  {
+    "text": "PerAppVolume",
+    "link": "/docs/PerAppVolume/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/PerAppVolume/"
       }
     ]
   },
@@ -188,6 +276,28 @@ export const upstreamDocsSidebars = [
       {
         "text": "概览",
         "link": "/docs/StatusBarLyric/"
+      }
+    ]
+  },
+  {
+    "text": "SystemIcons",
+    "link": "/docs/SystemIcons/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/SystemIcons/"
+      }
+    ]
+  },
+  {
+    "text": "uni",
+    "link": "/docs/uni/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/uni/"
       }
     ]
   }
