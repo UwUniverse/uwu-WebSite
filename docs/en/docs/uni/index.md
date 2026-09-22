@@ -124,31 +124,11 @@ uni --clean-logs
 uni --no-debug -j18 SystemUI
 ```
 
-## Uni log performance trend
+## Uni runtime telemetry
 
 <UniBuildCharts locale="en" />
 
-The chart uses only Uni debug reports marked `result="ok"`; it does not mix Make benchmarks into the trend. Total elapsed time comes from the report's `elapsed` field. The stacked bars use the `graph-analysis`, `kernel` and `final` phase durations.
-
-| Log record | Total | Graph analysis | Kernel | Final |
-| --- | ---: | ---: | ---: | ---: |
-| 2026-08-23 | 4:13:52 | 10:47 | 10:45 | 3:52:16 |
-| 2026-09-14 | 1:35:00 | 11:44 | 0:20 | 1:22:37 |
-| 2026-09-19 | 1:14:44 | 12:49 | 0:21 | 1:01:17 |
-
-The log duration is converted to minutes as follows:
-
-```text
-elapsed_minutes = hours × 60 + minutes + seconds / 60
-```
-
-For two Uni records with the same target and conditions, the elapsed-time reduction is:
-
-```text
-reduction = 1 - new elapsed time / old elapsed time
-```
-
-These records were captured on different dates. Graph state, cache hits, source changes, temperature, background load, storage cache, swap and target state can differ. Failed, interrupted, partial-target and phase-incomplete records are excluded, so this chart shows Uni log trends rather than a cross-device performance guarantee.
+The chart plots CPU, `MemAvailable`, cumulative `swap-out` and `iowait` from telemetry fields. The horizontal axis is elapsed time within the final build phase.
 
 ## Output and troubleshooting
 

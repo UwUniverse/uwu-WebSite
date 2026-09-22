@@ -62,18 +62,14 @@
   --uwu-button-ink: #16263c;
   --uwu-code-bg: #f6f6f7;
   --uwu-code-ink: #23262e;
-  --uni-chart-card: #f7f9fc;
-  --uni-chart-panel: #fbfcfe;
-  --uni-chart-border: #dce4ee;
-  --uni-chart-grid: #d6dee8;
-  --uni-chart-guide: #c5d0dc;
-  --uni-chart-primary: #3b7ddd;
-  --uni-chart-secondary: #7c63d8;
-  --uni-chart-warm: #e47766;
-  --uni-chart-callout: #e3f3e8;
-  --uni-chart-callout-secondary: #ebe6ff;
-  --uni-chart-callout-ink: #205f37;
-  --uni-chart-shadow: rgb(44 73 110 / 14%);
+  --uni-chart-card: #fbfbfa;
+  --uni-chart-panel: #fff;
+  --uni-chart-border: #e2e3e0;
+  --uni-chart-grid: #d9ddd7;
+  --uni-chart-cpu: #2875d9;
+  --uni-chart-memory: #3e9b5f;
+  --uni-chart-swap: #7566ce;
+  --uni-chart-wait: #d97445;
   --uwu-success: #25833d;
   --uwu-success-soft: #e2f1e4;
   --uwu-warning: #8b6500;
@@ -157,14 +153,10 @@
   --uni-chart-panel: #20242c;
   --uni-chart-border: #303742;
   --uni-chart-grid: #39424f;
-  --uni-chart-guide: #495566;
-  --uni-chart-primary: #8db7ff;
-  --uni-chart-secondary: #b4a3ff;
-  --uni-chart-warm: #ff9a8d;
-  --uni-chart-callout: #1d3a2a;
-  --uni-chart-callout-secondary: #30294d;
-  --uni-chart-callout-ink: #94dca9;
-  --uni-chart-shadow: rgb(0 0 0 / 35%);
+  --uni-chart-cpu: #82b5ff;
+  --uni-chart-memory: #79cf93;
+  --uni-chart-swap: #b5a5ff;
+  --uni-chart-wait: #ffab7d;
   --uwu-success: #4bc267;
   --uwu-success-soft: #17341f;
   --uwu-warning: #e4bf55;
@@ -1056,6 +1048,45 @@ a:hover {
 
 .vp-doc .custom-block :where(.custom-block-title, p) {
   color: inherit;
+}
+
+.vp-doc .custom-block.tip {
+  padding: 0 0 0 var(--uwu-space-4);
+  border: 0;
+  border-left: 4px solid var(--uwu-success);
+  border-radius: 0;
+  background: transparent;
+  color: var(--uwu-ink);
+}
+
+.vp-doc .custom-block.tip .custom-block-title {
+  display: flex;
+  align-items: center;
+  gap: var(--uwu-space-2);
+  margin-bottom: var(--uwu-space-3) !important;
+  color: var(--uwu-success);
+  font-size: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vp-doc .custom-block.tip .custom-block-title::before {
+  width: 1rem;
+  height: 1rem;
+  background: currentColor;
+  content: '';
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6.5 14.5h3M7 12.5h2M5.5 10.5V9.25A4.5 4.5 0 1 1 10.5 9.25v1.25' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6.5 14.5h3M7 12.5h2M5.5 10.5V9.25A4.5 4.5 0 1 1 10.5 9.25v1.25' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.vp-doc .custom-block.tip p {
+  color: var(--uwu-ink);
+}
+
+.vp-doc .custom-block.tip :not(pre) > code {
+  border-color: var(--uwu-border);
+  background: var(--uwu-surface-raised);
+  color: var(--uwu-ink-soft);
 }
 
 /* Shared controls */
