@@ -33,6 +33,15 @@ const localizedDocsText = {
     '/docs/moment/settings': 'Settings and scope',
     '/docs/moment/debugging': 'Debug commands',
     '/docs/uwuBackGroundManager/': ['uwuBackGroundManager', 'Documentation'],
+    '/docs/ClipboardAccess/': ['Clipboard access', 'Overview'],
+    '/docs/CustomFonts/': ['Custom fonts', 'Overview'],
+    '/docs/ExternalDesktop/': ['External desktop', 'Overview'],
+    '/docs/Kotj/': ['Kotj', 'Overview'],
+    '/docs/LauncherAtAGlance/': ['Launcher at a glance', 'Overview'],
+    '/docs/MaintainerMetadata/': ['Device maintainer metadata', 'Overview'],
+    '/docs/PerAppVolume/': ['Per-app volume', 'Overview'],
+    '/docs/SystemIcons/': ['System icons', 'Overview'],
+    '/docs/uni/': ['Uni build system', 'Overview'],
     '/docs/appjumpinjection/': ['App jump injection', 'Overview'],
     '/docs/AppSensorPolicy/': ['App sensor access', 'Overview'],
     '/docs/Prism/': ['Prism', 'Overview'],
@@ -68,6 +77,15 @@ const localizedDocsText = {
     '/docs/moment/settings': '設定與適用範圍',
     '/docs/moment/debugging': '除錯指令',
     '/docs/uwuBackGroundManager/': ['uwuBackGroundManager', '文件'],
+    '/docs/ClipboardAccess/': ['剪貼簿存取權限', '概覽'],
+    '/docs/CustomFonts/': ['自訂字型', '概覽'],
+    '/docs/ExternalDesktop/': ['外接螢幕桌面', '概覽'],
+    '/docs/Kotj/': ['Kotj', '概覽'],
+    '/docs/LauncherAtAGlance/': ['Launcher 一覽', '概覽'],
+    '/docs/MaintainerMetadata/': ['裝置維護者資訊', '概覽'],
+    '/docs/PerAppVolume/': ['個別應用程式音量', '概覽'],
+    '/docs/SystemIcons/': ['系統小圖示', '概覽'],
+    '/docs/uni/': ['Uni 建置系統', '概覽'],
     '/docs/appjumpinjection/': ['應用程式跳轉控制', '概覽'],
     '/docs/AppSensorPolicy/': ['應用程式感測器存取', '概覽'],
     '/docs/Prism/': ['Prism', '概覽'],
@@ -128,6 +146,11 @@ const traditionalManifestItems = upstreamManifestBranches.map(({ text, file }) =
   link: `/zh-tw/guide/platform-manifests/${file}`
 }))
 
+const englishManifestItems = upstreamManifestBranches.map(({ text, file }) => ({
+  text,
+  link: `/en/guide/platform-manifests/${file}`
+}))
+
 const manifestSidebar = {
   text: 'platform_manifests',
   collapsed: false,
@@ -138,6 +161,12 @@ const traditionalManifestSidebar = {
   text: 'platform_manifests',
   collapsed: false,
   items: traditionalManifestItems
+}
+
+const englishManifestSidebar = {
+  text: 'Platform manifests',
+  collapsed: false,
+  items: englishManifestItems
 }
 
 const issueSidebar = {
@@ -245,9 +274,9 @@ const traditionalChineseTheme: DefaultTheme.Config = {
       traditionalManifestSidebar
     ],
     '/zh-tw/docs/': traditionalDocsSidebar,
-    '/docs/main/': docsSidebar,
-    '/docs/moment/': docsSidebar,
-    '/docs/uwuBackGroundManager/': docsSidebar,
+    '/zh-tw/docs/main/': traditionalDocsSidebar,
+    '/zh-tw/docs/moment/': traditionalDocsSidebar,
+    '/zh-tw/docs/uwuBackGroundManager/': traditionalDocsSidebar,
     '/zh-tw/issues/': [traditionalIssueSidebar]
   }
 }
@@ -274,12 +303,12 @@ const englishTheme: DefaultTheme.Config = {
         text: 'Get started',
         items: [{ text: 'Quick start', link: '/en/guide/' }]
       },
-      manifestSidebar
+      englishManifestSidebar
     ],
     '/en/docs/': englishDocsSidebar,
-    '/docs/main/': docsSidebar,
-    '/docs/moment/': docsSidebar,
-    '/docs/uwuBackGroundManager/': docsSidebar,
+    '/en/docs/main/': englishDocsSidebar,
+    '/en/docs/moment/': englishDocsSidebar,
+    '/en/docs/uwuBackGroundManager/': englishDocsSidebar,
     '/en/issues/': [englishIssueSidebar]
   }
 }
