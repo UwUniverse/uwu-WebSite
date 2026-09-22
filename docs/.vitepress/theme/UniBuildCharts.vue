@@ -37,7 +37,7 @@ const copy = computed(() => props.locale === 'en'
 <template>
   <figure class="uni-build-charts">
     <svg
-      viewBox="0 0 1040 760"
+      viewBox="0 0 1040 780"
       role="img"
       aria-labelledby="uni-chart-title uni-chart-desc"
     >
@@ -51,7 +51,7 @@ const copy = computed(() => props.locale === 'en'
         </linearGradient>
       </defs>
 
-      <rect class="chart-card" x="8" y="8" width="1024" height="744" rx="24" />
+      <rect class="chart-card" x="8" y="8" width="1024" height="764" rx="24" />
 
       <g class="chart-heading">
         <text x="54" y="58">{{ copy.title }}</text>
@@ -78,7 +78,7 @@ const copy = computed(() => props.locale === 'en'
       </g>
 
       <g class="chart-panel" transform="translate(42 146)">
-        <rect x="0" y="0" width="956" height="258" rx="18" />
+        <rect x="0" y="0" width="956" height="252" rx="18" />
         <text class="panel-title" x="28" y="36">{{ copy.cpu }} / {{ copy.memory }}</text>
 
         <g class="plot" transform="translate(104 58)">
@@ -109,18 +109,11 @@ const copy = computed(() => props.locale === 'en'
           <polyline class="line memory-line" points="0,18 47,97 95,114 143,79 190,97 238,96 286,81 333,85 381,103 428,78 475,132 523,141 570,121 618,70 665,99 714,69 780,15" />
           <circle class="endpoint cpu-dot" cx="780" cy="173" r="5" />
           <circle class="endpoint memory-dot" cx="780" cy="15" r="5" />
-          <g class="time-labels" text-anchor="middle">
-            <text x="0" y="211">0m</text>
-            <text x="190" y="211">20m</text>
-            <text x="381" y="211">40m</text>
-            <text x="570" y="211">60m</text>
-            <text x="780" y="211">82m</text>
-          </g>
         </g>
       </g>
 
-      <g class="chart-panel" transform="translate(42 426)">
-        <rect x="0" y="0" width="956" height="258" rx="18" />
+      <g class="chart-panel" transform="translate(42 424)">
+        <rect x="0" y="0" width="956" height="300" rx="18" />
         <text class="panel-title" x="28" y="36">{{ copy.swap }} / {{ copy.wait }}</text>
 
         <g class="plot" transform="translate(104 58)">
@@ -162,7 +155,7 @@ const copy = computed(() => props.locale === 'en'
         </g>
       </g>
 
-      <text class="axis-title" x="956" y="720" text-anchor="end">{{ copy.elapsed }}</text>
+      <text class="axis-title" x="536" y="714" text-anchor="middle">{{ copy.elapsed }}</text>
     </svg>
     <figcaption>{{ copy.caption }}</figcaption>
   </figure>
