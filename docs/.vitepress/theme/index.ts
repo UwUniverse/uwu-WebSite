@@ -3,6 +3,7 @@ import { inBrowser, withBase, type Router } from 'vitepress'
 import DemoVideo from './DemoVideo.vue'
 import HomeLanding from './HomeLanding.vue'
 import EditorialLayout from './EditorialLayout.vue'
+import UniBuildCharts from './UniBuildCharts.vue'
 import './custom.css'
 
 const localePreferenceKey = 'uwuAOSP-locale-preference'
@@ -78,5 +79,6 @@ export default {
     setupLocaleRouting(router)
     app.component('DemoVideo', DemoVideo)
     app.component('HomeLanding', HomeLanding)
+    app.component('UniBuildCharts', UniBuildCharts)
   }
 }

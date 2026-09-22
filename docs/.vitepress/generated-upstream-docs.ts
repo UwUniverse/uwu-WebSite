@@ -78,17 +78,6 @@ export const upstreamDocsSidebars = [
     ]
   },
   {
-    "text": "AboutDevice",
-    "link": "/docs/AboutDevice/",
-    "collapsed": false,
-    "items": [
-      {
-        "text": "概览",
-        "link": "/docs/AboutDevice/"
-      }
-    ]
-  },
-  {
     "text": "appjumpinjection",
     "link": "/docs/appjumpinjection/",
     "collapsed": false,

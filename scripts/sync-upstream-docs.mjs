@@ -53,6 +53,13 @@ function rewriteReadmeLinks(content) {
   )
 }
 
+function addSiteOnlyUniChart(content) {
+  return content.replace(
+    /!\[同一主机上的 clean build 用时\]\(assets\/clean-build-time\.svg\)/,
+    '<UniBuildCharts />'
+  )
+}
+
 function documentationAssets(directory) {
   const extensions = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
 
@@ -200,8 +207,9 @@ function destination(relativePath) {
 }
 
 try {
+  const hiddenBranches = new Set(['AboutDevice'])
   const upstreamBranches = listBranches(docsRepository)
-    .filter((branch) => branch !== 'main')
+    .filter((branch) => branch !== 'main' && !hiddenBranches.has(branch))
   const preferredOrder = ['moment', 'uwuBackGroundManager']
   const docsBranches = [
     ...preferredOrder.filter((branch) => upstreamBranches.includes(branch)),
@@ -210,6 +218,10 @@ try {
       .sort((left, right) => left.localeCompare(right))
   ]
   const docsSidebars = []
+
+  for (const branch of hiddenBranches) {
+    fs.rmSync(branchDirectory(branch), { recursive: true, force: true })
+  }
 
   for (const branch of docsBranches) {
     const cloneDirectory = `docs-${branch.replaceAll('/', '-')}`
@@ -236,6 +248,10 @@ try {
       )
     } else {
       replaceMarkdownDirectory(upstream, branchDestination)
+      if (branch === 'uni') {
+        const index = path.join(branchDestination, 'index.md')
+        fs.writeFileSync(index, addSiteOnlyUniChart(fs.readFileSync(index, 'utf8')))
+      }
     }
 
     const items = sidebarItems(branchDestination, branch)

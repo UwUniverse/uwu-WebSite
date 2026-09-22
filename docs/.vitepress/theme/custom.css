@@ -62,6 +62,18 @@
   --uwu-button-ink: #16263c;
   --uwu-code-bg: #edf4fb;
   --uwu-code-ink: #142235;
+  --uni-chart-card: #f7f9fc;
+  --uni-chart-panel: #fbfcfe;
+  --uni-chart-border: #dce4ee;
+  --uni-chart-grid: #d6dee8;
+  --uni-chart-guide: #c5d0dc;
+  --uni-chart-primary: #3b7ddd;
+  --uni-chart-secondary: #7c63d8;
+  --uni-chart-warm: #e47766;
+  --uni-chart-callout: #e3f3e8;
+  --uni-chart-callout-secondary: #ebe6ff;
+  --uni-chart-callout-ink: #205f37;
+  --uni-chart-shadow: rgb(44 73 110 / 14%);
   --uwu-success: #25833d;
   --uwu-success-soft: #e2f1e4;
   --uwu-warning: #8b6500;
@@ -139,8 +151,20 @@
   --uwu-button: #9cb6f9;
   --uwu-button-hover: #bcdbfd;
   --uwu-button-ink: #16263c;
-  --uwu-code-bg: #08090b;
+  --uwu-code-bg: #1d2026;
   --uwu-code-ink: #f4f4f2;
+  --uni-chart-card: #171a20;
+  --uni-chart-panel: #20242c;
+  --uni-chart-border: #303742;
+  --uni-chart-grid: #39424f;
+  --uni-chart-guide: #495566;
+  --uni-chart-primary: #8db7ff;
+  --uni-chart-secondary: #b4a3ff;
+  --uni-chart-warm: #ff9a8d;
+  --uni-chart-callout: #1d3a2a;
+  --uni-chart-callout-secondary: #30294d;
+  --uni-chart-callout-ink: #94dca9;
+  --uni-chart-shadow: rgb(0 0 0 / 35%);
   --uwu-success: #4bc267;
   --uwu-success-soft: #17341f;
   --uwu-warning: #e4bf55;
@@ -1005,10 +1029,29 @@ a:hover {
 }
 
 .vp-doc .custom-block {
+  padding: var(--uwu-space-4) var(--uwu-space-5);
   border: 1px solid var(--uwu-border);
-  border-radius: var(--uwu-radius-sm);
+  border-radius: var(--uwu-radius-md);
   background: var(--uwu-surface);
   color: var(--uwu-ink-soft);
+}
+
+.vp-doc .custom-block .custom-block-title {
+  margin: 0 0 var(--uwu-space-2) !important;
+  color: var(--uwu-ink);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.vp-doc .custom-block p {
+  margin: 0 !important;
+  color: var(--uwu-ink-soft);
+  font-size: .96rem;
+  font-weight: 500;
+  line-height: 1.6;
 }
 
 .vp-doc .custom-block :where(.custom-block-title, p) {
