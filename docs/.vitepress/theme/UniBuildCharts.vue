@@ -6,7 +6,7 @@ const props = defineProps<{ locale?: 'zh' | 'en' }>()
 const copy = computed(() => props.locale === 'en'
   ? {
       title: 'Uni runtime telemetry',
-      subtitle: 'Final phase · 82m 37s · successful build',
+      subtitle: 'Final phase | 82m 37s',
       cpu: 'CPU',
       memory: 'Available RAM',
       swap: 'Swap-out',
@@ -20,7 +20,7 @@ const copy = computed(() => props.locale === 'en'
     }
   : {
       title: 'Uni 运行时遥测',
-      subtitle: '最终阶段 · 82 分 37 秒 · 构建成功',
+      subtitle: '最终阶段 | 82 分 37 秒',
       cpu: 'CPU',
       memory: '可用内存',
       swap: 'swap-out',
@@ -83,15 +83,15 @@ const copy = computed(() => props.locale === 'en'
 
         <g class="plot" transform="translate(86 58)">
           <g class="grid">
-            <line x1="0" y1="0" x2="824" y2="0" />
-            <line x1="0" y1="61" x2="824" y2="61" />
-            <line x1="0" y1="122" x2="824" y2="122" />
-            <line x1="0" y1="182" x2="824" y2="182" />
+            <line x1="0" y1="0" x2="780" y2="0" />
+            <line x1="0" y1="61" x2="780" y2="61" />
+            <line x1="0" y1="122" x2="780" y2="122" />
+            <line x1="0" y1="182" x2="780" y2="182" />
             <line x1="0" y1="0" x2="0" y2="182" />
-            <line x1="201" y1="0" x2="201" y2="182" />
-            <line x1="402" y1="0" x2="402" y2="182" />
-            <line x1="603" y1="0" x2="603" y2="182" />
-            <line x1="824" y1="0" x2="824" y2="182" />
+            <line x1="190" y1="0" x2="190" y2="182" />
+            <line x1="381" y1="0" x2="381" y2="182" />
+            <line x1="570" y1="0" x2="570" y2="182" />
+            <line x1="780" y1="0" x2="780" y2="182" />
           </g>
           <g class="axis-labels" text-anchor="end">
             <text x="-12" y="5">100%</text>
@@ -100,21 +100,21 @@ const copy = computed(() => props.locale === 'en'
             <text x="-12" y="187">0%</text>
           </g>
           <g class="axis-labels right-labels">
-            <text x="836" y="5">30 GiB</text>
-            <text x="836" y="66">20 GiB</text>
-            <text x="836" y="127">10 GiB</text>
-            <text x="836" y="187">0 GiB</text>
+            <text x="804" y="5">30 GiB</text>
+            <text x="804" y="66">20 GiB</text>
+            <text x="804" y="127">10 GiB</text>
+            <text x="804" y="187">0 GiB</text>
           </g>
-          <polyline class="line cpu-line" points="0,182 50,5 100,1 151,1 201,1 251,0 302,0 352,26 402,2 452,2 502,0 553,0 603,0 653,1 703,0 754,0 824,173" />
-          <polyline class="line memory-line" points="0,18 50,97 100,114 151,79 201,97 251,96 302,81 352,85 402,103 452,78 502,132 553,141 603,121 653,70 703,99 754,69 824,15" />
-          <circle class="endpoint cpu-dot" cx="824" cy="173" r="5" />
-          <circle class="endpoint memory-dot" cx="824" cy="15" r="5" />
+          <polyline class="line cpu-line" points="0,182 47,5 95,1 143,1 190,1 238,0 286,0 333,26 381,2 428,2 475,0 523,0 570,0 618,1 665,0 714,0 780,173" />
+          <polyline class="line memory-line" points="0,18 47,97 95,114 143,79 190,97 238,96 286,81 333,85 381,103 428,78 475,132 523,141 570,121 618,70 665,99 714,69 780,15" />
+          <circle class="endpoint cpu-dot" cx="780" cy="173" r="5" />
+          <circle class="endpoint memory-dot" cx="780" cy="15" r="5" />
           <g class="time-labels" text-anchor="middle">
             <text x="0" y="211">0m</text>
-            <text x="201" y="211">20m</text>
-            <text x="402" y="211">40m</text>
-            <text x="603" y="211">60m</text>
-            <text x="824" y="211">82m</text>
+            <text x="190" y="211">20m</text>
+            <text x="381" y="211">40m</text>
+            <text x="570" y="211">60m</text>
+            <text x="780" y="211">82m</text>
           </g>
         </g>
       </g>
@@ -125,15 +125,15 @@ const copy = computed(() => props.locale === 'en'
 
         <g class="plot" transform="translate(86 58)">
           <g class="grid">
-            <line x1="0" y1="0" x2="824" y2="0" />
-            <line x1="0" y1="61" x2="824" y2="61" />
-            <line x1="0" y1="122" x2="824" y2="122" />
-            <line x1="0" y1="182" x2="824" y2="182" />
+            <line x1="0" y1="0" x2="780" y2="0" />
+            <line x1="0" y1="61" x2="780" y2="61" />
+            <line x1="0" y1="122" x2="780" y2="122" />
+            <line x1="0" y1="182" x2="780" y2="182" />
             <line x1="0" y1="0" x2="0" y2="182" />
-            <line x1="201" y1="0" x2="201" y2="182" />
-            <line x1="402" y1="0" x2="402" y2="182" />
-            <line x1="603" y1="0" x2="603" y2="182" />
-            <line x1="824" y1="0" x2="824" y2="182" />
+            <line x1="190" y1="0" x2="190" y2="182" />
+            <line x1="381" y1="0" x2="381" y2="182" />
+            <line x1="570" y1="0" x2="570" y2="182" />
+            <line x1="780" y1="0" x2="780" y2="182" />
           </g>
           <g class="axis-labels" text-anchor="end">
             <text x="-12" y="5">22 GiB</text>
@@ -142,22 +142,22 @@ const copy = computed(() => props.locale === 'en'
             <text x="-12" y="187">0 GiB</text>
           </g>
           <g class="axis-labels right-labels">
-            <text x="836" y="5">50%</text>
-            <text x="836" y="66">33%</text>
-            <text x="836" y="127">16%</text>
-            <text x="836" y="187">0%</text>
+            <text x="804" y="5">50%</text>
+            <text x="804" y="66">33%</text>
+            <text x="804" y="127">16%</text>
+            <text x="804" y="187">0%</text>
           </g>
-          <path class="swap-area" d="M0 182 L50 94 L100 94 L151 94 L201 94 L251 94 L302 64 L352 55 L402 47 L452 42 L502 38 L553 38 L603 38 L653 38 L703 38 L754 38 L824 16 L824 182 Z" />
-          <polyline class="line swap-line" points="0,182 50,94 100,94 151,94 201,94 251,94 302,64 352,55 402,47 452,42 502,38 553,38 603,38 653,38 703,38 754,38 824,16" />
-          <polyline class="line wait-line" points="0,19 50,177 100,182 151,182 201,181 251,182 302,182 352,161 402,182 452,182 502,182 553,182 603,182 653,182 703,182 754,182 824,58" />
-          <circle class="endpoint swap-dot" cx="824" cy="16" r="5" />
-          <circle class="endpoint wait-dot" cx="824" cy="58" r="5" />
+          <path class="swap-area" d="M0 182 L47 94 L95 94 L143 94 L190 94 L238 94 L286 64 L333 55 L381 47 L428 42 L475 38 L523 38 L570 38 L618 38 L665 38 L714 38 L780 16 L780 182 Z" />
+          <polyline class="line swap-line" points="0,182 47,94 95,94 143,94 190,94 238,94 286,64 333,55 381,47 428,42 475,38 523,38 570,38 618,38 665,38 714,38 780,16" />
+          <polyline class="line wait-line" points="0,19 47,177 95,182 143,182 190,181 238,182 286,182 333,161 381,182 428,182 475,182 523,182 570,182 618,182 665,182 714,182 780,58" />
+          <circle class="endpoint swap-dot" cx="780" cy="16" r="5" />
+          <circle class="endpoint wait-dot" cx="780" cy="58" r="5" />
           <g class="time-labels" text-anchor="middle">
             <text x="0" y="211">0m</text>
-            <text x="201" y="211">20m</text>
-            <text x="402" y="211">40m</text>
-            <text x="603" y="211">60m</text>
-            <text x="824" y="211">82m</text>
+            <text x="190" y="211">20m</text>
+            <text x="381" y="211">40m</text>
+            <text x="570" y="211">60m</text>
+            <text x="780" y="211">82m</text>
           </g>
         </g>
       </g>
