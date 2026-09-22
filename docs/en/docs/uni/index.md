@@ -126,7 +126,7 @@ uni --no-debug -j18 SystemUI
 
 ## Clean-build comparison
 
-<UniBuildCharts />
+<UniBuildCharts locale="en" />
 
 | Build entry point | Time |
 | --- | ---: |

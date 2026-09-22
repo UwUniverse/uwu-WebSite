@@ -129,7 +129,7 @@ uni --no-debug -j18 SystemUI
 
 ## Clean build 对比
 
-<UniBuildCharts />
+<UniBuildCharts locale="zh" />
 
 | 构建入口 | 用时 |
 | --- | ---: |

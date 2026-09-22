@@ -56,7 +56,7 @@ function rewriteReadmeLinks(content) {
 function addSiteOnlyUniChart(content) {
   return content.replace(
     /!\[同一主机上的 clean build 用时\]\(assets\/clean-build-time\.svg\)/,
-    '<UniBuildCharts />'
+    '<UniBuildCharts locale="zh" />'
   )
 }
 

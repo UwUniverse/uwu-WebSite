@@ -1,3 +1,35 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = defineProps<{ locale?: 'zh' | 'en' }>()
+
+const copy = computed(() => props.locale === 'en'
+  ? {
+      title: 'uwuAOSP build performance',
+      subtitle: 'Same host · lower build time is better',
+      timeTitle: 'Clean build time',
+      timeNote: 'Measured elapsed time',
+      timeReduction: '35.5% less elapsed time',
+      throughputTitle: 'Relative throughput',
+      throughputNote: 'Derived index · Make = 100',
+      throughputGain: '1.55× effective throughput',
+      caption: 'The throughput panel is calculated as',
+      captionSuffix: '; it is not a third benchmark.'
+    }
+  : {
+      title: 'uwuAOSP 构建性能',
+      subtitle: '同一主机 · 构建耗时越低越好',
+      timeTitle: 'Clean build 用时',
+      timeNote: '实测耗时',
+      timeReduction: '耗时减少 35.5%',
+      throughputTitle: '相对吞吐',
+      throughputNote: '派生指标 · Make = 100',
+      throughputGain: '有效吞吐 1.55×',
+      caption: '吞吐图按以下公式计算',
+      captionSuffix: '；不代表额外的一次构建。'
+    })
+</script>
+
 <template>
   <figure class="uni-build-charts">
     <svg
@@ -36,14 +68,14 @@
       <rect class="chart-card" x="8" y="8" width="1024" height="744" rx="30" />
 
       <g class="chart-heading">
-        <text x="54" y="58">uwuAOSP build performance</text>
-        <text class="chart-subtitle" x="54" y="88">Same host · lower build time is better</text>
+        <text x="54" y="58">{{ copy.title }}</text>
+        <text class="chart-subtitle" x="54" y="88">{{ copy.subtitle }}</text>
       </g>
 
       <g class="chart-panel" transform="translate(42 118)">
         <rect x="0" y="0" width="956" height="276" rx="22" />
-        <text class="panel-title" x="28" y="38">Clean build time</text>
-        <text class="panel-note" x="28" y="63">Measured elapsed time</text>
+        <text class="panel-title" x="28" y="38">{{ copy.timeTitle }}</text>
+        <text class="panel-note" x="28" y="63">{{ copy.timeNote }}</text>
 
         <g class="grid" transform="translate(86 84)">
           <line x1="0" y1="0" x2="824" y2="0" />
@@ -75,14 +107,14 @@
         </g>
         <g class="callout" transform="translate(676 22)">
           <rect width="244" height="46" rx="14" />
-          <text x="122" y="29" text-anchor="middle">35.5% less elapsed time</text>
+          <text x="122" y="29" text-anchor="middle">{{ copy.timeReduction }}</text>
         </g>
       </g>
 
       <g class="chart-panel" transform="translate(42 420)">
         <rect x="0" y="0" width="956" height="276" rx="22" />
-        <text class="panel-title" x="28" y="38">Relative throughput</text>
-        <text class="panel-note" x="28" y="63">Derived index · Make = 100</text>
+        <text class="panel-title" x="28" y="38">{{ copy.throughputTitle }}</text>
+        <text class="panel-note" x="28" y="63">{{ copy.throughputNote }}</text>
 
         <g class="grid" transform="translate(86 84)">
           <line x1="0" y1="0" x2="824" y2="0" />
@@ -112,12 +144,12 @@
         </g>
         <g class="callout callout-secondary" transform="translate(676 22)">
           <rect width="244" height="46" rx="14" />
-          <text x="122" y="29" text-anchor="middle">1.55× effective throughput</text>
+          <text x="122" y="29" text-anchor="middle">{{ copy.throughputGain }}</text>
         </g>
       </g>
     </svg>
     <figcaption>
-      The throughput panel is calculated as <code>Make time / Uni time × 100</code>; it is not a third benchmark.
+      {{ copy.caption }} <code>Make time / Uni time × 100</code>{{ copy.captionSuffix }}
     </figcaption>
   </figure>
 </template>
