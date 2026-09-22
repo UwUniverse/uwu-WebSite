@@ -81,7 +81,7 @@ const copy = computed(() => props.locale === 'en'
         <rect x="0" y="0" width="956" height="258" rx="18" />
         <text class="panel-title" x="28" y="36">{{ copy.cpu }} / {{ copy.memory }}</text>
 
-        <g class="plot" transform="translate(86 58)">
+        <g class="plot" transform="translate(104 58)">
           <g class="grid">
             <line x1="0" y1="0" x2="780" y2="0" />
             <line x1="0" y1="61" x2="780" y2="61" />
@@ -123,7 +123,7 @@ const copy = computed(() => props.locale === 'en'
         <rect x="0" y="0" width="956" height="258" rx="18" />
         <text class="panel-title" x="28" y="36">{{ copy.swap }} / {{ copy.wait }}</text>
 
-        <g class="plot" transform="translate(86 58)">
+        <g class="plot" transform="translate(104 58)">
           <g class="grid">
             <line x1="0" y1="0" x2="780" y2="0" />
             <line x1="0" y1="61" x2="780" y2="61" />
