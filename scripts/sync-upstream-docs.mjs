@@ -46,12 +46,39 @@ function relativeMarkdownPath(sourceRoot, sourceFile) {
     : relative
 }
 
+function rewriteReadmeLinks(content) {
+  return content.replace(
+    /\]\(([^)\s]*?)README\.md(#[^)]+)?\)/gi,
+    (_, prefix, hash = '') => `](${prefix || './'}${hash})`
+  )
+}
+
+function documentationAssets(directory) {
+  const extensions = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
+
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.name === '.git') return []
+    const source = path.join(directory, entry.name)
+    if (entry.isDirectory()) return documentationAssets(source)
+    return entry.isFile() && extensions.has(path.extname(entry.name).toLowerCase())
+      ? [source]
+      : []
+  })
+}
+
 function replaceMarkdownDirectory(sourceRoot, destinationRoot) {
   fs.rmSync(destinationRoot, { recursive: true, force: true })
   fs.mkdirSync(destinationRoot, { recursive: true })
 
   for (const sourceFile of markdownFiles(sourceRoot)) {
     const destination = path.join(destinationRoot, relativeMarkdownPath(sourceRoot, sourceFile))
+    fs.mkdirSync(path.dirname(destination), { recursive: true })
+    const content = rewriteReadmeLinks(fs.readFileSync(sourceFile, 'utf8'))
+    fs.writeFileSync(destination, content)
+  }
+
+  for (const sourceFile of documentationAssets(sourceRoot)) {
+    const destination = path.join(destinationRoot, path.relative(sourceRoot, sourceFile))
     fs.mkdirSync(path.dirname(destination), { recursive: true })
     fs.copyFileSync(sourceFile, destination)
   }
@@ -69,7 +96,7 @@ function copyMarkdownIfPresent(sourceRoot, sourceName, destination, replacements
     content = content.replaceAll(from, to)
   }
 
-  fs.writeFileSync(destination, content)
+  fs.writeFileSync(destination, rewriteReadmeLinks(content))
   return true
 }
 
@@ -192,12 +219,20 @@ try {
     if (branch === 'uwuBackGroundManager') {
       fs.rmSync(branchDestination, { recursive: true, force: true })
       fs.mkdirSync(branchDestination, { recursive: true })
-      copyMarkdownIfPresent(upstream, 'CN.md', path.join(branchDestination, 'index.md'))
+      copyMarkdownIfPresent(
+        upstream,
+        'CN.md',
+        path.join(branchDestination, 'index.md'),
+        [['./README.md', './english']]
+      )
       copyMarkdownIfPresent(
         upstream,
         'README.md',
         path.join(branchDestination, 'english.md'),
-        [[/\[English\]\(\.\/README\.md\)\s*\|\s*\[简体中文\]\(\.\/CN\.md\)/g, '']]
+        [
+          [/\[English\]\(\.\/README\.md\)\s*\|\s*\[简体中文\]\(\.\/CN\.md\)/g, ''],
+          ['./CN.md', './']
+        ]
       )
     } else {
       replaceMarkdownDirectory(upstream, branchDestination)
