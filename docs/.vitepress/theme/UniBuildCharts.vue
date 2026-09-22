@@ -5,67 +5,63 @@ const props = defineProps<{ locale?: 'zh' | 'en' }>()
 
 const copy = computed(() => props.locale === 'en'
   ? {
-      title: 'uwuAOSP build performance',
-      subtitle: 'Same host · lower build time is better',
-      timeTitle: 'Clean build time',
-      timeNote: 'Measured elapsed time',
-      timeReduction: '35.5% less elapsed time',
-      throughputTitle: 'Relative throughput',
-      throughputNote: 'Derived index · Make = 100',
-      throughputGain: '1.55× effective throughput',
-      caption: 'The throughput panel is calculated as',
-      captionSuffix: '; it is not a third benchmark.'
+      title: 'Uni log performance trend',
+      subtitle: 'Successful Uni debug reports · lower elapsed time is better',
+      elapsedTitle: 'Total elapsed time',
+      elapsedNote: 'Minutes parsed from the report summary',
+      phaseTitle: 'Phase composition',
+      phaseNote: 'Stacked minutes · graph analysis / kernel / final',
+      improvement: '70.6% lower than the first record',
+      total: 'Total',
+      graph: 'Graph analysis',
+      kernel: 'Kernel',
+      final: 'Final',
+      caption: 'Source: successful Uni debug reports dated 2026-08-23, 2026-09-14 and 2026-09-19. Records are not mixed with Make benchmarks.',
+      description: 'Uni elapsed time decreases from 253.9 minutes to 74.7 minutes across three successful log records. The stacked bars show graph analysis, kernel and final phase minutes.'
     }
   : {
-      title: 'uwuAOSP 构建性能',
-      subtitle: '同一主机 · 构建耗时越低越好',
-      timeTitle: 'Clean build 用时',
-      timeNote: '实测耗时',
-      timeReduction: '耗时减少 35.5%',
-      throughputTitle: '相对吞吐',
-      throughputNote: '派生指标 · Make = 100',
-      throughputGain: '有效吞吐 1.55×',
-      caption: '吞吐图按以下公式计算',
-      captionSuffix: '；不代表额外的一次构建。'
+      title: 'Uni 日志性能变化',
+      subtitle: '成功的 Uni debug report · 总耗时越低越好',
+      elapsedTitle: '总耗时变化',
+      elapsedNote: '从日志摘要换算出的分钟数',
+      phaseTitle: '阶段耗时构成',
+      phaseNote: '堆叠分钟数 · 图分析 / 内核 / 主构建',
+      improvement: '相比首条记录下降 70.6%',
+      total: '总耗时',
+      graph: '图分析',
+      kernel: '内核',
+      final: '主构建',
+      caption: '数据源：2026-08-23、2026-09-14、2026-09-19 的成功 Uni debug report。图表不与 Make 基准混合。',
+      description: '三条成功日志中的 Uni 总耗时从 253.9 分钟下降到 74.7 分钟，堆叠柱展示图分析、内核和主构建阶段的分钟数。'
     })
 </script>
 
 <template>
   <figure class="uni-build-charts">
     <svg
-      viewBox="0 0 1040 760"
+      viewBox="0 0 1040 820"
       role="img"
       aria-labelledby="uni-chart-title uni-chart-desc"
     >
-      <title id="uni-chart-title">uwuAOSP clean build time and throughput</title>
-      <desc id="uni-chart-desc">
-        Make completed in 5 hours 19 minutes 4 seconds. Uni completed in 3 hours 25 minutes 43 seconds.
-        The derived throughput index rises from 100 to 155.1.
-      </desc>
+      <title id="uni-chart-title">{{ copy.title }}</title>
+      <desc id="uni-chart-desc">{{ copy.description }}</desc>
 
       <defs>
-        <linearGradient id="uni-time-line" x1="0" x2="1" y1="0" y2="0">
+        <linearGradient id="uni-trend-line" x1="0" x2="1" y1="0" y2="0">
           <stop offset="0" stop-color="var(--uni-chart-warm)" />
-          <stop offset="1" stop-color="var(--uni-chart-primary)" />
+          <stop offset=".52" stop-color="var(--uni-chart-primary)" />
+          <stop offset="1" stop-color="var(--uni-chart-secondary)" />
         </linearGradient>
-        <linearGradient id="uni-time-fill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stop-color="var(--uni-chart-primary)" stop-opacity=".22" />
+        <linearGradient id="uni-trend-fill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="var(--uni-chart-primary)" stop-opacity=".2" />
           <stop offset="1" stop-color="var(--uni-chart-primary)" stop-opacity="0" />
-        </linearGradient>
-        <linearGradient id="uni-throughput-line" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stop-color="var(--uni-chart-secondary)" />
-          <stop offset="1" stop-color="var(--uni-chart-primary)" />
-        </linearGradient>
-        <linearGradient id="uni-throughput-fill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stop-color="var(--uni-chart-secondary)" stop-opacity=".2" />
-          <stop offset="1" stop-color="var(--uni-chart-secondary)" stop-opacity="0" />
         </linearGradient>
         <filter id="uni-chart-shadow" x="-30%" y="-30%" width="160%" height="160%">
           <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="var(--uni-chart-shadow)" />
         </filter>
       </defs>
 
-      <rect class="chart-card" x="8" y="8" width="1024" height="744" rx="30" />
+      <rect class="chart-card" x="8" y="8" width="1024" height="804" rx="30" />
 
       <g class="chart-heading">
         <text x="54" y="58">{{ copy.title }}</text>
@@ -73,84 +69,102 @@ const copy = computed(() => props.locale === 'en'
       </g>
 
       <g class="chart-panel" transform="translate(42 118)">
-        <rect x="0" y="0" width="956" height="276" rx="22" />
-        <text class="panel-title" x="28" y="38">{{ copy.timeTitle }}</text>
-        <text class="panel-note" x="28" y="63">{{ copy.timeNote }}</text>
+        <rect x="0" y="0" width="956" height="300" rx="22" />
+        <text class="panel-title" x="28" y="38">{{ copy.elapsedTitle }}</text>
+        <text class="panel-note" x="28" y="63">{{ copy.elapsedNote }}</text>
 
-        <g class="grid" transform="translate(86 84)">
+        <g class="grid" transform="translate(86 72)">
           <line x1="0" y1="0" x2="824" y2="0" />
           <line x1="0" y1="48" x2="824" y2="48" />
           <line x1="0" y1="96" x2="824" y2="96" />
           <line x1="0" y1="144" x2="824" y2="144" />
           <line x1="0" y1="192" x2="824" y2="192" />
-          <line x1="0" y1="240" x2="824" y2="240" />
           <g class="axis-labels">
-            <text x="-14" y="5">6h</text>
-            <text x="-14" y="53">5h</text>
-            <text x="-14" y="101">4h</text>
-            <text x="-14" y="149">3h</text>
-            <text x="-14" y="197">2h</text>
-            <text x="-14" y="245">0h</text>
+            <text x="-18" y="5">270</text>
+            <text x="-18" y="53">200</text>
+            <text x="-18" y="101">130</text>
+            <text x="-18" y="149">70</text>
+            <text x="-18" y="197">0</text>
           </g>
-          <path class="area area-time" d="M94 33 C290 58 500 94 730 115 L730 240 L94 240 Z" />
-          <path class="line line-time" d="M94 33 C290 58 500 94 730 115" />
-          <line class="guide" x1="94" y1="33" x2="94" y2="240" />
-          <line class="guide" x1="730" y1="115" x2="730" y2="240" />
-          <circle class="point point-make" cx="94" cy="33" r="9" />
-          <circle class="point point-uni" cx="730" cy="115" r="9" />
+          <path class="area" d="M112 11 C260 43 374 92 480 128 C628 145 742 152 848 138 L848 192 L112 192 Z" />
+          <path class="line" d="M112 11 C260 43 374 92 480 128 C628 145 742 152 848 138" />
+          <line class="guide" x1="112" y1="11" x2="112" y2="192" />
+          <line class="guide" x1="480" y1="128" x2="480" y2="192" />
+          <line class="guide" x1="848" y1="138" x2="848" y2="192" />
+          <circle class="point point-first" cx="112" cy="11" r="10" />
+          <circle class="point point-second" cx="480" cy="128" r="10" />
+          <circle class="point point-third" cx="848" cy="138" r="10" />
           <g class="value" text-anchor="middle">
-            <text x="94" y="17">5:19:04</text>
-            <text x="730" y="99">3:25:43</text>
-            <text class="category" x="94" y="265">Make</text>
-            <text class="category" x="730" y="265">Uni</text>
+            <text x="112" y="-6">253.9</text>
+            <text x="480" y="111">95.0</text>
+            <text x="848" y="121">74.7</text>
+            <text class="category" x="112" y="220">08/23</text>
+            <text class="category" x="480" y="220">09/14</text>
+            <text class="category" x="848" y="220">09/19</text>
           </g>
         </g>
-        <g class="callout" transform="translate(676 22)">
-          <rect width="244" height="46" rx="14" />
-          <text x="122" y="29" text-anchor="middle">{{ copy.timeReduction }}</text>
+        <g class="callout" transform="translate(672 20)">
+          <rect width="248" height="46" rx="14" />
+          <text x="124" y="29" text-anchor="middle">{{ copy.improvement }}</text>
         </g>
       </g>
 
-      <g class="chart-panel" transform="translate(42 420)">
-        <rect x="0" y="0" width="956" height="276" rx="22" />
-        <text class="panel-title" x="28" y="38">{{ copy.throughputTitle }}</text>
-        <text class="panel-note" x="28" y="63">{{ copy.throughputNote }}</text>
+      <g class="chart-panel" transform="translate(42 442)">
+        <rect x="0" y="0" width="956" height="320" rx="22" />
+        <text class="panel-title" x="28" y="38">{{ copy.phaseTitle }}</text>
+        <text class="panel-note" x="28" y="63">{{ copy.phaseNote }}</text>
 
-        <g class="grid" transform="translate(86 84)">
-          <line x1="0" y1="0" x2="824" y2="0" />
-          <line x1="0" y1="52" x2="824" y2="52" />
-          <line x1="0" y1="104" x2="824" y2="104" />
-          <line x1="0" y1="156" x2="824" y2="156" />
-          <line x1="0" y1="208" x2="824" y2="208" />
-          <g class="axis-labels">
-            <text x="-14" y="5">180</text>
-            <text x="-14" y="57">160</text>
-            <text x="-14" y="109">140</text>
-            <text x="-14" y="161">120</text>
-            <text x="-14" y="213">100</text>
-          </g>
-          <path class="area area-throughput" d="M94 208 C290 186 500 111 730 63 L730 208 L94 208 Z" />
-          <path class="line line-throughput" d="M94 208 C290 186 500 111 730 63" />
-          <line class="guide" x1="94" y1="208" x2="94" y2="208" />
-          <line class="guide" x1="730" y1="63" x2="730" y2="208" />
-          <circle class="point point-make" cx="94" cy="208" r="9" />
-          <circle class="point point-uni" cx="730" cy="63" r="9" />
-          <g class="value" text-anchor="middle">
-            <text x="94" y="192">100</text>
-            <text x="730" y="47">155.1</text>
-            <text class="category" x="94" y="233">Make</text>
-            <text class="category" x="730" y="233">Uni</text>
-          </g>
+        <g class="legend" transform="translate(620 24)">
+          <rect class="legend-graph" x="0" y="0" width="13" height="13" rx="3" />
+          <text x="20" y="12">{{ copy.graph }}</text>
+          <rect class="legend-kernel" x="116" y="0" width="13" height="13" rx="3" />
+          <text x="136" y="12">{{ copy.kernel }}</text>
+          <rect class="legend-final" x="214" y="0" width="13" height="13" rx="3" />
+          <text x="234" y="12">{{ copy.final }}</text>
         </g>
-        <g class="callout callout-secondary" transform="translate(676 22)">
-          <rect width="244" height="46" rx="14" />
-          <text x="122" y="29" text-anchor="middle">{{ copy.throughputGain }}</text>
+
+        <g class="grid" transform="translate(86 72)">
+          <line x1="0" y1="0" x2="824" y2="0" />
+          <line x1="0" y1="48" x2="824" y2="48" />
+          <line x1="0" y1="96" x2="824" y2="96" />
+          <line x1="0" y1="144" x2="824" y2="144" />
+          <line x1="0" y1="192" x2="824" y2="192" />
+          <g class="axis-labels">
+            <text x="-18" y="5">270</text>
+            <text x="-18" y="53">200</text>
+            <text x="-18" y="101">130</text>
+            <text x="-18" y="149">70</text>
+            <text x="-18" y="197">0</text>
+          </g>
+
+          <g class="bar bar-first">
+            <rect class="bar-final" x="68" y="27" width="112" height="165" rx="8" />
+            <rect class="bar-kernel" x="68" y="19" width="112" height="8" />
+            <rect class="bar-graph" x="68" y="11" width="112" height="8" rx="8" />
+          </g>
+          <g class="bar bar-second">
+            <rect class="bar-final" x="356" y="133" width="112" height="59" rx="8" />
+            <rect class="bar-kernel" x="356" y="133" width="112" height="1" />
+            <rect class="bar-graph" x="356" y="124" width="112" height="9" rx="8" />
+          </g>
+          <g class="bar bar-third">
+            <rect class="bar-final" x="644" y="149" width="112" height="43" rx="8" />
+            <rect class="bar-kernel" x="644" y="149" width="112" height="1" />
+            <rect class="bar-graph" x="644" y="140" width="112" height="9" rx="8" />
+          </g>
+
+          <g class="value" text-anchor="middle">
+            <text x="124" y="4">253.9</text>
+            <text x="412" y="117">95.0</text>
+            <text x="700" y="133">74.7</text>
+            <text class="category" x="124" y="220">08/23</text>
+            <text class="category" x="412" y="220">09/14</text>
+            <text class="category" x="700" y="220">09/19</text>
+          </g>
         </g>
       </g>
     </svg>
-    <figcaption>
-      {{ copy.caption }} <code>Make time / Uni time × 100</code>{{ copy.captionSuffix }}
-    </figcaption>
+    <figcaption>{{ copy.caption }}</figcaption>
   </figure>
 </template>
 
@@ -182,7 +196,8 @@ const copy = computed(() => props.locale === 'en'
 
 .chart-heading .chart-subtitle,
 .panel-note,
-.axis-labels {
+.axis-labels,
+.legend {
   fill: var(--vp-c-text-2);
   font-size: 14px;
   font-weight: 500;
@@ -211,30 +226,16 @@ const copy = computed(() => props.locale === 'en'
 }
 
 .area {
+  fill: url(#uni-trend-fill);
   stroke: none;
-}
-
-.area-time {
-  fill: url(#uni-time-fill);
-}
-
-.area-throughput {
-  fill: url(#uni-throughput-fill);
 }
 
 .line {
   fill: none;
+  stroke: url(#uni-trend-line);
   stroke-width: 6;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.line-time {
-  stroke: url(#uni-time-line);
-}
-
-.line-throughput {
-  stroke: url(#uni-throughput-line);
 }
 
 .point {
@@ -243,12 +244,16 @@ const copy = computed(() => props.locale === 'en'
   filter: url(#uni-chart-shadow);
 }
 
-.point-make {
+.point-first {
   fill: var(--uni-chart-warm);
 }
 
-.point-uni {
+.point-second {
   fill: var(--uni-chart-primary);
+}
+
+.point-third {
+  fill: var(--uni-chart-secondary);
 }
 
 .value text {
@@ -273,18 +278,32 @@ const copy = computed(() => props.locale === 'en'
   font-weight: 700;
 }
 
-.callout-secondary rect {
-  fill: var(--uni-chart-callout-secondary);
+.legend rect {
+  stroke: none;
 }
 
-.uni-build-charts figcaption,
-figcaption {
+.legend-graph,
+.bar-graph {
+  fill: var(--uni-chart-secondary);
+}
+
+.legend-kernel,
+.bar-kernel {
+  fill: var(--uni-chart-warm);
+}
+
+.legend-final,
+.bar-final {
+  fill: var(--uni-chart-primary);
+}
+
+.uni-build-charts figcaption {
   margin-top: .75rem;
   color: var(--vp-c-text-2);
   font-size: .86rem;
 }
 
-code {
+.uni-build-charts code {
   color: var(--vp-c-brand-1);
 }
 </style>

@@ -124,34 +124,31 @@ uni --clean-logs
 uni --no-debug -j18 SystemUI
 ```
 
-## Clean-build comparison
+## Uni log performance trend
 
 <UniBuildCharts locale="en" />
 
-| Build entry point | Time |
-| --- | ---: |
-| Native Make | 5:19:04 |
-| Uni | 3:25:43 |
+The chart uses only Uni debug reports marked `result="ok"`; it does not mix Make benchmarks into the trend. Total elapsed time comes from the report's `elapsed` field. The stacked bars use the `graph-analysis`, `kernel` and `final` phase durations.
 
-Time reduction:
+| Log record | Total | Graph analysis | Kernel | Final |
+| --- | ---: | ---: | ---: | ---: |
+| 2026-08-23 | 4:13:52 | 10:47 | 10:45 | 3:52:16 |
+| 2026-09-14 | 1:35:00 | 11:44 | 0:20 | 1:22:37 |
+| 2026-09-19 | 1:14:44 | 12:49 | 0:21 | 1:01:17 |
 
-```text
-reduction = 1 - Uni time / Make time
-          = 1 - 3:25:43 / 5:19:04
-          = 35.5%
-```
-
-With Make as 100, the effective throughput index is:
+The log duration is converted to minutes as follows:
 
 ```text
-Uni throughput index = Make time / Uni time × 100
-                     = 5:19:04 / 3:25:43 × 100
-                     = 155.1
+elapsed_minutes = hours × 60 + minutes + seconds / 60
 ```
 
-In this record, Uni saves **1:53:21** and completes at about **1.55×** the Make rate. The throughput panel is derived from the same two timings, not a third benchmark.
+For two Uni records with the same target and conditions, the elapsed-time reduction is:
 
-The test host was an Intel Core Ultra 5 125H with 14 cores, 18 threads, about 32 GiB RAM, 50 GiB swap and an NVMe SSD. Both timings are full clean builds on that host, not a cross-device guarantee. Source and manifest revisions, temperature, background load, storage cache, ccache, swap and the target product can change the result.
+```text
+reduction = 1 - new elapsed time / old elapsed time
+```
+
+These records were captured on different dates. Graph state, cache hits, source changes, temperature, background load, storage cache, swap and target state can differ. Failed, interrupted, partial-target and phase-incomplete records are excluded, so this chart shows Uni log trends rather than a cross-device performance guarantee.
 
 ## Output and troubleshooting
 
