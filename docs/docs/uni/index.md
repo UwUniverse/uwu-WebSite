@@ -127,6 +127,28 @@ uni --clean-logs
 uni --no-debug -j18 SystemUI
 ```
 
+## 签名发布 OTA
+
+在 Android 源码树中一次性生成密钥，目录必须位于源码树外且事先不存在。不需要 `lunch`，也不会启动构建：
+
+```sh
+uni --init-signing-keys ~/.android-certs
+```
+
+Uni 生成 LineageOS 基础密钥集合，私钥目录权限为 `0700`，文件权限为 `0600`。已有密钥目录会被拒绝，不会覆盖手动生成或以前发布使用的密钥。请把整个目录安全备份到另一块存储设备。
+
+完成 `lunch` 后，每次发布都使用同一目录。Uni 会构建 `target-files-package` 和 `otatools`，生成独立的签名 target-files、OTA 和 SHA-256 校验文件：
+
+```sh
+uni -j18 otapackage --sign-keys ~/.android-certs
+```
+
+已有手动密钥可直接用于 `--sign-keys`，无需初始化，也不会被 Uni 修改。Uni 初始化的目录会在首次签名时，根据 `META/apexkeys.txt` 为非 `PRESIGNED` APEX 生成 4096 位密钥；后续复用，新增 APEX 只增加新密钥。备份必须包含 `apex/` 子目录。删除源码树或 `out` 不会影响外部密钥；若密钥丢失，新生成的密钥无法直接延续原设备的普通 OTA 更新。
+
+手动密钥目录、非默认 APK 或需要指定其他 APEX 密钥的设备，可通过 `--sign-config` 的 `key_mappings`、`extra_apks`、`extra_apex_payload_keys` 配置；AVB 密钥不会由该配置替换。`--sign-keys` 不能与 `--trust-output` 或 `--assume-existing` 同用。已有 target-files 可用 `uni --sign-keys ~/.android-certs --sign-check` 做隔离签名检查。
+
+首次从 test-key 切换到 release-key 时，已有设备需要经过验证的密钥迁移流程或完整刷入；不能把新密钥签名的包当作普通增量 OTA。
+
 ## Uni 运行时遥测
 
 <UniBuildCharts locale="zh" />

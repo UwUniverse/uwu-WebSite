@@ -10,22 +10,21 @@ This page is for cases where you cannot find an OTA package for your device or w
 
 ## Sign a release OTA
 
-Uni can produce a signed OTA after creating target files. The key directory must contain these four key pairs:
+Initialize keys once from the source tree. The destination must be outside the source tree and must not exist yet:
 
-```text
-releasekey.pk8       releasekey.x509.pem
-platform.pk8         platform.x509.pem
-shared.pk8           shared.x509.pem
-media.pk8            media.x509.pem
+```sh
+uni --init-signing-keys ~/.android-certs
 ```
 
-After `lunch`, run:
+If you already generated keys manually, skip initialization. After `lunch`, use the same directory for every release:
 
 ```sh
 uni -j$(nproc) otapackage --sign-keys ~/android-certs
 ```
 
-Uni builds `target-files-package` and `otatools`, signs APKs/APEXes and the OTA, then writes a SHA-256 checksum. Signed artifacts are stored under `out/release/<product>/`. Keys are read only during signing and are not written into the source tree or ordinary build outputs.
+Uni builds `target-files-package` and `otatools`, signs APKs/APEXes and the OTA, then writes a SHA-256 checksum. For a Uni-initialized directory, it creates and reuses APEX keys based on the target-files metadata; manually created key directories are not modified. Signed artifacts are stored under `out/release/<product>/`. Additional APK and AVB keys require device-specific configuration; see the [Uni signing guide](/en/docs/uni/#signing-a-release-ota).
+
+Back up the key directory securely on separate storage. Deleting the source tree leaves the keys intact. Newly generated keys cannot continue ordinary OTA updates for devices that trust the old keys.
 
 To validate an existing target-files package in an isolated directory:
 

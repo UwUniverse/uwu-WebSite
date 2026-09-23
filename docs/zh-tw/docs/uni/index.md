@@ -124,6 +124,28 @@ uni --clean-logs
 uni --no-debug -j18 SystemUI
 ```
 
+## 簽名發佈 OTA
+
+在 Android 原始碼樹中一次性產生金鑰。目標目錄必須位於原始碼樹外，而且事先不能存在。不需要 `lunch`，也不會開始建置：
+
+```sh
+uni --init-signing-keys ~/.android-certs
+```
+
+Uni 產生 LineageOS 基礎金鑰集合，目錄權限為 `0700`，私鑰檔案權限為 `0600`。若目錄已存在，初始化會拒絕操作，不會覆蓋手動產生或先前發佈使用的金鑰。請將整個目錄安全備份到另一個儲存裝置。
+
+完成 `lunch` 後，每次發佈都使用同一目錄。Uni 會建置 `target-files-package` 和 `otatools`，另外產生簽名 target-files、OTA 與 SHA-256 驗證檔：
+
+```sh
+uni -j18 otapackage --sign-keys ~/.android-certs
+```
+
+已有手動產生的金鑰目錄可以直接傳給 `--sign-keys`，無須初始化，Uni 也不會修改它。Uni 初始化的目錄會在首次簽名時，依 `META/apexkeys.txt` 為非 `PRESIGNED` APEX 產生 4096 位元金鑰；後續重用，新增 APEX 只增加新金鑰。備份必須包含 `apex/` 子目錄。刪除原始碼樹或 `out` 不影響存放在外部的金鑰；如果金鑰遺失，新金鑰無法直接延續原裝置的一般 OTA 更新。
+
+手動管理的目錄、非預設 APK 或需指定其他 APEX 金鑰的裝置，可透過 `--sign-config` 的 `key_mappings`、`extra_apks`、`extra_apex_payload_keys` 設定；此設定不會替換 AVB 金鑰。`--sign-keys` 不能與 `--trust-output` 或 `--assume-existing` 同時使用。已有 target-files 可用 `uni --sign-keys ~/.android-certs --sign-check` 進行隔離簽名檢查。
+
+首次從 test-key 改用 release-key 時，既有裝置需要經過驗證的金鑰遷移流程或完整刷入；新金鑰簽名的套件不能當作一般增量 OTA。
+
 ## Uni 執行時遙測
 
 <UniBuildCharts locale="zh" />

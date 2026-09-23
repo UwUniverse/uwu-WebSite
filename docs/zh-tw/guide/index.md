@@ -10,22 +10,21 @@
 
 ## 簽名發佈 OTA
 
-Uni 可以在產生 target-files 後直接輸出簽名 OTA。金鑰目錄需要包含以下四組金鑰：
+首次使用時，在原始碼樹中執行一次初始化。金鑰目錄必須位於原始碼樹外，而且事先不能存在：
 
-```text
-releasekey.pk8       releasekey.x509.pem
-platform.pk8         platform.x509.pem
-shared.pk8           shared.x509.pem
-media.pk8            media.x509.pem
+```sh
+uni --init-signing-keys ~/.android-certs
 ```
 
-完成 `lunch` 後執行：
+若已有手動產生的金鑰目錄，可略過初始化。完成 `lunch` 後，每次發佈都使用同一目錄：
 
 ```sh
 uni -j$(nproc) otapackage --sign-keys ~/android-certs
 ```
 
-Uni 會建置 `target-files-package` 和 `otatools`，簽名 APK/APEX 與 OTA，並寫出 SHA-256 驗證檔。簽名產物位於 `out/release/<產品名稱>/`。金鑰只會在簽名階段讀取，不會寫入原始碼樹或一般建置產物。
+Uni 會建置 `target-files-package` 和 `otatools`，重新簽署 APK/APEX 與 OTA，並寫出 SHA-256 驗證檔。Uni 初始化的目錄會依 target-files 清單產生並重用 APEX 金鑰；手動產生的金鑰目錄不會被修改。簽名產物位於 `out/release/<產品名稱>/`。額外 APK 與 AVB 金鑰需依裝置設定；請參閱 [Uni 簽名說明](/zh-tw/docs/uni/#簽名發佈-ota)。
+
+請在另一個儲存裝置上安全備份金鑰目錄。刪除原始碼樹不影響金鑰；若金鑰遺失，新產生的金鑰無法直接延續原裝置的一般 OTA 更新。
 
 需要對既有 target-files 做隔離驗證時：
 
