@@ -52,7 +52,7 @@ const text = copy[props.locale]
 const tocLineBudget = 17 + Array.from('剪贴板权限').length
 const sectionLeader = (label: string) => '—'.repeat(Math.max(0, tocLineBudget - Array.from(label).length))
 const prefix = props.locale === 'zh-CN' ? '' : props.locale === 'zh-TW' ? '/zh-tw' : '/en'
-const indexHref = withBase(`${prefix}/about/`)
+const indexHref = withBase(`${prefix}/blog/`)
 const articleHref = withBase(`${prefix}/blog/uwu-17.0.100/`)
 const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
 </script>
