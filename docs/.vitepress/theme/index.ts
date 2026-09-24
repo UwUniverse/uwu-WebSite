@@ -4,6 +4,7 @@ import DemoVideo from './DemoVideo.vue'
 import HomeLanding from './HomeLanding.vue'
 import EditorialLayout from './EditorialLayout.vue'
 import UniBuildCharts from './UniBuildCharts.vue'
+import ReleaseBlog from './ReleaseBlog.vue'
 import './custom.css'
 
 const localePreferenceKey = 'uwuAOSP-locale-preference'
@@ -80,5 +81,6 @@ export default {
     app.component('DemoVideo', DemoVideo)
     app.component('HomeLanding', HomeLanding)
     app.component('UniBuildCharts', UniBuildCharts)
+    app.component('ReleaseBlog', ReleaseBlog)
   }
 }
