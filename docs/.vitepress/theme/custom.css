@@ -887,7 +887,7 @@ a:hover {
 .VPDoc:has(.uwu-release-page) .vp-doc > div > p:first-of-type { margin-top: 84px; font-size: 1.25rem; line-height: 1.75; }
 .VPDoc:has(.uwu-release-page) .vp-doc > div > h2 { margin-top: 104px; margin-bottom: 32px; font-size: clamp(2rem, 3vw, 2.45rem); line-height: 1.2; }
 .VPDoc:has(.uwu-release-page) .vp-doc > div > h2 + p { margin-top: 0; }
-.VPDoc:has(.uwu-release-page) .vp-doc > div > :where(.uwu-release-media, .uni-build-charts, .uwu-build-compare) { width: min(calc(100% - 48px), 1040px); margin: 48px auto; }
+.VPDoc:has(.uwu-release-page) .vp-doc > div > :where(.uwu-release-media, .uni-build-charts, .uwu-build-compare) { width: min(calc(100% - 48px), 720px); margin: 48px auto; }
 .VPDoc:has(.uwu-release-page) .vp-doc > div > p a { color: inherit; text-decoration: underline; text-underline-offset: .14em; }
 
 .uwu-release-hero {
@@ -906,7 +906,7 @@ a:hover {
 .uwu-release-hero__inner > :where(h1, p, nav) { max-width: 48%; }
 .uwu-release-hero__back { position: absolute; top: 30px; left: clamp(24px, 5vw, 72px); color: inherit; font-size: .85rem; opacity: .8; }
 .uwu-release-hero__back:hover { color: inherit; opacity: 1; }
-.uwu-release-hero__date { margin: 0 0 10px !important; font-size: .84rem; font-weight: 700; letter-spacing: .18em; }
+.uwu-release-hero__date { margin: 0 0 10px !important; font-size: .84rem; font-weight: 700; letter-spacing: .18em; transform: translateY(14px); }
 .vp-doc .uwu-release-hero h1,
 .uwu-release-hero h1 { margin: 0 0 48px; color: inherit; font-size: clamp(3rem, 5vw, 5.1rem); font-weight: 700; line-height: 1.05; letter-spacing: -.055em; }
 .uwu-release-hero h1 span { display: block; }
@@ -915,7 +915,7 @@ a:hover {
 .vp-doc .uwu-release-toc a, .vp-doc .uwu-release-hero__back { text-decoration: none; }
 .uwu-release-toc a:hover { color: inherit; opacity: .65; }
 .uwu-release-toc__number { flex: none; font-variant-numeric: tabular-nums; }
-.uwu-release-toc__leader { flex: none; white-space: nowrap; }
+.uwu-release-toc__leader { flex: 1 1 auto; min-width: 24px; overflow: hidden; white-space: nowrap; }
 .uwu-release-toc__label { flex: none; }
 .uwu-release-hero__more { position: absolute; right: clamp(24px, 5vw, 72px); bottom: 30px; color: inherit; font-size: .83rem; opacity: .8; }
 a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
@@ -932,13 +932,7 @@ a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
 .uwu-build-compare > div { padding: 25px 30px; background: var(--vp-c-bg); }
 .uwu-build-compare span { display: block; color: var(--uwu-muted); font-size: .86rem; }
 .uwu-build-compare strong { display: block; margin-top: 8px; color: var(--uwu-ink); font-size: clamp(1.75rem, 3.5vw, 2.6rem); font-variant-numeric: tabular-nums; line-height: 1.2; }
-.uwu-release-signature { margin-top: 90px !important; padding-top: 30px !important; border-top: 1px solid var(--vp-c-divider); color: var(--uwu-muted); font-size: .95rem; }
-
-.uwu-blog-index__content { max-width: 760px; margin: 0 auto; padding: 96px 24px 120px; }
-.uwu-blog-eyebrow { margin: 0 0 14px !important; color: var(--uwu-muted); font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.uwu-blog-index__content h2 { margin: 0 0 18px; color: var(--uwu-ink); font-size: clamp(2rem, 4vw, 3rem); }
-.uwu-blog-index__content p { color: var(--uwu-muted); font-size: 1.12rem; }
-.uwu-blog-index__content > a { display: inline-block; margin-top: 24px; border-bottom: 1px solid currentColor; font-weight: 700; }
+.uwu-release-signature { margin-top: 90px !important; padding-top: 30px !important; border-top: 1px solid var(--vp-c-divider); color: var(--uwu-muted); font-size: .95rem; text-align: right; }
 
 @media (max-width: 700px) {
   .VPDoc:has(.uwu-release-page) .vp-doc > div > p { margin-bottom: 24px; font-size: 1.05rem; line-height: 1.7; }

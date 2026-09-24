@@ -8,10 +8,7 @@ const props = defineProps<{
 
 const copy = {
   'zh-CN': {
-    eyebrow: 'uwuAOSP · 更新日志',
-    indexTitle: '项目进展',
-    indexIntro: '关于新版本、系统体验和构建工具的更新。',
-    title: 'uwuAOSP 17.0.100',
+    indexTitle: '目录',
     date: '2026-09',
     action: '阅读更新',
     back: '返回更新日志',
@@ -24,10 +21,7 @@ const copy = {
     ]
   },
   'zh-TW': {
-    eyebrow: 'uwuAOSP · 更新日誌',
-    indexTitle: '專案進展',
-    indexIntro: '關於新版本、系統體驗與建置工具的更新。',
-    title: 'uwuAOSP 17.0.100',
+    indexTitle: '目錄',
     date: '2026-09',
     action: '閱讀更新',
     back: '返回更新日誌',
@@ -40,10 +34,7 @@ const copy = {
     ]
   },
   'en-US': {
-    eyebrow: 'uwuAOSP · Blog',
-    indexTitle: 'What’s new',
-    indexIntro: 'Updates on releases, the everyday experience, and the tools behind uwuAOSP.',
-    title: 'uwuAOSP 17.0.100',
+    indexTitle: 'Contents',
     date: '2026-09',
     action: 'Read the update',
     back: 'Back to the blog',
@@ -75,7 +66,7 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
         <nav class="uwu-release-toc" :aria-label="text.indexTitle">
           <a v-for="([label, id], index) in text.sections" :key="id" :href="mode === 'index' ? `${articleHref}#${id}` : `#${id}`">
             <span class="uwu-release-toc__number">[{{ index + 1 }}]</span>
-            <span class="uwu-release-toc__leader" aria-hidden="true">———————</span>
+            <span class="uwu-release-toc__leader" aria-hidden="true">—————————————————</span>
             <span class="uwu-release-toc__label">{{ label }}</span>
           </a>
         </nav>
@@ -83,11 +74,5 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
       <a v-if="mode === 'index'" class="uwu-release-hero__more" :href="articleHref">{{ text.action }} <span aria-hidden="true">↗</span></a>
       <span v-else class="uwu-release-hero__more">{{ text.scroll }} <span aria-hidden="true">↓</span></span>
     </header>
-    <section v-if="mode === 'index'" class="uwu-blog-index__content">
-      <p class="uwu-blog-eyebrow">{{ text.eyebrow }}</p>
-      <h2>{{ text.indexTitle }}</h2>
-      <p>{{ text.indexIntro }}</p>
-      <a :href="articleHref">{{ text.title }} <span aria-hidden="true">↗</span></a>
-    </section>
   </div>
 </template>
