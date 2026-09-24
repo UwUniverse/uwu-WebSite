@@ -14,9 +14,9 @@ const copy = {
     back: '返回更新日志',
     scroll: '向下阅读',
     sections: [
-      ['剪贴板权限', 'privacy-and-control'],
-      ['桌面与外观', 'daily-use'],
-      ['构建与维护', 'for-maintainers'],
+      ['隐私与安全', 'privacy-and-control'],
+      ['更多个性化', 'daily-use'],
+      ['构建优化', 'for-maintainers'],
       ['感谢与参与', 'thanks-and-contributing']
     ]
   },
@@ -27,9 +27,9 @@ const copy = {
     back: '返回更新日誌',
     scroll: '向下閱讀',
     sections: [
-      ['剪貼簿權限', 'privacy-and-control'],
-      ['桌面與外觀', 'daily-use'],
-      ['建置與維護', 'for-maintainers'],
+      ['隱私與安全', 'privacy-and-control'],
+      ['更多個人化', 'daily-use'],
+      ['建置優化', 'for-maintainers'],
       ['感謝與參與', 'thanks-and-contributing']
     ]
   },
@@ -40,15 +40,17 @@ const copy = {
     back: 'Back to the blog',
     scroll: 'Scroll to read',
     sections: [
-      ['Clipboard access', 'privacy-and-control'],
-      ['Desktop and appearance', 'daily-use'],
-      ['Builds and maintenance', 'for-maintainers'],
-      ['Thanks and contributions', 'thanks-and-contributing']
+      ['Privacy & security', 'privacy-and-control'],
+      ['More personalization', 'daily-use'],
+      ['Build optimization', 'for-maintainers'],
+      ['Contributors', 'thanks-and-contributing']
     ]
   }
 } as const
 
 const text = copy[props.locale]
+const tocLineBudget = 17 + Array.from('剪贴板权限').length
+const sectionLeader = (label: string) => '—'.repeat(Math.max(0, tocLineBudget - Array.from(label).length))
 const prefix = props.locale === 'zh-CN' ? '' : props.locale === 'zh-TW' ? '/zh-tw' : '/en'
 const indexHref = withBase(`${prefix}/about/`)
 const articleHref = withBase(`${prefix}/blog/uwu-17.0.100/`)
@@ -66,7 +68,7 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
         <nav class="uwu-release-toc" :aria-label="text.indexTitle">
           <a v-for="([label, id], index) in text.sections" :key="id" :href="mode === 'index' ? `${articleHref}#${id}` : `#${id}`">
             <span class="uwu-release-toc__number">[{{ index + 1 }}]</span>
-            <span class="uwu-release-toc__leader" aria-hidden="true">—————————————————</span>
+            <span class="uwu-release-toc__leader" aria-hidden="true">{{ sectionLeader(label) }}</span>
             <span class="uwu-release-toc__label">{{ label }}</span>
           </a>
         </nav>

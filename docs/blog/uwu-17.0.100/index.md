@@ -45,7 +45,15 @@ outline: false
   <figcaption>PUI 在控制中心和系统页面中的实际效果。</figcaption>
 </figure>
 
-连接 USB-C、HDMI 或受支持的虚拟显示器时，[外接屏桌面](/docs/ExternalDesktop/)可调用 Android 桌面模式，让应用在外接屏上以窗口运行。本机屏幕是否遮盖、scrcpy 虚拟屏是否触发桌面模式，都可以单独设置。此外，[状态栏歌词](/docs/StatusBarLyric/)、[智能建议](/docs/SmartSuggestions/)和[单独控制应用音量](/docs/PerAppVolume/)也回到了日常体验中。
+连接 USB-C、HDMI 或受支持的虚拟显示器时，[外接屏桌面](/docs/ExternalDesktop/)可调用 Android 桌面模式，让应用在外接屏上以窗口运行。本机屏幕是否遮盖、scrcpy 虚拟屏是否触发桌面模式，都可以单独设置。
+
+<figure class="uwu-release-media">
+  <img src="/images/uwu-17.0.100/external-desktop-settings.png" alt="外接屏幕设置页，可启用桌面模式、遮盖本机屏幕并允许 scrcpy 虚拟屏" loading="lazy" />
+  <img src="/images/uwu-17.0.100/external-display-connected.jpg" alt="连接虚拟外接屏后显示的连接提示与桌面画面" loading="lazy" />
+  <figcaption>外接屏桌面设置，以及连接虚拟显示器后的系统提示。</figcaption>
+</figure>
+
+此外，[状态栏歌词](/docs/StatusBarLyric/)、[智能建议](/docs/SmartSuggestions/)和[单独控制应用音量](/docs/PerAppVolume/)也回到了日常体验中。
 
 ## 构建与维护 {#for-maintainers}
 
@@ -66,6 +74,6 @@ RinnRei 开发的 [Uni](/docs/uni/)沿用 Soong、Kati 与 Ninja，并减少重�
 
 ## 感谢与参与 {#thanks-and-contributing}
 
-感谢 AOSP、LineageOS、Lawnchair 和所有上游项目与贡献者。感谢提供测试设备、提交问题和完善翻译的社区成员。源码与文档都公开；发现问题时，可在 [Issue 页面](/issues/website/)附上复现过程，或通过 [GitHub](https://github.com/uwuAOSP) 提交修改。
+感谢 AOSP、LineageOS、Lawnchair 和所有上游项目与贡献者。感谢提供测试设备、提交问题和完善翻译的社区成员。源码与文档均开源；发现问题时，可在 [Issue 页面](/issues/website/)附上复现过程，或通过 [GitHub](https://github.com/uwuAOSP) 提交修改。
 
 <p class="uwu-release-signature">UwUniverse全体成员<br />2026.9.25 秋</p>
