@@ -915,7 +915,7 @@ a:hover {
 .vp-doc .uwu-release-toc a, .vp-doc .uwu-release-hero__back { text-decoration: none; }
 .uwu-release-toc a:hover { color: inherit; opacity: .65; }
 .uwu-release-toc__number { flex: none; font-variant-numeric: tabular-nums; }
-.uwu-release-toc__leader { flex: 1 1 auto; min-width: 24px; overflow: hidden; white-space: nowrap; }
+.uwu-release-toc__leader { flex: 0 1 auto; min-width: 24px; overflow: hidden; white-space: nowrap; }
 .uwu-release-toc__label { flex: none; }
 .uwu-release-hero__more { position: absolute; right: clamp(24px, 5vw, 72px); bottom: 30px; color: inherit; font-size: .83rem; opacity: .8; }
 a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
