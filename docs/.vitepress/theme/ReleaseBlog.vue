@@ -12,15 +12,15 @@ const copy = {
     indexTitle: '项目进展',
     indexIntro: '关于新版本、系统体验和构建工具的更新。',
     title: 'uwuAOSP 17.0.100',
-    summary: '更自由的桌面与外观设置，更细致的应用控制，以及让设备维护者少等一会儿的构建工具。',
-    date: '2026 年 9 月 24 日',
+    summary: '更自由的桌面与外观设置，细致的应用控制，以及让设备维护者少等一会的构建工具。',
+    date: '2026 年 9 月 25 日',
     action: '阅读更新',
     back: '返回更新日志',
     scroll: '向下阅读',
     sections: [
-      ['日常使用', 'daily-use'],
-      ['隐私与控制', 'privacy-and-control'],
-      ['给设备维护者', 'for-maintainers'],
+      ['剪贴板权限', 'privacy-and-control'],
+      ['桌面与外观', 'daily-use'],
+      ['构建与维护', 'for-maintainers'],
       ['感谢与参与', 'thanks-and-contributing']
     ]
   },
@@ -30,14 +30,14 @@ const copy = {
     indexIntro: '關於新版本、系統體驗與建置工具的更新。',
     title: 'uwuAOSP 17.0.100',
     summary: '更自由的桌面與外觀設定、更細緻的應用程式控制，以及讓裝置維護者少等一會兒的建置工具。',
-    date: '2026 年 9 月 24 日',
+    date: '2026 年 9 月 25 日',
     action: '閱讀更新',
     back: '返回更新日誌',
     scroll: '向下閱讀',
     sections: [
-      ['日常使用', 'daily-use'],
-      ['隱私與控制', 'privacy-and-control'],
-      ['給裝置維護者', 'for-maintainers'],
+      ['剪貼簿權限', 'privacy-and-control'],
+      ['桌面與外觀', 'daily-use'],
+      ['建置與維護', 'for-maintainers'],
       ['感謝與參與', 'thanks-and-contributing']
     ]
   },
@@ -47,14 +47,14 @@ const copy = {
     indexIntro: 'Updates on releases, the everyday experience, and the tools behind uwuAOSP.',
     title: 'uwuAOSP 17.0.100',
     summary: 'A more flexible home screen, more control over apps, and build tools that help device maintainers spend less time waiting.',
-    date: 'September 24, 2026',
+    date: 'September 25, 2026',
     action: 'Read the update',
     back: 'Back to the blog',
     scroll: 'Scroll to read',
     sections: [
-      ['Everyday experience', 'daily-use'],
-      ['Privacy and control', 'privacy-and-control'],
-      ['For device maintainers', 'for-maintainers'],
+      ['Clipboard access', 'privacy-and-control'],
+      ['Desktop and appearance', 'daily-use'],
+      ['Builds and maintenance', 'for-maintainers'],
       ['Thanks and contributions', 'thanks-and-contributing']
     ]
   }
@@ -79,7 +79,6 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
         <nav class="uwu-release-toc" :aria-label="text.indexTitle">
           <a v-for="([label, id], index) in text.sections" :key="id" :href="mode === 'index' ? `${articleHref}#${id}` : `#${id}`">
             <span class="uwu-release-toc__number">[{{ index + 1 }}]</span>
-            <span class="uwu-release-toc__leader" aria-hidden="true"></span>
             <span class="uwu-release-toc__label">{{ label }}</span>
           </a>
         </nav>

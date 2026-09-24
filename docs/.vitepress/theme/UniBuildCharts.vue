@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps<{ locale?: 'zh' | 'en' }>()
+const props = defineProps<{ locale?: 'zh' | 'zh-tw' | 'en' }>()
 
 const copy = computed(() => props.locale === 'en'
   ? {
@@ -17,6 +17,21 @@ const copy = computed(() => props.locale === 'en'
       elapsed: 'Elapsed time',
       caption: 'Sampled from the final phase of a successful Uni build on 2026-09-14. CPU, MemAvailable, swap-out and I/O wait are plotted from telemetry fields.',
       description: 'A telemetry chart showing CPU, available memory, cumulative swap-out and I/O wait across the final 82 minutes and 37 seconds of a successful Uni build.'
+    }
+  : props.locale === 'zh-tw'
+  ? {
+      title: 'Uni 執行階段遙測',
+      subtitle: '最後階段 | 82 分 37 秒',
+      cpu: 'CPU',
+      memory: '可用記憶體',
+      swap: 'swap-out',
+      wait: 'I/O wait',
+      average: '平均 96.2%',
+      minimum: '最低 5.7 GiB',
+      total: '累計 20.1 GiB',
+      elapsed: '階段時間',
+      caption: '取樣自 2026-09-14 一次成功 Uni 建置的最後階段。CPU、MemAvailable、swap-out 與 I/O wait 均來自日誌 telemetry 欄位。',
+      description: '展示一次成功 Uni 建置最後 82 分 37 秒內 CPU、可用記憶體、累計 swap-out 與 I/O wait 的遙測圖表。'
     }
   : {
       title: 'Uni 运行时遥测',
