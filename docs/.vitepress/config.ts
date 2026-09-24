@@ -219,7 +219,7 @@ const baseTheme: DefaultTheme.Config = {
 const simplifiedChineseTheme: DefaultTheme.Config = {
   ...baseTheme,
   nav: [
-    { text: '关于项目', link: '/about/' },
+    { text: '更新日志', link: '/about/' },
     { text: '文档', link: '/docs/' },
     { text: '快速开始', link: '/guide/' },
     { text: '功能演示', link: '/demo/' },
@@ -251,7 +251,7 @@ const simplifiedChineseTheme: DefaultTheme.Config = {
 const traditionalChineseTheme: DefaultTheme.Config = {
   ...baseTheme,
   nav: [
-    { text: '關於專案', link: '/zh-tw/about/' },
+    { text: '更新日誌', link: '/zh-tw/about/' },
     { text: '文件', link: '/zh-tw/docs/' },
     { text: '快速開始', link: '/zh-tw/guide/' },
     { text: '功能展示', link: '/zh-tw/demo/' },
@@ -284,7 +284,7 @@ const traditionalChineseTheme: DefaultTheme.Config = {
 const englishTheme: DefaultTheme.Config = {
   ...baseTheme,
   nav: [
-    { text: 'About', link: '/en/about/' },
+    { text: 'Blog', link: '/en/about/' },
     { text: 'Docs', link: '/en/docs/' },
     { text: 'Quick start', link: '/en/guide/' },
     { text: 'Feature demo', link: '/en/demo/' },
