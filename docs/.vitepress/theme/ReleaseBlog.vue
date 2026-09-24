@@ -49,8 +49,7 @@ const copy = {
 } as const
 
 const text = copy[props.locale]
-const tocLineBudget = 17 + Array.from('剪贴板权限').length
-const sectionLeader = (label: string) => '—'.repeat(Math.max(0, tocLineBudget - Array.from(label).length))
+const sectionLeader = '—'.repeat(props.locale === 'en-US' ? 11 : 17)
 const prefix = props.locale === 'zh-CN' ? '' : props.locale === 'zh-TW' ? '/zh-tw' : '/en'
 const indexHref = withBase(`${prefix}/blog/`)
 const articleHref = withBase(`${prefix}/blog/uwu-17.0.100/`)
@@ -58,7 +57,7 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
 </script>
 
 <template>
-  <div :class="['uwu-release-page', { 'uwu-release-page--index': mode === 'index' }]">
+  <div :class="['uwu-release-page', `uwu-release-page--${locale}`, { 'uwu-release-page--index': mode === 'index' }]">
     <header class="uwu-release-hero">
       <img class="uwu-release-hero__art" :src="imageSrc" alt="" />
       <div class="uwu-release-hero__inner">
@@ -68,7 +67,7 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
         <nav class="uwu-release-toc" :aria-label="text.indexTitle">
           <a v-for="([label, id], index) in text.sections" :key="id" :href="mode === 'index' ? `${articleHref}#${id}` : `#${id}`">
             <span class="uwu-release-toc__number">[{{ index + 1 }}]</span>
-            <span class="uwu-release-toc__leader" aria-hidden="true">{{ sectionLeader(label) }}</span>
+            <span class="uwu-release-toc__leader" aria-hidden="true">{{ sectionLeader }}</span>
             <span class="uwu-release-toc__label">{{ label }}</span>
           </a>
         </nav>

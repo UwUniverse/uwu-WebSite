@@ -910,13 +910,14 @@ a:hover {
 .vp-doc .uwu-release-hero h1,
 .uwu-release-hero h1 { margin: 0 0 48px; color: inherit; font-size: clamp(3rem, 5vw, 5.1rem); font-weight: 700; line-height: 1.05; letter-spacing: -.055em; }
 .uwu-release-hero h1 span { display: block; }
-.uwu-release-toc { display: grid; gap: 9px; margin: 0; text-align: left; }
-.uwu-release-toc a { display: flex; align-items: baseline; gap: 0; color: inherit; font-size: clamp(.88rem, 1.25vw, 1.07rem); line-height: 1.4; }
+.uwu-release-toc { --uwu-release-toc-leader-width: 17em; display: grid; gap: 9px; margin: 0; text-align: left; }
+.uwu-release-page--en-US .uwu-release-toc { --uwu-release-toc-leader-width: 11em; }
+.uwu-release-toc a { display: grid; grid-template-columns: 2.1em var(--uwu-release-toc-leader-width) max-content; align-items: baseline; color: inherit; font-size: clamp(.88rem, 1.25vw, 1.07rem); line-height: 1.4; }
 .vp-doc .uwu-release-toc a, .vp-doc .uwu-release-hero__back { text-decoration: none; }
 .uwu-release-toc a:hover { color: inherit; opacity: .65; }
-.uwu-release-toc__number { flex: none; font-variant-numeric: tabular-nums; }
-.uwu-release-toc__leader { flex: 0 1 auto; min-width: 24px; overflow: hidden; white-space: nowrap; }
-.uwu-release-toc__label { flex: none; }
+.uwu-release-toc__number { font-variant-numeric: tabular-nums; }
+.uwu-release-toc__leader { display: block; width: var(--uwu-release-toc-leader-width); overflow: hidden; white-space: nowrap; }
+.uwu-release-toc__label { white-space: nowrap; }
 .uwu-release-hero__more { position: absolute; right: clamp(24px, 5vw, 72px); bottom: 30px; color: inherit; font-size: .83rem; opacity: .8; }
 a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
 
@@ -943,6 +944,8 @@ a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
   .uwu-release-hero__inner > :where(h1, p, nav) { max-width: 100%; }
   .vp-doc .uwu-release-hero h1, .uwu-release-hero h1 { font-size: clamp(2.7rem, 11vw, 4rem); }
   .uwu-release-toc { gap: 12px; }
+  .uwu-release-page:not(.uwu-release-page--en-US) .uwu-release-toc { --uwu-release-toc-leader-width: min(17em, calc(100vw - 190px)); }
+  .uwu-release-page--en-US .uwu-release-toc { --uwu-release-toc-leader-width: min(11em, calc(100vw - 240px)); }
   .uwu-release-hero__more { right: 22px; bottom: 24px; }
   .uwu-build-compare { grid-template-columns: 1fr; }
 }
