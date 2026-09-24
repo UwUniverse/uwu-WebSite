@@ -1,6 +1,6 @@
 ---
 title: uwuAOSP 17.0.100
-description: A more flexible desktop, finer app controls, and faster builds for device maintainers
+description: uwuAOSP 17.0.100 release notes covering clipboard access, desktop settings, and Uni
 aside: false
 outline: false
 ---

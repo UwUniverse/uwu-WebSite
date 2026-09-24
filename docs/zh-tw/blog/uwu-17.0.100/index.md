@@ -1,6 +1,6 @@
 ---
 title: uwuAOSP 17.0.100
-description: 更自由的桌面與外觀設定、細緻的應用程式控制，以及讓裝置維護者少等一會的建置工具
+description: uwuAOSP 17.0.100 更新內容：剪貼簿權限、桌面與外觀、Uni 建置工具
 aside: false
 outline: false
 ---
