@@ -882,7 +882,7 @@ a:hover {
 .VPDoc:has(.uwu-release-page) > .container,
 .VPDoc:has(.uwu-release-page) > .container > .content,
 .VPDoc:has(.uwu-release-page) .content-container { width: 100%; max-width: none !important; margin: 0 !important; padding: 0 !important; }
-.VPDoc:has(.uwu-release-page) .vp-doc > div > :where(p, h2, h3, ul, ol, blockquote) { box-sizing: border-box; max-width: 820px; margin-right: auto; margin-left: auto; padding-right: 24px; padding-left: 24px; }
+.VPDoc:has(.uwu-release-page) .vp-doc > div > :where(p, h2, h3, ul, ol, blockquote) { box-sizing: border-box; max-width: 720px; margin-right: auto; margin-left: auto; padding-right: 24px; padding-left: 24px; }
 .VPDoc:has(.uwu-release-page) .vp-doc > div > p { margin-top: 0; margin-bottom: 30px; font-size: 1.18rem; line-height: 1.75; }
 .VPDoc:has(.uwu-release-page) .vp-doc > div > p:first-of-type { margin-top: 84px; font-size: 1.25rem; line-height: 1.75; }
 .VPDoc:has(.uwu-release-page) .vp-doc > div > h2 { margin-top: 104px; margin-bottom: 32px; font-size: clamp(2rem, 3vw, 2.45rem); line-height: 1.2; }
@@ -925,7 +925,9 @@ a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
 
 .uwu-release-media { display: grid; gap: 18px; }
 .uwu-release-media img { display: block; width: 100%; height: auto; border: 1px solid var(--vp-c-divider); border-radius: 16px; }
-.uwu-release-media figcaption { max-width: 800px; margin: 14px auto 0; color: var(--uwu-muted); font-size: .88rem; line-height: 1.6; }
+.uwu-release-media figcaption,
+.VPDoc:has(.uwu-release-page) .uni-build-charts figcaption { box-sizing: border-box; max-width: 720px; margin-right: auto; margin-left: auto; padding-right: 24px; padding-left: 24px; color: var(--uwu-muted); font-size: .88rem; line-height: 1.6; }
+.uwu-release-media figcaption { margin-top: 14px; }
 .uwu-build-compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--vp-c-divider); border-radius: 18px; background: var(--vp-c-divider); }
 .uwu-build-compare > div { padding: 25px 30px; background: var(--vp-c-bg); }
 .uwu-build-compare span { display: block; color: var(--uwu-muted); font-size: .86rem; }
