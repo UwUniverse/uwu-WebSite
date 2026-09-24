@@ -16,7 +16,7 @@ const copy = {
     date: '2026 年 9 月 24 日',
     action: '阅读更新',
     back: '返回更新日志',
-    toc: '本文内容',
+    scroll: '向下阅读',
     sections: [
       ['日常使用', 'daily-use'],
       ['隐私与控制', 'privacy-and-control'],
@@ -33,7 +33,7 @@ const copy = {
     date: '2026 年 9 月 24 日',
     action: '閱讀更新',
     back: '返回更新日誌',
-    toc: '本文內容',
+    scroll: '向下閱讀',
     sections: [
       ['日常使用', 'daily-use'],
       ['隱私與控制', 'privacy-and-control'],
@@ -50,7 +50,7 @@ const copy = {
     date: 'September 24, 2026',
     action: 'Read the update',
     back: 'Back to the blog',
-    toc: 'In this post',
+    scroll: 'Scroll to read',
     sections: [
       ['Everyday experience', 'daily-use'],
       ['Privacy and control', 'privacy-and-control'],
@@ -68,32 +68,30 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
 </script>
 
 <template>
-  <section v-if="mode === 'index'" class="uwu-blog-index">
-    <div class="uwu-blog-index__heading">
-      <p class="uwu-blog-eyebrow">{{ text.eyebrow }}</p>
-      <h1>{{ text.indexTitle }}</h1>
-      <p>{{ text.indexIntro }}</p>
-    </div>
-    <a class="uwu-blog-card" :href="articleHref">
-      <div class="uwu-blog-card__copy">
-        <span class="uwu-blog-card__date">{{ text.date }}</span>
-        <h2>{{ text.title }}</h2>
-        <p>{{ text.summary }}</p>
-        <span class="uwu-blog-card__link">{{ text.action }} <span aria-hidden="true">↗</span></span>
+  <div :class="['uwu-release-page', { 'uwu-release-page--index': mode === 'index' }]">
+    <header class="uwu-release-hero">
+      <img class="uwu-release-hero__art" :src="imageSrc" alt="" />
+      <div class="uwu-release-hero__inner">
+        <a v-if="mode === 'article'" class="uwu-release-hero__back" :href="indexHref">← {{ text.back }}</a>
+        <p class="uwu-release-hero__date">{{ text.date }}</p>
+        <h1><span>uwuAOSP</span><span>17.0.100</span></h1>
+        <p class="uwu-release-hero__summary">{{ text.summary }}</p>
+        <nav class="uwu-release-toc" :aria-label="text.indexTitle">
+          <a v-for="([label, id], index) in text.sections" :key="id" :href="mode === 'index' ? `${articleHref}#${id}` : `#${id}`">
+            <span class="uwu-release-toc__number">[{{ index + 1 }}]</span>
+            <span class="uwu-release-toc__leader" aria-hidden="true"></span>
+            <span class="uwu-release-toc__label">{{ label }}</span>
+          </a>
+        </nav>
       </div>
-      <div class="uwu-blog-card__image"><img :src="imageSrc" alt="" /></div>
-    </a>
-  </section>
-
-  <div v-else class="uwu-release-hero">
-    <a class="uwu-release-hero__back" :href="indexHref">← {{ text.back }}</a>
-    <p class="uwu-blog-eyebrow">{{ text.eyebrow }} <span aria-hidden="true">/</span> {{ text.date }}</p>
-    <h1>{{ text.title }}</h1>
-    <p class="uwu-release-hero__summary">{{ text.summary }}</p>
-    <figure class="uwu-release-hero__image"><img :src="imageSrc" alt="" /></figure>
-    <nav class="uwu-release-toc" :aria-label="text.toc">
-      <span>{{ text.toc }}</span>
-      <a v-for="[label, id] in text.sections" :key="id" :href="`#${id}`">{{ label }}</a>
-    </nav>
+      <a v-if="mode === 'index'" class="uwu-release-hero__more" :href="articleHref">{{ text.action }} <span aria-hidden="true">↗</span></a>
+      <span v-else class="uwu-release-hero__more">{{ text.scroll }} <span aria-hidden="true">↓</span></span>
+    </header>
+    <section v-if="mode === 'index'" class="uwu-blog-index__content">
+      <p class="uwu-blog-eyebrow">{{ text.eyebrow }}</p>
+      <h2>{{ text.indexTitle }}</h2>
+      <p>{{ text.indexIntro }}</p>
+      <a :href="articleHref">{{ text.title }} <span aria-hidden="true">↗</span></a>
+    </section>
   </div>
 </template>
