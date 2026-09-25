@@ -100,6 +100,17 @@ export const upstreamDocsSidebars = [
     ]
   },
   {
+    "text": "bringup-17",
+    "link": "/docs/bringup-17/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/bringup-17/"
+      }
+    ]
+  },
+  {
     "text": "ClipboardAccess",
     "link": "/docs/ClipboardAccess/",
     "collapsed": false,
@@ -151,17 +162,6 @@ export const upstreamDocsSidebars = [
       {
         "text": "概览",
         "link": "/docs/LauncherAtAGlance/"
-      }
-    ]
-  },
-  {
-    "text": "MaintainerMetadata",
-    "link": "/docs/MaintainerMetadata/",
-    "collapsed": false,
-    "items": [
-      {
-        "text": "概览",
-        "link": "/docs/MaintainerMetadata/"
       }
     ]
   },
