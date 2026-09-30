@@ -1,69 +1,46 @@
-# Soong-only build documentation
+# Soong-only
 
-This documentation explains how uwuAOSP uses Soong to generate build targets, images,
-and kernel artifacts while Android product configuration is still parsed by Make. It
-also describes the configuration relationship between `uwu_kernel` and the legacy Make
-kernel build system.
+Generating the Android build graph includes a serial Kati stage. Kati processes Make build rules and generates the corresponding Ninja build rules.
 
-## Why use Soong-only
+LineageOS noted in its 23.2 release blog:
 
-Soong aims to remove the dependency on Makefiles for generating Android build targets.
-Product configuration can still use Make, while Soong generates build targets and Ninja
-rules directly from the module graph, skipping Kati's main target-generation phase.
+> LineageOS is now nearly Android.mk free! Google announced their move from make to
+> soong many years ago, pushing developers to migrate from Android.mk to Android.bp,
+> and has started blocking Android.mk in many locations of the source tree.
 
-The main benefit of skipping Kati is lower build-analysis overhead. The goal described
-in the official Soong documentation is to reduce analysis time by about half and improve
-developer efficiency. This mainly affects build startup and dependency-graph analysis;
-it does not skip compilation actions executed by Ninja or the Linux Kbuild invoked by
-`uwu_kernel`.
+However, some core build components still depend on Make, so Kati remains a required part of the build process.
 
-Soong-only does not mean “remove all Make”. Make still handles product configuration and
-variable expansion, but it no longer converts Android.mk targets into the main Ninja
-graph.
+uwuAOSP continues this migration by completing the final step, allowing modern devices to skip Kati's main build-graph generation stage. In our tests, this nearly halves build-graph generation time. Product configuration, such as BoardConfig, still uses Make; Soong-only does not mean that Makefiles cannot be used in the device tree.
 
-## Documentation navigation
+## Migrate a device
 
-| Page | Contents |
-| --- | --- |
-| [Build flow](build-flow.md) | `PRODUCT_SOONG_ONLY`, configuration export, and the Soong build graph |
-| [Image generation](image-generation.md) | fsgen, boot/DTBO/vbmeta/super images, and output locations |
-| [Build validation](validation.md) | Validation commands, artifact checks, and incremental-build checks |
-| [uwu_kernel build system](uwu_kernel/) | `uwu_kernel` page index and responsibility boundaries |
+uwuAOSP has already handled most of the build components required for Soong-only on modern devices. Device bringup usually only requires migrating the following:
 
-## Basic concepts
+- [`uwu_kernel`](uwu_kernel/): replaces the legacy kernel build task;
+- `uwu_prebuilt_image`: replaces `$(call add-radio-file, ...)` in the Make layer.
 
-Soong-only does not completely remove Make. Product configuration still needs Make to
-read product inheritance and generate Soong configuration variables. The difference is
-that after product configuration completes, Soong generates the main build targets and
-Ninja rules, and Kati's main target-generation phase is not run.
+uwuCLI provides a migration script to simplify device bringup. After the script performs the mechanical conversion, review and validate the generated build rules.
 
-The required configuration for a product to use Soong-only is:
+To enable Soong-only temporarily, set the environment variable:
+
+```bash
+export SOONG_ONLY=true
+```
+
+You can also set it in the product configuration:
 
 ```make
 PRODUCT_SOONG_ONLY := true
 ```
 
-The mode can also be selected temporarily with command-line arguments:
+> [!NOTE]
+> A-only devices depend on `//bootable/deprecated-ota:updater`, which has not yet been migrated. Soong-only cannot currently be used on these devices. If you need support for them, please open an issue in the issue tracker.
 
-```sh
-m --soong-only <target>
-m --no-soong-only <target>
-```
+## Validation
 
-`SOONG_ONLY=true` is the equivalent environment-variable entry point. Command-line
-arguments take precedence over the product default.
+After migration, complete at least one full build and confirm that the device boots and its main functions work. Do not determine whether migration succeeded by checking against a fixed list of images.
 
-Key device configuration is usually located in:
+The following devices have completed Soong-only build and boot validation:
 
-- `device/<vendor>/<device>/BoardConfig*.mk`: enable the Soong kernel and select the module;
-- `device/<vendor>/<device>/Android.bp`: declare `uwu_kernel`;
-- `device/<vendor>/<device>/device.mk`: install the kernel into the product;
-- `vendor/uwu/config/BoardConfigSoong.mk`: export the kernel selection to Soong.
-
-Whether an image is generated is determined by the product's partition configuration.
-Do not infer that every image exists solely because Soong-only is enabled.
-
-## Reference implementations
-
-- Native Android Soong-only documentation: `build/soong/docs/soong_only.md`
-- Soong best practices: `build/soong/docs/best_practices.md`
+- OnePlus 6T (`fajita`)
+- OnePlus Ace 3 / 12R (`aston(c)`)

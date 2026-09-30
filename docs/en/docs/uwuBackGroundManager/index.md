@@ -1,79 +1,42 @@
 # uwuBackGroundManager
 
-uwuBackGroundManager is a system feature that manages background policies on a per-app basis. It can freeze idle apps or improve their ability to remain alive in the background.
+uwuBackGroundManager manages background behavior per app. It can freeze idle apps or increase the background retention level of apps that need to keep working.
 
-## Device requirements
+## App modes
 
-- The kernel supports cgroup freezer.
-- The Android Binder driver supports process freezing.
-- The Android userspace freezer is enabled and can access the freezer cgroup hierarchy.
+- **Default**: applies no uwuAOSP policy and uses Android's native background management.
+- **Tombstone**: freezes the process when the app is idle, preserving memory state and stopping CPU execution.
+- **Full**: does not freeze the app, limits its OOM priority to the “perceptible app” level, and adds it to the Device Idle allowlist.
 
-## How it works
+Policies are stored in `Settings.Secure` per user and package. `system_server` listens for configuration changes and applies the mode to processes under the same UID.
 
-App modes are stored per user in `Settings.Secure`. The configuration persists after app restarts and device reboots. `system_server` listens for configuration changes and applies the selected mode to all processes under the app UID.
+Tombstone mode tracks visible activities, foreground services, broadcasts, executing services, Instrumentation, audio playback and recording, location, VPN, Binder activity, and AOSP freezer exemptions. When a protected state ends, eligible apps return to the freeze queue. When a Binder request arrives, the system first unfreezes the entire UID, then freezes it again after the request completes and the app becomes idle. It does not terminate a frozen process using AOSP's default path.
 
-The controller tracks app visibility, audio playback, audio recording, location listeners, VPN connections, and Binder activity. These states temporarily prevent an app from being frozen. When the protected state ends, Tombstone mode schedules the app to be frozen again.
+Full mode reduces process reclamation and Doze restrictions, but does not guarantee that an app will stay alive indefinitely. Force-stop, crashes, voluntary exit, and severe memory pressure can still end the process.
 
-Tombstone mode freezes eligible processes after the app has been idle for approximately 3 seconds. After audio playback stops, it waits approximately 6 seconds. A process will not be frozen if it has a visible Activity, a foreground service, an active broadcast receiver, an executing service, Instrumentation, an explicit CPU capability, or an AOSP freezer exemption.
+## Freezer backends
 
-When a frozen Tombstone app receives a Binder request, uwuBackGroundManager temporarily unfreezes the entire app UID, avoiding AOSP's default frozen-process termination logic. After Binder has been idle for approximately 3 seconds, the UID can be frozen again.
+Settings provides automatic, CGroup1, CGroup2, and hybrid backends. The system reads the cgroup mount layout and freezer capabilities:
 
-Full mode does not use the freezer. It limits the process OOM adjustment value to the “perceptible app” level and adds the app package name and app ID to the Device Idle allowlist. This reduces process reclamation and Doze restrictions, but it does not guarantee that the app will never be terminated.
+- **Automatic** selects an available backend based on the device's actual layout.
+- Manual options unsupported by the current kernel are disabled.
+- If the selected backend becomes unavailable or the layout changes, the framework falls back to an available backend. Tombstone freezing is not performed when no freezer is available.
 
-The optional “Ignore launcher task card removal” setting only applies to apps in Tombstone or Full mode. When an app is swiped away from Recents, its task card disappears from the launcher list, but the task, UI state, and processes are preserved. Force-stopping the app, an app crash, severe memory pressure, or the app exiting voluntarily will still terminate its processes.
+Tombstone mode also requires the Binder driver to support `BINDER_FREEZE`, `BINDER_GET_FROZEN_INFO`, and frozen-transaction tracking. Defining ioctl numbers without implementing them in the driver is not sufficient. Full mode does not require these freezing interfaces.
 
-## Required kernel support
+## Recent tasks
 
-### Tombstone mode requirements
+“Ignore launcher task card removal” applies only to Tombstone and Full apps. Swiping the card away from Recents removes the card, but the task and process may remain. Force-stopping the app still ends it.
 
-- `CONFIG_CGROUP_FREEZER=y`  
-  Provides the cgroup freezer required to pause and resume app processes. The active cgroup hierarchy must expose a writable `cgroup.freeze` interface to Android userspace.
+## Diagnostic logs
 
-- `CONFIG_ANDROID_BINDER_IPC=y`  
-  Provides the Android Binder IPC driver used by app and system processes.
+The Settings page can export background-management logs. Logs use `[INFO]`, `[WARN]`, and `[ERROR]` levels and include build information, app policies, requested and active freezer backends, cgroup controllers and mounts, Binder nodes, kernel freezer state, and framework events. Export reads local state only; it does not upload files.
 
-- `BINDER_FREEZE`  
-  The Binder UAPI and driver must implement this ioctl. Android uses it to freeze Binder delivery to the target process, keeping the Binder state consistent with the cgroup frozen state.
+## Kernel requirements
 
-- `BINDER_GET_FROZEN_INFO`  
-  The Binder UAPI and driver must implement this ioctl and report synchronous and asynchronous transactions received while the process is frozen. The framework relies on this information to safely unfreeze Tombstone apps when Binder activity occurs.
+- CGroup1 requires a writable freezer controller.
+- CGroup2 requires writable `cgroup.freeze`.
+- The Android Binder driver must provide a freezing UAPI compatible with userspace.
+- The Android userspace freezer must be enabled and able to access the relevant cgroup hierarchy.
 
-- Binder frozen-transaction tracking  
-  The driver must track pending synchronous transactions and asynchronous traffic while a process is frozen. Defining the ioctl numbers in the header alone is insufficient; the corresponding driver implementation is also required.
-
-- Consistent userspace and kernel Binder interfaces  
-  The ioctl structures and command numbers in the kernel must match those used by Android userspace.
-
-Full mode does not require dedicated kernel hooks.
-
-### Tombstone mode
-
-Preserves the in-memory state while preventing CPU usage when idle.
-
-- Freezes eligible background processes after the protection delay ends.
-- Preserves memory and app state while the process remains alive.
-- Audio playback, recording, location, VPN, visibility, and Binder activity temporarily wake or protect the app.
-- The app may still be reclaimed by the system under high memory pressure.
-- Foreground processes or explicitly exempted processes may not be frozen.
-
-> Tip: After leaving a chat app, eligible processes will be frozen. When a Binder event is received, the app is temporarily unfrozen to process the event and is frozen again after becoming idle.
-
-### Full
-
-Suitable for apps that need to continuously perform background tasks.
-
-- uwuBackGroundManager does not freeze the app.
-- The process OOM priority is raised to at least the “perceptible app” level.
-- The app is added to the Device Idle allowlist to reduce Doze restrictions.
-- The app can continue performing background tasks within the limits imposed by other Android permissions and restrictions.
-- The app may still exit voluntarily, crash, be force-stopped, or be terminated under severe memory pressure.
-
-> Tip: Download managers can continue performing background tasks and receive stronger process retention than in Default mode.
-
-### Default
-
-Default mode removes the app's uwuBackGroundManager policy and restores Android's native process management.
-
-### Thanks
-
-Many thanks to the Cirno project for inspiring this feature: https://github.com/Freezer-Team/Cirno.git
+This feature was inspired by [Cirno](https://github.com/Freezer-Team/Cirno.git).

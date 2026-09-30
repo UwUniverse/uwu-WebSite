@@ -1,29 +1,43 @@
 # uwuAOSP
 
-1. Initialize the repository:
+1. Initialize
+
+We recommend initializing with the release manifests:
+
+```bash
+repo init -u https://github.com/uwuAOSP/platform_vendor_uwu-versions.git -b main --git-lfs
+```
+
+Or track our development repositories:
+
+> [!NOTE]
+> The development branch may be unstable.
 
 ```bash
 repo init -u https://github.com/uwuAOSP/platform_manifests.git -b uwu-17.0 --git-lfs
 ```
 
-2. Synchronize the source tree:
+2. Sync
 
 ```bash
 repo sync -c -j$(nproc --all) --force-sync --force-checkout --no-clone-bundle --no-tags --optimized-fetch --prune
 ```
 
-3. Set up the build environment and select a device:
+3. Set up the build environment
 
 ```bash
 source build/envsetup.sh
+```
+
+```bash
 lunch uwu_devicecode-cp2a-userdebug
 ```
 
 > [!TIP]
-> For a new device bring-up, run `./uwuCLI/uwu` and follow the interactive instructions.
+> For a new device bringup, see the [instructions on our website](https://uwuaosp.uwuniverse.org/docs/bringup-17/).
 
 4. Build an OTA package:
 
 ```bash
-uni -j$(nproc) otapackage
+uni otapackage
 ```

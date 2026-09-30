@@ -6,36 +6,31 @@
 | --- | --- |
 | `kernel_dir` | Kernel source directory relative to the Android source root; required for source builds |
 | `prebuilt` | Prebuilt kernel path; skips source Kbuild when set |
-| `prebuilt_config` | Generated `.config` file; only used with `prebuilt` |
-| `prebuilt_headers` | Gzip-compressed kernel UAPI headers archive; only used with `prebuilt` |
-| `prebuilt_modules` | Pre-generated kernel modules zip; only used with `prebuilt` |
+| `prebuilt_config` | Generated `.config` file; used only with `prebuilt` |
+| `prebuilt_headers` | Gzip-compressed kernel UAPI headers archive; used only with `prebuilt` |
+| `prebuilt_modules` | Prebuilt kernel modules zip; used only with `prebuilt` |
 | `kernel_arch` | Kbuild architecture, such as `arm64` |
 | `image_name` | Kernel filename under `arch/<arch>/boot`; required for source builds |
 | `clang_version` | Toolchain version under `prebuilts/clang/host/linux-x86` |
 | `clang_path` | Custom Clang directory; takes precedence over `clang_version` |
 | `rust_version` | Optional Rust toolchain version |
-| `clang_triple` | Override the default `CLANG_TRIPLE` |
-| `cross_compile` | `CROSS_COMPILE` passed to Kbuild |
-| `cc` / `ld` | Override the default C compiler or linker |
-| `autofdo_profile` | AutoFDO profile path; searches for a GKI profile by default, and `none` disables it |
-| `rbe_wrapper` | Complete `rewrapper` command; uses `kernel_rbe_cc.sh` for the actual compilation when set |
-| `make_command` | Override the tree-local `make` command |
-| `build_jobs` | Override Kbuild `-j` parallelism |
-| `make_flags` | Variables or arguments passed to every Kbuild invocation |
-| `additional_flags` | Additional device-specific Kbuild configuration arguments |
+| `clang_triple` | Override for the default `CLANG_TRIPLE` |
+| `cross_compile` | `CROSS_COMPILE` value passed to Kbuild |
+| `cc` / `ld` | Override for the default C compiler or linker |
+| `autofdo_profile` | AutoFDO profile path; searches for a GKI profile by default, or set to `none` to disable |
+| `rbe_wrapper` | Complete `rewrapper` command; uses `kernel_rbe_cc.sh` for compilation when set |
+| `make_command` | Override for the tree-local `make` command |
+| `build_jobs` | Override for Kbuild `-j` parallelism |
+| `make_flags` | Variables or arguments passed to all Kbuild invocations |
+| `additional_flags` | Additional device-specific Kbuild arguments; mainly for migrating `TARGET_KERNEL_ADDITIONAL_FLAGS` |
 | `environment` | Additional environment assignments passed to the Kbuild action |
 | `srcs` | Additional analysis-time inputs; does not replace the source directory dependency |
 
-The default Kbuild parallelism is calculated as `(logical CPU count + 2) * 3 / 2`, using
-integer arithmetic. Lower `build_jobs` only when the host lacks memory or the kernel has
-concurrency issues.
+The default Kbuild parallelism is calculated using integer arithmetic: `(logical CPU count + 2) * 3 / 2`.
 
-When `clang_version` and `rust_version` are not set explicitly, the values exported by
-envsetup, `LLVM_AOSP_PREBUILTS_VERSION` and `RUST_AOSP_PREBUILTS_VERSION`, are preferred.
-They fall back to `clang-stable` and no additional Rust toolchain path respectively.
+If `clang_version` and `rust_version` are not explicitly set, uwu_kernel prefers `LLVM_AOSP_PREBUILTS_VERSION` and `RUST_AOSP_PREBUILTS_VERSION` exported by envsetup. Clang then falls back to `clang-stable`. If no Rust version is set, no Rust toolchain path is added.
 
-Every entry in `environment` must be `NAME=value` and becomes an environment variable for
-the Kbuild action. Use `make_flags` or `additional_flags` to pass Make variables.
+Each `environment` entry must use the `NAME=value` format and becomes a shell environment variable for the Kbuild action. Use `make_flags` or `additional_flags` to pass Make variables.
 
 ## Kconfig
 
@@ -61,20 +56,17 @@ Configuration is processed in this order:
 3. merge `fragments` sequentially or all at once;
 4. modify LTO options according to `lto`;
 5. append `overrides`;
-6. run Kconfig's default-value processing one final time.
+6. run `olddefconfig` again.
 
-`lto` supports `none`, `thin`, and `full`. Verify the final fragment and override result
-through the generated `.config`, rather than checking source files alone.
+`lto` supports `none`, `thin`, and `full`. Verify the final fragment and override results in the generated `.config`, rather than checking only the source files.
 
-Configuration names without `/`, and names beginning with `vendor/`, resolve as follows:
+Configuration names without `/`, and names beginning with `vendor/`, resolve under:
 
 ```text
 <kernel_dir>/arch/<config_arch>/configs/<name>
 ```
 
-Other names containing `/` resolve from the Android source root. For example,
-`kernel/vendor/foo.config` points directly to a file under the source root. The `x86_64`
-defconfig directory is still converted to `arch/x86/configs`.
+Other valid configuration paths can resolve relative to the Android source root. For example, `kernel/vendor/foo.config` points to a file under the source root. The `x86_64` defconfig directory is still converted to `arch/x86/configs`.
 
 ## DTB and DTBO
 
@@ -85,6 +77,7 @@ dtb: {
     target: "dtbs",
     image_name: "dtb.img",
 },
+
 dtbo: {
     enabled: true,
     target: "dtbs",
@@ -95,28 +88,21 @@ dtbo: {
 
 | Property | Description |
 | --- | --- |
-| `enabled` | Enable this class of device-tree output |
+| `enabled` | Enable this type of device-tree output |
 | `qcom_merge` | Use uwuAOSP's QCOM DT merge flow |
 | `src` | Prebuilt DTB/DTBO input |
-| `target` | Target passed to Kbuild; defaults to `dtbs` or `dtbo.img` |
+| `target` | Kbuild target; defaults to `dtbs` or `dtbo.img` |
 | `image_name` | Output name; defaults to `dtb.img` or `dtbo.img` |
 | `config` | Configuration file used by `mkdtboimg cfg_create` |
 | `input_globs` | Glob used to collect DT files when Kbuild does not generate the final image directly |
 | `page_size` | Page size for `mkdtboimg create`; defaults to 4096 |
-| `custom_command` | Command used when the standard flow cannot cover the device |
+| `custom_command` | Command for cases the standard flow cannot handle |
 
-`dtb.src` and `dtbo.src` apply only to prebuilt kernels. Source builds should collect
-device-tree outputs through a Kbuild target or `input_globs`. `dtb.config` and
-`dtb.page_size` are not currently supported. QCOM merge mode uses `dtb.target`;
-`dtbo.target` has no effect and is ignored.
+`dtb.src` and `dtbo.src` are only for prebuilt kernels. Source builds should collect device-tree outputs through a Kbuild target or `input_globs`. `dtb.config` and `dtb.page_size` are not currently supported.
 
-`custom_command` may use `$(kernelDir)`, `$(kernelOut)`, and `$(out)`. It should be a last
-resort; repeated flows should be implemented as common capabilities.
+`custom_command` can use `$(kernelDir)`, `$(kernelOut)`, and `$(out)`. Use it only as a last resort; repeated flows should be implemented as a common capability.
 
-When `qcom_merge` is enabled, both `dtb.enabled` and `dtbo.enabled` must be true. The QCOM
-merge flow creates a separate merge working directory from the kernel DTS output, then
-generates DTB and DTBO separately. Kbuild itself continues to use the shared
-`kernel_build` output directory.
+When `qcom_merge` is enabled, both `dtb.enabled` and `dtbo.enabled` must be `true`. QCOM merge runs Kbuild using `dtb.target`, creates a separate merge working directory from the kernel DTS outputs, then generates DTB and DTBO. `dtbo.target` is not used in this mode.
 
 ## Modules
 
@@ -140,33 +126,24 @@ modules: {
 },
 ```
 
-Module installation sets support `system_dlkm`, `vendor_dlkm`, `vendor_ramdisk`, and
-`recovery`. Every class must provide both an install list and a load list; the load list
-must be a subset of the install list. Each class may also define a blocklist.
+Module install sets support `system_dlkm`, `vendor_dlkm`, `vendor_ramdisk`, and `recovery`. Each class must have both an install list and a load list; the load list must be a subset of the install list. Each class can also define a corresponding blocklist.
 
-Normal `external_modules` entries are built with the external module's own Makefile;
-entries with the `:kbuild` suffix use the kernel Kbuild `M=` mode. `module_aliases` uses
-the `old_name.ko:new_name.ko` format. `auto_collect_deps` adds dependencies discovered
-from generated modules to the installation set.
+Normal `external_modules` entries are built using the external module's own Makefile, with the default target `all`; `:all` explicitly selects the same behavior. Entries with the `:kbuild` suffix use the main kernel Kbuild `M=` mode.
 
-With `auto_collect_deps` enabled, the source tree must also contain
-`lineage/scripts/collect-kernel-module-deps/collect-kernel-module-deps.py`. An internal
-installer for a partition is created only when its install or load list is configured;
-once one is configured, the other must be configured too. `vendor_dlkm` depends on the
-system_dlkm installer when both are enabled.
+`module_aliases` uses the `old_name.ko:new_name.ko` format.
 
-The RBE wrapper covers only actual C and assembly compilation. Preprocessing, assembly,
-dependency analysis, and other Clang calls still run locally. `rbe_wrapper` should include
-the required rewrapper arguments, for example:
+When `auto_collect_deps` is enabled, `uwu_kernel` collects dependencies of modules in the install list and adds them to the final install set. This requires `lineage/scripts/collect-kernel-module-deps/collect-kernel-module-deps.py` in the source tree.
+
+`vendor_dlkm_install_all` adds all built modules not installed to `system_dlkm` to the `vendor_dlkm` install list.
+
+A partition installer is created only when its install list or load list is configured. If one is configured, the other must also be configured. When `system_dlkm` is enabled, `vendor_dlkm` depends on the system_dlkm installer.
+
+## RBE wrapper
+
+The RBE wrapper applies only to actual C and assembly source compilation. Other Clang calls, including preprocessing, `-S`, and dependency generation, still run locally.
+
+`rbe_wrapper` should include the required rewrapper arguments. For example:
 
 ```bp
 rbe_wrapper: "prebuilts/remoteexecution-client/live/rewrapper --labels=type=compile,lang=cpp,compiler=clang",
 ```
-
-## Device configuration
-
-The complete configuration should live in the device tree's `Android.bp`. This page only
-shows the configuration model; it does not duplicate device-specific module manifests,
-DT inputs, or kernel paths. Devices can choose different architectures, toolchains,
-device-tree flows, and module partitions, but all should use the same `uwu_kernel` module
-interface.

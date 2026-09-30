@@ -1,104 +1,65 @@
 # uwu_kernel 疑難排解
 
-## 找不到核心模組
+## 修改核心原始碼後沒有重新編譯
 
-確認 `SOONG_KERNEL_MODULE` 在 BoardConfig 階段設定，且模組名稱與 Android.bp 一致：
+首先確認修改的檔案位於 `kernel_dir` 中。如果修改的是 external module，請確認它位於 `external_module_root` 中。
 
-```make
-BOARD_USES_SOONG_KERNEL := true
-SOONG_KERNEL_MODULE := //device/<vendor>/<device>:kernel
+`uwu_kernel` 會追蹤這些目錄中的原始碼變更。只有位於這些目錄之外、但仍需要作為核心建置輸入的檔案，才應透過 `srcs` 明確宣告。
+
+請勿使用：
+
+```bp
+srcs: ["**/*"],
 ```
 
-同時確認產品包含：
+將整個原始碼樹展開為 Soong 輸入，會大幅增加 Soong 分析與建置圖生成的負擔。若原始碼相依性沒有正確追蹤，請先檢查 `kernel_dir`、`external_module_root` 和實際原始碼位置。
 
-```make
-PRODUCT_PACKAGES += kernel
+## External module 建置失敗
+
+首先確認 `external_module_root` 和 `external_modules` 指向正確位置。
+
+一般 external module 會透過自己的 Makefile 建置。如果模組需要使用主要核心 Kbuild 的 `M=` 模式，請使用 `:kbuild` 後綴：
+
+```bp
+external_modules: [
+    "vendor/example:kbuild",
+],
 ```
 
-不要只在產品 Makefile 後段設定 `SOONG_KERNEL_MODULE`。Soong mutator 與 fsgen 需要在
-模組分析階段讀取它。
+如果模組可以編譯但無法正確安裝，也請檢查生成的 `.ko` 是否位於 `uwu_kernel` 能收集的模組輸出中。
 
-## 找不到設定檔
+## Kernel module 未安裝到預期分割區
 
-沒有斜線的設定名稱會依照以下路徑解析：
+請檢查該模組是否列在對應分割區的 install list 中。`uwu_kernel` 支援 `system_dlkm`、`vendor_dlkm`、`vendor_ramdisk` 和 `recovery`。
+
+Install list 決定模組是否安裝到該分割區；load list 則決定要載入哪些已安裝模組。請勿為了安裝模組而將它加入 load list。
+
+啟用 `auto_collect_deps` 時，會根據 install list 自動補上相依模組；未啟用時，請確認所需相依項目已包含在安裝集合中。
+
+## Kernel module 未載入
+
+首先確認模組已安裝到預期分割區，再檢查它是否列在該分割區的 load list 中。
+
+`uwu_kernel` 要求：
 
 ```text
-<kernel_dir>/arch/<config_arch>/configs/<name>
+load list ⊆ install list
 ```
 
-包含路徑的設定名稱會以原始碼根目錄解析，例如 `vendor/common.config` 對應原始碼根目錄
-下的檔案。`x86_64` 的 defconfig 目錄會轉換為 `arch/x86/configs`。
+如果 load list 包含未安裝到對應分割區的模組，建置會失敗。
 
-檢查 `config.defconfig` 與所有 fragment 是否存在，並確認 fragment 順序沒有依賴舊版
-Make 的隱式變數展開。
+如果模組已正確安裝並列於 load list，但裝置開機後仍未載入，請繼續檢查生成的 `modules.load`、模組相依性、blocklist 和裝置開機記錄。此時問題通常已不是 `uwu_kernel` 的模組配置本身。
 
-如果使用 `prebuilt` 核心，原始碼設定屬性不會執行；應分別設定 `prebuilt_config`、
-`prebuilt_headers` 與 `prebuilt_modules` 來提供對應輸出。
+## DTB 或 DTBO 建置失敗
 
-## 修改原始碼後沒有重新編譯
+確認已啟用對應輸出，並檢查 `target`、`input_globs` 與實際 Kbuild 輸出是否一致。
 
-檢查：
+使用 `qcom_merge` 時，`dtb.enabled` 和 `dtbo.enabled` 必須同時啟用。此模式會使用 `dtb.target` 建置裝置樹，再根據生成的 DTS 輸出完成 DTB/DTBO 合併。
 
-1. 修改檔案是否位於 `kernel_dir` 或 `external_module_root`；
-2. `source_deps/source.d` 是否包含對應目錄；
-3. 是否手動修改了 `out/soong` 中間檔案；
-4. 原始碼是否位於目錄相依性之外且沒有加入 `srcs`；
-5. action 的輸出時間戳是否被外部腳本覆寫。
+若裝置採用非標準的裝置樹配置，請先確認能否透過 `target` 或 `input_globs` 描述；只有標準流程無法處理時才使用 `custom_command`。
 
-不要透過 `srcs: ["**/*"]` 解決問題。應修正原始碼根目錄或補充最小的額外輸入。
+## Kernel configuration 與預期不符
 
-## Headers 沒有更新
+請檢查最終生成的 `.config`，不要只檢查來源 defconfig、fragment 或 `overrides`。
 
-確認 `generated_kernel_includes` 依賴的是目前的 `uwu_kernel`，而不是
-`generated_kernel_includes_legacy`。接著檢查：
-
-```text
-out/soong/.intermediates/device/<vendor>/<device>/kernel/
-  <variant>/headers.timestamp
-out/soong/.intermediates/device/<vendor>/<device>/kernel/
-  <variant>/source_deps/source.d
-```
-
-headers action 會執行 Kbuild `headers_install`，接著執行
-`vendor/uwu/build/tools/clean_headers.sh`。如果 action 已執行但結果不完整，應檢查
-核心的 UAPI 匯出規則，而不是手動複製 headers。
-
-## DTB 或 DTBO 失敗
-
-依序檢查：
-
-- `dtb.enabled` 與 `dtbo.enabled` 是否符合 `qcom_merge` 的要求；
-- Kbuild `target` 是否真的生成對應的 DT 檔案；
-- `input_globs` 是否符合實際輸出；
-- DTBO `page_size` 是否與 BoardConfig 及 bootloader 要求一致；
-- `custom_command` 是否使用合法的 `$(kernelDir)`、`$(kernelOut)` 與 `$(out)`；
-- 使用 QCOM 合併時，`merge_dtbs.py` 的輸入目錄是否包含基礎 DTB 與 techpack DT。
-
-不要直接編輯生成的 `.dtb` 或 `.dtbo`。
-
-## Modules 建置成功但沒有安裝
-
-確認模組同時出現在對應的 install list 與 load list。還要檢查：
-
-- 模組所屬分割區是否為 `system_dlkm`、`vendor_dlkm`、`vendor_ramdisk` 或 `recovery`；
-- `external_module_root` 是否正確；
-- 一般 external module 是否應改為 `path:kbuild`；
-- `module_aliases` 是否使用 `old.ko:new.ko`；
-- 是否需要啟用 `auto_collect_deps`；
-- blocklist 是否錯誤使用模組 basename 以外的路徑。
-
-不要將內部生成的 `kernel_modules_*` 模組手動加入 `PRODUCT_PACKAGES`。
-
-## 工具鏈或 Perl 錯誤
-
-檢查實際 action 是否使用 tree 內的工具鏈與工具路徑。常見問題包括：
-
-- `clang_version` 不存在；
-- 自訂 `clang_path` 缺少 `bin` 或 `lib`；
-- `DTC_EXT` 使用了錯誤的 host 輸出；
-- 外部模組依賴主機系統 Perl；
-- `make_command` 指向的工具不支援目前的 Kbuild 參數。
-
-優先修正模組屬性，不要在裝置 Makefile 中重新拼接另一套 PATH。
-
-如果啟用 `rbe_wrapper`，確認它是完整的 rewrapper 指令，且建置環境設定了 `TOP`。
+Kconfig 在合併 fragment、套用 LTO 設定和附加 override 後，還會處理預設值；最終 `.config` 才是實際用於核心建置的設定。

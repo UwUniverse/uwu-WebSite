@@ -18,6 +18,7 @@ const docsSidebar = upstreamDocsSidebars
 
 const localizedDocsText = {
   en: {
+    '/docs/bringup-17/': ['Bring-up guide', 'Overview'],
     '/docs/moment/': ['Moment', 'Overview'],
     '/docs/moment/launching-apps': 'Launch apps',
     '/docs/moment/navigation-handle': 'Double-tap navigation bar',
@@ -62,6 +63,7 @@ const localizedDocsText = {
     '/docs/StatusBarLyric/': ['StatusBarLyric', 'Overview']
   },
   'zh-tw': {
+    '/docs/bringup-17/': ['裝置移植指南', '概覽'],
     '/docs/moment/': ['Moment', '概覽'],
     '/docs/moment/launching-apps': '啟動應用程式',
     '/docs/moment/navigation-handle': '導覽列雙擊',

@@ -1,111 +1,65 @@
 # uwu_kernel troubleshooting
 
-## Kernel module not found
+## Kernel changes do not trigger a rebuild
 
-Confirm that `SOONG_KERNEL_MODULE` is set during the BoardConfig stage and that its module
-name matches Android.bp:
+First confirm that the changed file is under `kernel_dir`. If you changed an external module, confirm that it is under `external_module_root`.
 
-```make
-BOARD_USES_SOONG_KERNEL := true
-SOONG_KERNEL_MODULE := //device/<vendor>/<device>:kernel
+`uwu_kernel` tracks source changes in these directories. Declare files with `srcs` only when they are outside these directories but are still required as kernel build inputs.
+
+Do not use:
+
+```bp
+srcs: ["**/*"],
 ```
 
-Also confirm that the product contains:
+Expanding the entire source tree into Soong inputs significantly increases Soong analysis and build-graph generation overhead. If source dependencies are not tracked correctly, first check `kernel_dir`, `external_module_root`, and the actual source locations.
 
-```make
-PRODUCT_PACKAGES += kernel
+## External module build fails
+
+First confirm that `external_module_root` and `external_modules` point to the correct locations.
+
+Normal external modules are built using their own Makefile. If a module needs the main kernel Kbuild `M=` mode, use the `:kbuild` suffix:
+
+```bp
+external_modules: [
+    "vendor/example:kbuild",
+],
 ```
 
-Do not set `SOONG_KERNEL_MODULE` only at the end of a product Makefile. The Soong mutator
-and fsgen need to read it during module analysis.
+If the module builds but is not installed correctly, also check whether its generated `.ko` file is in the module outputs that `uwu_kernel` can collect.
 
-## Configuration file not found
+## Kernel module is not installed to the expected partition
 
-Configuration names without a slash resolve to:
+Check whether the module is included in the install list for the partition. `uwu_kernel` supports `system_dlkm`, `vendor_dlkm`, `vendor_ramdisk`, and `recovery`.
+
+The install list determines whether a module is installed to a partition; the load list determines which installed modules are loaded. Do not add a module to the load list just to install it.
+
+When `auto_collect_deps` is enabled, dependencies are added automatically based on the install list. Otherwise, ensure that the required dependencies are included in the install set.
+
+## Kernel module is not loaded
+
+First confirm that the module is installed to the expected partition, then check whether it is in that partition's load list.
+
+`uwu_kernel` requires:
 
 ```text
-<kernel_dir>/arch/<config_arch>/configs/<name>
+load list ⊆ install list
 ```
 
-Names containing a path resolve from the source root. For example, `vendor/common.config`
-means the file at that path under the source root. The `x86_64` defconfig directory is
-converted to `arch/x86/configs`.
+The build fails if the load list contains a module that is not installed to the corresponding partition.
 
-Check that `config.defconfig` and every fragment exist, and that fragment order does not
-depend on implicit variable expansion from the old Make flow.
+If the module is installed and listed for loading but does not load after boot, check the generated `modules.load`, module dependencies, blocklist, and device boot logs. The issue is then usually not with the `uwu_kernel` module layout configuration itself.
 
-For a `prebuilt` kernel, source configuration properties are not executed. Set
-`prebuilt_config`, `prebuilt_headers`, and `prebuilt_modules` separately to provide the
-corresponding outputs.
+## DTB or DTBO build fails
 
-## Source changes do not trigger a rebuild
+Confirm that the corresponding output is enabled, and check that `target`, `input_globs`, and the actual Kbuild outputs match.
 
-Check:
+When using `qcom_merge`, both `dtb.enabled` and `dtbo.enabled` must be enabled. This mode uses `dtb.target` to build the device tree, then completes the DTB/DTBO merge using the generated DTS outputs.
 
-1. whether the changed file is under `kernel_dir` or `external_module_root`;
-2. whether `source_deps/source.d` includes the corresponding directory;
-3. whether an intermediate file under `out/soong` was edited manually;
-4. whether the source is outside directory dependencies without being added to `srcs`;
-5. whether an external script has overwritten an action's output timestamp.
+If the device uses a non-standard device-tree layout, first check whether it can be described with `target` or `input_globs`. Use `custom_command` only when the standard flow cannot cover it.
 
-Do not solve this with `srcs: ["**/*"]`. Correct the source root or add the smallest
-necessary additional input.
+## Kernel configuration differs from expectations
 
-## Headers are not updated
+Check the final generated `.config`, not only the source defconfig, fragments, or `overrides`.
 
-Confirm that `generated_kernel_includes` depends on the current `uwu_kernel`, not
-`generated_kernel_includes_legacy`. Then inspect:
-
-```text
-out/soong/.intermediates/device/<vendor>/<device>/kernel/
-  <variant>/headers.timestamp
-out/soong/.intermediates/device/<vendor>/<device>/kernel/
-  <variant>/source_deps/source.d
-```
-
-The headers action runs Kbuild `headers_install`, followed by
-`vendor/uwu/build/tools/clean_headers.sh`. If the action ran but the result is incomplete,
-check the kernel UAPI export rules instead of copying headers manually.
-
-## DTB or DTBO failure
-
-Check these items in order:
-
-- whether `dtb.enabled` and `dtbo.enabled` satisfy the `qcom_merge` requirements;
-- whether the Kbuild `target` actually generates the corresponding DT files;
-- whether `input_globs` matches the real output;
-- whether DTBO `page_size` matches BoardConfig and bootloader requirements;
-- whether `custom_command` uses valid `$(kernelDir)`, `$(kernelOut)`, and `$(out)` values;
-- when using QCOM merge, whether the `merge_dtbs.py` input directory contains the base DTB and techpack DT.
-
-Do not edit generated `.dtb` or `.dtbo` files directly.
-
-## Modules build successfully but are not installed
-
-Confirm that each module appears in both the corresponding install list and load list.
-Also check:
-
-- whether the module belongs to `system_dlkm`, `vendor_dlkm`, `vendor_ramdisk`, or `recovery`;
-- whether `external_module_root` is correct;
-- whether a normal external module should use `path:kbuild` instead;
-- whether `module_aliases` uses `old.ko:new.ko`;
-- whether `auto_collect_deps` needs to be enabled;
-- whether a blocklist incorrectly uses a path instead of the module basename.
-
-Do not add internally generated `kernel_modules_*` modules to `PRODUCT_PACKAGES` manually.
-
-## Toolchain or Perl errors
-
-Check whether the action uses the tree-local toolchain and tool paths. Common problems
-include:
-
-- `clang_version` does not exist;
-- custom `clang_path` lacks `bin` or `lib`;
-- `DTC_EXT` points to the wrong host output;
-- an external module depends on the host system Perl;
-- `make_command` points to a tool that does not support the current Kbuild arguments.
-
-Fix module properties first instead of reconstructing a second PATH in the device Makefile.
-
-When `rbe_wrapper` is enabled, confirm that it is a complete rewrapper command and that
-the build environment sets `TOP`.
+Kconfig processes defaults after merging fragments, applying LTO configuration, and appending overrides. The final `.config` is the configuration actually used for the kernel build.

@@ -1,112 +1,45 @@
-# uwu_kernel outputs and dependencies
+# uwu_kernel outputs
+
+`uwu_kernel` provides kernel build artifacts to other modules through Soong output labels.
 
 ## Output labels
 
-`uwu_kernel` exposes artifacts through Soong output labels:
+| Label | Output |
+| --- | --- |
+| Default label | Kernel image |
+| `.config` | Final kernel configuration |
+| `.dtb` | DTB image |
+| `.dtbo` | DTBO image |
+| `.modules` | Kernel modules archive |
 
-| Label | Output | Main consumers |
-| --- | --- | --- |
-| Default label `""` | Kernel image | fsgen bootimg, `android_device` |
-| `.config` | Final Kconfig file | Debugging and configuration validation |
-| `.dtb` | DTB image | Boot image and device validation |
-| `.dtbo` | DTBO image | fsgen DTBO and vbmeta |
-| `.modules` | Kernel modules zip | Partition module installer |
-
-Source kernels generate `.config`, headers, DTB, DTBO, and modules according to enabled
-properties. Prebuilt kernels do not run Kbuild; they provide corresponding outputs only
-when `prebuilt_config`, `prebuilt_headers`, `dtb.src`, `dtbo.src`, or `prebuilt_modules`
-is configured.
-
-Device configuration should reference labels through the module, for example:
+For example, a `uwu_kernel` module named `kernel` can be referenced as follows:
 
 ```text
 :kernel
+:kernel{.config}
 :kernel{.dtb}
 :kernel{.dtbo}
 :kernel{.modules}
 ```
 
-Do not put concrete paths under `out/soong/.intermediates` into Android.bp or Makefiles.
+Labels other than the default kernel image are available only when the corresponding output exists. For example, `.dtbo` is available only when DTBO output is enabled.
 
-## Kernel action
+Device configuration and other Soong modules should reference kernel outputs through these labels. Do not depend on specific paths under `out/soong/.intermediates`.
 
-Source builds create an independent `kernel_build` output directory and establish these
-dependencies:
+## Kernel headers
 
-1. create directory-dependency stamps for the kernel source and external modules;
-2. generate `.config` from configuration inputs, then run `headers_install` and clean UAPI headers from source inputs;
-3. make the kernel image action depend on `.config` and the source-dependency stamp;
-4. make DTB/DTBO actions depend on the kernel image, DTS outputs, and source-dependency stamp;
-5. make the modules action depend on kernel/DT outputs, then compile, install, and package kernel modules.
+Kernel UAPI headers are not exposed through an output label. `uwu_kernel` runs Kbuild `headers_install`, cleans the generated headers, and provides them to other modules through the Generated headers interface.
 
-Each action declares the previous stage's outputs as explicit dependencies. DT, module, and
-header actions therefore cannot drift outside the kernel-image build graph.
+`generated_kernel_includes` uses the headers provided by the `uwu_kernel` selected by `SOONG_KERNEL_MODULE`. This maintains compatibility with libraries in the current Android tree that depend on `generated_kernel_includes`.
 
-When `autofdo_profile` is enabled, the profile is also an explicit input to the kernel,
-DT, and modules actions. When `rbe_wrapper` is enabled, the wrapper script is likewise an
-action input.
+## Kernel modules
 
-## Toolchain
+When kernel modules are enabled, `.modules` provides an archive of the built kernel modules. `uwu_kernel` creates the corresponding partition module installers based on the install lists, load lists, and blocklists declared in `modules`.
 
-Default Kbuild calls use tools from the tree:
+Devices do not need to add these internal installers directly. Add the main `uwu_kernel` module to the product:
 
-- Clang: `prebuilts/clang/host/linux-x86/<version>/bin`;
-- build tools: `prebuilts/build-tools/linux-x86/bin`;
-- kernel tools: `prebuilts/kernel-build-tools/linux-x86/bin`;
-- Lineage tools: `prebuilts/tools-lineage/linux-x86/bin`;
-- Perl base modules: `prebuilts/tools-lineage/common/perl-base`.
-
-The action explicitly sets `LLVM=1`, `LLVM_IAS=1`, `DTC_EXT`, `LZ4`, `LEX`, `YACC`, `M4`,
-`PAHOLE`, `LIBCLANG_PATH`, `CC`, and `LD`. This prevents kernel builds from depending on
-whatever tool versions happen to be installed in the host distribution.
-
-## Source dependencies
-
-Soong directory-dependency rules generate `source_deps/source.d`. Kernel source and
-configuration files are action inputs, while the source directory is a directory
-dependency. New or modified kernel files can therefore trigger the relevant action without
-expanding the entire source tree into every Ninja rule.
-
-`srcs` is only for additional files outside directory dependencies. Do not use:
-
-```bp
-srcs: ["**/*"],
+```device.mk
+PRODUCT_PACKAGES += kernel
 ```
 
-That pattern increases Soong analysis memory, Ninja file size, and reanalysis cost.
-
-## UAPI headers
-
-`uwu_kernel` runs Kbuild `headers_install`, then
-`vendor/uwu/build/tools/clean_headers.sh`. The shared `generated_kernel_includes` module
-forwards headers from the module selected by `SOONG_KERNEL_MODULE`; unmigrated devices
-fall back to `generated_kernel_includes_legacy`.
-
-Prebuilt kernels can use the same headers provider through `prebuilt_headers`; the archive
-must be a gzip-compressed tar archive.
-
-Native modules continue to depend on `generated_kernel_includes` and do not need to switch
-to a concrete device intermediate directory.
-
-## Modules zip and partition installers
-
-The `.modules` output is a zip containing installation results, load lists, and blocklists.
-`uwu_kernel` creates internal `PrebuiltKernelModules` modules from the manifests of four
-partition classes, and fsgen connects those modules to the corresponding filesystem or
-ramdisk.
-
-These internal modules are not public product modules for direct addition to device
-configuration. Declare manifests in `uwu_kernel.modules` and install the main module with
-`PRODUCT_PACKAGES += kernel`.
-
-## Intermediate outputs
-
-The main kernel intermediate directory for a device build is usually:
-
-```text
-out/soong/.intermediates/device/<vendor>/<device>/kernel/<variant>/
-```
-
-It may contain `kernel/<image_name>`, `kernel_build/.config`, `dtb/<image_name>`,
-`dtbo/<image_name>`, `headers/`, and `source_deps/source.d`. Treat these as validation
-clues, not a stable API.
+For kernel module partition and load configuration, see the [configuration reference](configuration.md).

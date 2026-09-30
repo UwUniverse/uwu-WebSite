@@ -126,25 +126,61 @@ uni --no-debug -j18 SystemUI
 
 ## 簽名發佈 OTA
 
-在 Android 原始碼樹中一次性產生金鑰。目標目錄必須位於原始碼樹外，而且事先不能存在。不需要 `lunch`，也不會開始建置：
+在 Android 原始碼樹中一次性初始化金鑰。目標目錄必須位於原始碼樹外，而且事先不能存在。不需要 `lunch` 或建置：
 
 ```sh
 uni --init-signing-keys ~/.android-certs
 ```
 
-Uni 產生 LineageOS 基礎金鑰集合，目錄權限為 `0700`，私鑰檔案權限為 `0600`。若目錄已存在，初始化會拒絕操作，不會覆蓋手動產生或先前發佈使用的金鑰。請將整個目錄安全備份到另一個儲存裝置。
+Uni 會產生 LineageOS 基礎金鑰：`bluetooth`、`cyngn-app`、`media`、`networkstack`、`nfc`、`platform`、`releasekey`、`sdk_sandbox`、`shared`、`testcert` 和 `verity`；`testkey` 會指向 `releasekey`。私鑰為未加密的 PKCS#8 檔案。目錄權限為 `0700`，金鑰檔案權限為 `0600`。若目標目錄已存在，命令會失敗；絕不覆蓋手動產生或先前發佈使用的金鑰。
 
-完成 `lunch` 後，每次發佈都使用同一目錄。Uni 會建置 `target-files-package` 和 `otatools`，另外產生簽名 target-files、OTA 與 SHA-256 驗證檔：
+請將整個金鑰目錄安全備份至原始碼樹和建置磁碟以外的位置。刪除原始碼樹或 `out` 不會影響存放在外部的金鑰；若金鑰遺失，新金鑰無法直接延續信任舊金鑰裝置的一般 OTA 更新。
+
+完成 `lunch` 後，每次發佈都使用同一目錄。Uni 會增量建置 `target-files-package` 和 `otatools`，再於獨立目錄簽署 target-files 並生成 OTA：
 
 ```sh
 uni -j18 otapackage --sign-keys ~/.android-certs
 ```
 
-已有手動產生的金鑰目錄可以直接傳給 `--sign-keys`，無須初始化，Uni 也不會修改它。Uni 初始化的目錄會在首次簽名時，依 `META/apexkeys.txt` 為非 `PRESIGNED` APEX 產生 4096 位元金鑰；後續重用，新增 APEX 只增加新金鑰。備份必須包含 `apex/` 子目錄。刪除原始碼樹或 `out` 不影響存放在外部的金鑰；如果金鑰遺失，新金鑰無法直接延續原裝置的一般 OTA 更新。
+已有手動產生的金鑰目錄可以直接傳給 `--sign-keys`，無須初始化，Uni 也不會修改它。Uni 初始化的目錄會在首次簽名時讀取 `META/apexkeys.txt`，為非 `PRESIGNED` APEX 產生 4096 位元金鑰。後續發佈會重用這些金鑰；新增 APEX 只會增加新金鑰，不會替換既有金鑰。備份時也請包含 `apex/` 子目錄。
 
-手動管理的目錄、非預設 APK 或需指定其他 APEX 金鑰的裝置，可透過 `--sign-config` 的 `key_mappings`、`extra_apks`、`extra_apex_payload_keys` 設定；此設定不會替換 AVB 金鑰。`--sign-keys` 不能與 `--trust-output` 或 `--assume-existing` 同時使用。已有 target-files 可用 `uni --sign-keys ~/.android-certs --sign-check` 進行隔離簽名檢查。
+輸出位於 `OUT_DIR/release/<product>/`，包含加上時間戳的簽名 target-files、簽名 OTA 和 OTA 的 `.sha256` 驗證檔；不會覆蓋一般 OTA。簽名時會使用建置樹中的 hermetic `sign_target_files_apks` 和 `ota_from_target_files`，不會使用舊式 `--block --backup=true` 參數。
 
-首次從 test-key 改用 release-key 時，既有裝置需要經過驗證的金鑰遷移流程或完整刷入；新金鑰簽名的套件不能當作一般增量 OTA。
+### APEX 與非預設 APK 金鑰
+
+`--sign-keys` 會傳入標準的 `-o -d <keys>` 對應。手動管理的金鑰目錄、非預設 APK 或需要指定其他 APEX 金鑰的裝置，可另外準備並長期保存對應金鑰，再提供 JSON 設定：
+
+```json
+{
+  "key_mappings": {
+    "source/key/path": "custom-key"
+  },
+  "extra_apks": {
+    "com.android.example.apex": "releasekey"
+  },
+  "extra_apex_payload_keys": {
+    "com.android.example.apex": "apex-payload-key.pem"
+  }
+}
+```
+
+設定中的相對路徑以 `--sign-keys` 目錄為基準。APEX payload 私鑰必須符合對應 APEX 的簽名需求，不能用上述 2048 位元基礎 APK 金鑰取代；此設定不會自動替換 AVB 金鑰：
+
+```sh
+uni -j18 otapackage --sign-keys ~/.android-certs --sign-config signing.json
+```
+
+### 隔離簽名檢查
+
+先對既有 target-files 完整測試簽名和 OTA 生成，不發布正式套件：
+
+```sh
+uni --sign-keys ~/.android-certs --sign-check
+```
+
+檢查結果寫入 `OUT_DIR/release/<product>/checks/<timestamp>/`。此模式不會啟動 Android 建置、不修改一般產物，也不會覆蓋正式簽名套件。`--sign-keys` 不能與 `--trust-output` 或 `--assume-existing` 同時使用。
+
+使用 test-key 的裝置不能將 release-key OTA 當作一般增量更新接收。首次更換金鑰時，必須透過信任新金鑰的 recovery 或 fastboot 完整刷入，或使用另外準備並驗證過的金鑰遷移套件。
 
 ## Uni 執行時遙測
 

@@ -18,7 +18,7 @@ The maintainer information will be displayed in Settings -> System -> Software u
 
 ### Manual changes
 
-If uwuCLI don't work for you, please configure the following flags in the device tree's `device.mk` or an equivalent Makefile:
+Configure the following flags in the device tree's `device.mk` or an equivalent Makefile:
 
 ```
 # Device type
@@ -32,8 +32,6 @@ UWU_SUPPORTS_TELEPHONY := true
 # OPTIONAL: Device maintainer
 UWU_MAINTAINER := Akaza_Akari
 ```
-
-If you like, please open an issue on Issue Tracker for failed device tree.
 
 ## Optional (Phase 2)
 

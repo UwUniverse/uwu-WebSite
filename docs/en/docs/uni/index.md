@@ -126,25 +126,61 @@ uni --no-debug -j18 SystemUI
 
 ## Signing a release OTA
 
-Initialize keys once from the Android source tree. The destination must be outside the tree and must not exist yet. No `lunch` or build is needed:
+Initialize keys once from the Android source tree. The destination must be outside the source tree and must not exist yet. No `lunch` or build is needed:
 
 ```sh
 uni --init-signing-keys ~/.android-certs
 ```
 
-Uni creates the base LineageOS key set with directory permissions `0700` and private key permissions `0600`. It refuses an existing directory and never overwrites manually created keys or keys used for earlier releases. Back up the entire directory securely on separate storage.
+Uni creates the base LineageOS keys: `bluetooth`, `cyngn-app`, `media`, `networkstack`, `nfc`, `platform`, `releasekey`, `sdk_sandbox`, `shared`, `testcert`, and `verity`; `testkey` points to `releasekey`. Private keys are unencrypted PKCS#8 files. The directory permissions are `0700`, and key file permissions are `0600`. The command fails if the directory already exists; it never overwrites manually generated keys or keys used for earlier releases.
 
-After `lunch`, use the same directory for every release. Uni builds `target-files-package` and `otatools`, then produces separate signed target files, an OTA and a SHA-256 checksum:
+Back up the entire key directory securely outside the source tree and build disk. Deleting the source tree or `out` does not affect externally stored keys. If the keys are lost, newly generated keys cannot continue ordinary OTA updates for devices that trust the old keys.
+
+After `lunch`, use the same directory for every release. Uni incrementally builds `target-files-package` and `otatools`, then signs the target files in a separate directory and creates an OTA:
 
 ```sh
 uni -j18 otapackage --sign-keys ~/.android-certs
 ```
 
-You can pass an existing manually generated key directory to `--sign-keys` without initializing it; Uni will not modify it. For a Uni-initialized directory, the first signing run reads `META/apexkeys.txt` and creates 4096-bit keys for non-`PRESIGNED` APEXes. Later releases reuse those keys; a newly introduced APEX only adds a new key. Include the `apex/` subdirectory in backups. Deleting the source tree or `out` does not affect externally stored keys. If the keys are lost, new keys cannot continue ordinary OTA updates for devices that trust the old ones.
+You can pass an existing manually generated key directory to `--sign-keys` without initializing it; Uni will not modify it. For a directory initialized by Uni, the first signing run reads `META/apexkeys.txt` and generates 4096-bit keys for non-`PRESIGNED` APEXes. Later releases reuse those keys; a new APEX adds a new key without replacing existing keys. Include the `apex/` subdirectory in backups.
 
-For manually managed directories, non-default APKs or device-specific APEX keys, use `--sign-config` with `key_mappings`, `extra_apks` and `extra_apex_payload_keys`. This configuration does not replace AVB keys. `--sign-keys` cannot be combined with `--trust-output` or `--assume-existing`. Run `uni --sign-keys ~/.android-certs --sign-check` to test signing existing target files in an isolated directory.
+Output is written to `OUT_DIR/release/<product>/`, including timestamped signed target files, the signed OTA, and an OTA `.sha256` checksum. Regular OTA outputs are not overwritten. Signing uses the hermetic `sign_target_files_apks` and `ota_from_target_files` built with the tree, not the legacy `--block --backup=true` arguments.
 
-Devices moving from test keys to release keys need a verified key migration path or a full flash. A newly signed package is not an ordinary incremental OTA for those devices.
+### APEX and non-default APK keys
+
+`--sign-keys` supplies the standard `-o -d <keys>` mapping. For manually managed key directories, non-default APKs, or devices that need specific APEX keys, prepare and retain those keys separately, then provide a JSON configuration:
+
+```json
+{
+  "key_mappings": {
+    "source/key/path": "custom-key"
+  },
+  "extra_apks": {
+    "com.android.example.apex": "releasekey"
+  },
+  "extra_apex_payload_keys": {
+    "com.android.example.apex": "apex-payload-key.pem"
+  }
+}
+```
+
+Relative paths in the configuration are resolved from the `--sign-keys` directory. APEX payload private keys must meet the signing requirements of the corresponding APEX; they cannot be replaced with the 2048-bit base APK keys above. AVB keys are not replaced by this configuration:
+
+```sh
+uni -j18 otapackage --sign-keys ~/.android-certs --sign-config signing.json
+```
+
+### Isolated signing check
+
+Validate signing and OTA generation for existing target files without publishing a release:
+
+```sh
+uni --sign-keys ~/.android-certs --sign-check
+```
+
+Results are written to `OUT_DIR/release/<product>/checks/<timestamp>/`. This mode does not start an Android build, modify regular outputs, or overwrite a signed release package. `--sign-keys` cannot be combined with `--trust-output` or `--assume-existing`.
+
+Devices with test-key builds cannot accept release-key OTAs as ordinary incremental updates. Changing keys for the first time requires a recovery or fastboot full flash that trusts the new key, or a separately prepared and verified key-migration package.
 
 ## Uni runtime telemetry
 
