@@ -1075,7 +1075,7 @@ a.uwu-release-hero__more:hover { color: inherit; opacity: 1; }
 .vp-doc th,
 .vp-doc td {
   padding: var(--uwu-space-3) var(--uwu-space-4);
-  border: 0;
+  border: 1px solid var(--uwu-border-strong);
   text-align: left;
 }
 
