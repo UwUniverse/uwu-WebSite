@@ -21,7 +21,7 @@ export const upstreamDocsSidebars = [
         "link": "/docs/moment/moment-arc"
       },
       {
-        "text": "通知打开",
+        "text": "通过通知打开 Moment",
         "link": "/docs/moment/notifications"
       },
       {
@@ -37,7 +37,7 @@ export const upstreamDocsSidebars = [
         "link": "/docs/moment/move-and-resize"
       },
       {
-        "text": "操作菜单",
+        "text": "Moment 操作菜单",
         "link": "/docs/moment/controls"
       },
       {
@@ -53,11 +53,11 @@ export const upstreamDocsSidebars = [
         "link": "/docs/moment/back"
       },
       {
-        "text": "设置与适用范围",
+        "text": "Moment 设置",
         "link": "/docs/moment/settings"
       },
       {
-        "text": "调试命令",
+        "text": "Moment 调试命令",
         "link": "/docs/moment/debugging"
       }
     ]
@@ -162,6 +162,17 @@ export const upstreamDocsSidebars = [
       {
         "text": "概览",
         "link": "/docs/LauncherAtAGlance/"
+      }
+    ]
+  },
+  {
+    "text": "MaintainerMetadata",
+    "link": "/docs/MaintainerMetadata/",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "概览",
+        "link": "/docs/MaintainerMetadata/"
       }
     ]
   },
