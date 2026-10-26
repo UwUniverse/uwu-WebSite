@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 
-type Pattern = 'checker' | 'stripes' | 'particles'
 type PaletteColor = { hex: string; rgb: string }
-type DriftDirection = { x: number; y: number }
 type Particle = {
   x: number
   y: number
@@ -16,18 +14,6 @@ type Particle = {
   sway: number
 }
 
-const patterns: Pattern[] = ['checker', 'stripes', 'particles']
-const driftDirections: DriftDirection[] = [
-  { x: -1, y: -1 },
-  { x: 0, y: -1 },
-  { x: 1, y: -1 },
-  { x: -1, y: 0 },
-  { x: 1, y: 0 },
-  { x: -1, y: 1 },
-  { x: 0, y: 1 },
-  { x: 1, y: 1 }
-]
-
 // Sampled from the pale blue panel in bamberga.png.
 const lightPalette: PaletteColor[] = [
   { hex: '#6F9FE5', rgb: '111 159 229' },
@@ -38,20 +24,14 @@ const lightPalette: PaletteColor[] = [
   { hex: '#6D7BCC', rgb: '109 123 204' }
 ]
 
-const pattern = ref<Pattern>('checker')
 const color = ref<PaletteColor>(lightPalette[0])
-const driftDirection = ref<DriftDirection>(driftDirections[0])
 const root = ref<HTMLElement>()
 const canvas = ref<HTMLCanvasElement>()
-const styleVars = computed(() => ({
-  '--uwu-pattern-light-rgb': color.value.rgb,
-  '--uwu-pattern-checker-x': `${driftDirection.value.x * 104}px`,
-  '--uwu-pattern-checker-y': `${driftDirection.value.y * 104}px`,
-  '--uwu-pattern-stripes-x': `${driftDirection.value.x * 90}px`,
-  '--uwu-pattern-stripes-y': `${driftDirection.value.y * 90}px`
-}))
 
 const particles: Particle[] = []
+const particleCount = 42
+const gridColumns = 7
+const gridRows = particleCount / gridColumns
 let context: CanvasRenderingContext2D | undefined
 let animationFrame = 0
 let resizeObserver: ResizeObserver | undefined
@@ -64,35 +44,51 @@ let width = 0
 let height = 0
 let pointerX = 0
 let pointerY = 0
+let spawnIndex = 0
 
 function randomBetween(min: number, max: number) {
   return min + Math.random() * (max - min)
 }
 
-function createParticle(): Particle {
-  return {
-    x: randomBetween(-.05, 1.05),
-    y: randomBetween(.04, .96),
-    z: randomBetween(.55, 2.2),
-    size: randomBetween(14, 48),
-    rotation: randomBetween(-Math.PI, Math.PI),
-    spin: randomBetween(-.0007, .0007),
-    speed: randomBetween(.00013, .00025),
-    phase: randomBetween(0, Math.PI * 2),
-    sway: randomBetween(.05, .11)
-  }
+function gridCoordinate(index: number, count: number) {
+  return (index + .5 + randomBetween(-.22, .22)) / count
 }
 
-function recycleParticle(particle: Particle) {
-  particle.x = randomBetween(-.14, -.05)
-  particle.y = randomBetween(.04, .96)
-  particle.z = 2.2
-  particle.size = randomBetween(14, 48)
+function resetParticle(particle: Particle, index: number, fromEdge: boolean) {
+  const slot = index % particleCount
+  const column = slot % gridColumns
+  const row = Math.floor(slot / gridColumns)
+  particle.x = fromEdge ? randomBetween(-.14, -.05) : gridCoordinate(column, gridColumns)
+  particle.y = gridCoordinate(row, gridRows)
+  // Keep depth random when recycling. A fixed depth here made every later
+  // particle smaller because the projected size is size / z.
+  particle.z = randomBetween(.72, 1.65)
+  particle.size = randomBetween(24, 54)
   particle.rotation = randomBetween(-Math.PI, Math.PI)
   particle.spin = randomBetween(-.0007, .0007)
   particle.speed = randomBetween(.00013, .00025)
   particle.phase = randomBetween(0, Math.PI * 2)
   particle.sway = randomBetween(.05, .11)
+}
+
+function createParticle(index: number): Particle {
+  const particle = {
+    x: 0,
+    y: 0,
+    z: 1,
+    size: 0,
+    rotation: 0,
+    spin: 0,
+    speed: 0,
+    phase: 0,
+    sway: 0
+  }
+  resetParticle(particle, index, false)
+  return particle
+}
+
+function recycleParticle(particle: Particle) {
+  resetParticle(particle, spawnIndex++, true)
 }
 
 function resizeCanvas() {
@@ -108,7 +104,8 @@ function resizeCanvas() {
   context = element.getContext('2d') || undefined
   context?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
   if (!particles.length) {
-    for (let i = 0; i < 42; i++) particles.push(createParticle())
+    for (let i = 0; i < particleCount; i++) particles.push(createParticle(i))
+    spawnIndex = particles.length
   }
   draw(0, true)
 }
@@ -173,8 +170,7 @@ function tick(timestamp: number) {
 }
 
 function updateRunning() {
-  const shouldRun = pattern.value === 'particles'
-    && visible
+  const shouldRun = visible
     && !document.hidden
     && !media?.matches
   if (shouldRun && !running) {
@@ -190,7 +186,7 @@ function updateRunning() {
 }
 
 function handlePointer(event: PointerEvent) {
-  if (event.pointerType === 'touch' || pattern.value !== 'particles') return
+  if (event.pointerType === 'touch') return
   const rootElement = root.value || document.querySelector<HTMLElement>('.uwu-pattern-wallpaper')
   const box = rootElement?.getBoundingClientRect()
   if (!box || !box.width || !box.height) return
@@ -199,10 +195,7 @@ function handlePointer(event: PointerEvent) {
 }
 
 onMounted(async () => {
-  pattern.value = patterns[Math.floor(Math.random() * patterns.length)]
   color.value = lightPalette[Math.floor(Math.random() * lightPalette.length)]
-  driftDirection.value = driftDirections[Math.floor(Math.random() * driftDirections.length)]
-  if (pattern.value !== 'particles') return
   await nextTick()
   media = matchMedia('(prefers-reduced-motion: reduce)')
   media.addEventListener('change', updateRunning)
@@ -224,7 +217,6 @@ onMounted(async () => {
 })
 
 onUpdated(() => {
-  if (pattern.value !== 'particles') return
   resizeCanvas()
   updateRunning()
 })
@@ -244,11 +236,9 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="uwu-pattern-wallpaper"
-    :class="`uwu-pattern-wallpaper--${pattern}`"
-    :style="styleVars"
     aria-hidden="true"
   >
-    <canvas v-if="pattern === 'particles'" ref="canvas" />
+    <canvas ref="canvas" />
   </div>
 </template>
 
@@ -258,45 +248,12 @@ onBeforeUnmount(() => {
   z-index: 0;
   inset: 0;
   pointer-events: none;
-  opacity: .26;
-  --uwu-pattern-rgb: var(--uwu-pattern-light-rgb);
+  opacity: .34;
   overflow: hidden;
   transition: opacity 180ms ease;
 }
 
-.uwu-pattern-wallpaper::before {
-  position: absolute;
-  inset: -12%;
-  content: '';
-  background-repeat: repeat;
-  will-change: transform;
-}
-
-.uwu-pattern-wallpaper--checker::before {
-  background-image:
-    linear-gradient(45deg, rgb(var(--uwu-pattern-rgb) / .34) 25%, transparent 25%, transparent 75%, rgb(var(--uwu-pattern-rgb) / .34) 75%),
-    linear-gradient(45deg, rgb(var(--uwu-pattern-rgb) / .34) 25%, transparent 25%, transparent 75%, rgb(var(--uwu-pattern-rgb) / .34) 75%);
-  background-position: 0 0, 52px 52px;
-  background-size: 104px 104px;
-  animation: uwu-checker-drift 16s linear infinite;
-}
-
-.uwu-pattern-wallpaper--stripes::before {
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgb(var(--uwu-pattern-rgb) / .38) 0,
-    rgb(var(--uwu-pattern-rgb) / .38) 32px,
-    transparent 32px,
-    transparent 64px
-  );
-  animation: uwu-stripes-drift 18s linear infinite;
-}
-
-.uwu-pattern-wallpaper--particles::before {
-  display: none;
-}
-
-.uwu-pattern-wallpaper--particles canvas {
+.uwu-pattern-wallpaper canvas {
   position: absolute;
   inset: -5%;
   display: block;
@@ -305,31 +262,11 @@ onBeforeUnmount(() => {
   will-change: contents;
 }
 
-.uwu-pattern-wallpaper--particles {
-  opacity: .34;
-}
-
-@keyframes uwu-checker-drift {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(var(--uwu-pattern-checker-x), var(--uwu-pattern-checker-y), 0); }
-}
-
-@keyframes uwu-stripes-drift {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(var(--uwu-pattern-stripes-x), var(--uwu-pattern-stripes-y), 0); }
-}
-
 .dark .uwu-pattern-wallpaper {
-  --uwu-pattern-rgb: 235 239 244;
   opacity: .16;
-}
-
-.dark .uwu-pattern-wallpaper--particles {
-  opacity: .2;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .uwu-pattern-wallpaper { transition: none; }
-  .uwu-pattern-wallpaper::before { animation: none; }
 }
 </style>
