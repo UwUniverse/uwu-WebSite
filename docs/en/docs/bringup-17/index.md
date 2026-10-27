@@ -37,7 +37,7 @@ UWU_MAINTAINER := Akaza_Akari
 
 ### Configure OTA updates
 
-The native `Updater` reads an HTTPS JSON update list provided by the maintainer. Configure `updater_server_url` through a device resource overlay, upload the signed OTA ZIP, then publish its metadata in the update list. Signing a package does not publish it.
+The native `Updater` reads an HTTPS JSON update list provided by the maintainer. Configure `updater_server_url` through a device resource overlay, upload the signed OTA ZIP, then publish its metadata in the update list.
 
 For the resource path, JSON schema, streaming setup, and verification commands, see [Configure OTA updates (Chinese)](/docs/bringup-17/#ota-updates). The [quick start](/en/guide/#configure-ota-updates) also covers the configuration steps.
 

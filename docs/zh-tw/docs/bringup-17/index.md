@@ -37,7 +37,7 @@ UWU_MAINTAINER := Akaza_Akari
 
 ### 設定 OTA 更新
 
-原生 `Updater` 讀取維護者提供的 HTTPS JSON 更新清單。透過裝置資源覆蓋設定 `updater_server_url`，上傳簽名 OTA ZIP，再發佈含有套件中繼資料的更新清單。簽名建置不會自動發佈套件。
+原生 `Updater` 讀取維護者提供的 HTTPS JSON 更新清單。透過裝置資源覆蓋設定 `updater_server_url`，上傳簽名 OTA ZIP，再發佈含有套件中繼資料的更新清單。
 
 資源路徑、JSON 欄位、串流設定與驗證指令請參閱[設定 OTA 更新（簡體中文）](/docs/bringup-17/#ota-updates)。[快速開始](/zh-tw/guide/#設定-ota-更新)也提供設定步驟。
 

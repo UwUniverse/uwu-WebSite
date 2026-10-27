@@ -22,9 +22,9 @@ uni --init-signing-keys ~/.android-certs
 uni otapackage --sign-keys ~/.android-certs
 ```
 
-uni 會建置 `target-files-package` 和 `otatools`，重新簽署 APK/APEX 與 OTA，並寫出 SHA-256 驗證檔。uni 初始化的目錄會依 target-files 清單產生並重用 APEX 金鑰；手動產生的金鑰目錄不會被修改。簽名產物位於 `out/release/<產品名稱>/`。額外 APK 與 AVB 金鑰需依裝置設定；請參閱 [uni 簽名說明](/zh-tw/docs/uni/#簽名發佈-ota)。
+uni 會建置 `target-files-package` 和 `otatools`，重新簽署 APK/APEX 與 OTA，並寫出 SHA-256 驗證檔。簽名產物位於 `out/release/<產品名稱>/`。額外 APK 與 AVB 金鑰需依裝置設定；請參閱 [uni 簽名說明](/zh-tw/docs/uni/#簽名發佈-ota)。
 
-請在另一個儲存裝置上安全備份金鑰目錄。刪除原始碼樹不影響金鑰；若金鑰遺失，新產生的金鑰無法直接延續原裝置的一般 OTA 更新。
+請在另一個儲存裝置上備份金鑰目錄。若金鑰遺失，新產生的金鑰無法直接延續原裝置的一般 OTA 更新。
 
 需要對既有 target-files 做隔離驗證時：
 
@@ -34,7 +34,7 @@ uni --sign-keys ~/.android-certs --sign-check
 
 ## 設定 OTA 更新
 
-原生更新器透過維護者提供的 HTTPS 更新來源檢查新版本。簽名建置只產生更新套件，不會自動上傳檔案或發佈更新清單。
+原生更新器透過維護者提供的 HTTPS 更新來源檢查新版本。
 
 1. 在裝置樹的產品 Makefile 中加入資源覆蓋目錄：
 
@@ -56,4 +56,4 @@ uni --sign-keys ~/.android-certs --sign-check
 3. 上傳最終簽名 OTA ZIP，並在更新來源網址發佈 JSON 陣列。清單須包含目標版本、建置時間戳記、管道，以及檔案直連、位元組數、SHA-256 和 SDK。沒有更新時回傳 `[]`。
 4. 建置並安裝包含設定的系統，在 **設定 > 系統 > 軟體更新** 中驗證檢查、下載和安裝。
 
-完整欄位、串流安裝設定與驗證指令請參閱[裝置移植指南 - 設定 OTA 更新（簡體中文）](/docs/bringup-17/#ota-updates)。未設定更新來源時，仍可使用本機匯入。官網更新日誌頁面不是 OTA 更新來源，不能填入上述網址。
+完整欄位、串流安裝設定與驗證指令請參閱[裝置移植指南 - 設定 OTA 更新（簡體中文）](/docs/bringup-17/#ota-updates)。
