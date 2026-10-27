@@ -19,15 +19,41 @@ uni --init-signing-keys ~/.android-certs
 已有手动生成的密钥目录可跳过初始化。完成 `lunch` 后，每次发布都使用同一目录：
 
 ```sh
-uni -j$(nproc) otapackage --sign-keys ~/android-certs
+uni otapackage --sign-keys ~/.android-certs
 ```
 
-Uni 会构建 `target-files-package` 和 `otatools`，重签 APK/APEX 与 OTA，并写出 SHA-256 校验文件。Uni 初始化的目录会按 target-files 清单生成并复用 APEX 密钥；手动密钥目录不会被修改。签名产物位于 `out/release/<产品名>/`。额外 APK 和 AVB 密钥需要按设备配置；参见 [Uni 签名说明](/docs/uni/#签名发布-ota)。
+uni 会构建 `target-files-package` 和 `otatools`，重签 APK/APEX 与 OTA，并写出 SHA-256 校验文件。uni 初始化的目录会按 target-files 清单生成并复用 APEX 密钥；手动密钥目录不会被修改。签名产物位于 `out/release/<产品名>/`。额外 APK 和 AVB 密钥需要按设备配置；参见 [uni 签名说明](/docs/uni/#ota-签名)。
 
 请在另一块存储设备上安全备份密钥目录。删除源码树不影响密钥；丢失密钥后，新生成的密钥无法直接延续原设备的常规 OTA 更新。
 
 需要对已有 target-files 做隔离验证时：
 
 ```sh
-uni --sign-keys ~/android-certs --sign-check
+uni --sign-keys ~/.android-certs --sign-check
 ```
+
+## 配置 OTA 更新
+
+原生更新器通过维护者提供的 HTTPS 更新源检查新版本。签名构建只生成更新包，不会自动上传文件或发布更新列表。
+
+1. 在设备树的产品 Makefile 中加入资源覆盖目录：
+
+   ```make
+   PRODUCT_PACKAGE_OVERLAYS += device/<vendor>/<device>/overlay
+   ```
+
+2. 在该目录下的 `packages/apps/Updater/app/src/main/res/values/config.xml` 中填写更新源：
+
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <resources>
+       <string name="updater_server_url" translatable="false">https://ota.example.org/{device}/{type}.json</string>
+   </resources>
+   ```
+
+   替换设备树路径和示例域名。`{device}` 读取设备代号，`{type}` 读取小写发布渠道；也可以直接填写固定地址。
+
+3. 上传最终签名 OTA ZIP，并在更新源地址发布 JSON 数组。列表须包含目标版本、构建时间戳、渠道，以及文件直链、字节数、SHA-256 和 SDK。没有更新时返回 `[]`。
+4. 构建并安装包含配置的系统，在 **设置 > 系统 > 软件更新** 中验证检查、下载和安装。
+
+完整字段、流式安装配置和验证命令见 [设备移植指南 - 配置 OTA 更新](/docs/bringup-17/#ota-updates)。更新源未配置时，本地导入仍可使用。官网更新日志页面不是 OTA 更新源，不能填入上述地址。

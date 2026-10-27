@@ -35,6 +35,14 @@ UWU_MAINTAINER := Akaza_Akari
 
 ## Optional (Phase 2)
 
+### Configure OTA updates
+
+The native `Updater` reads an HTTPS JSON update list provided by the maintainer. Configure `updater_server_url` through a device resource overlay, upload the signed OTA ZIP, then publish its metadata in the update list. Signing a package does not publish it.
+
+For the resource path, JSON schema, streaming setup, and verification commands, see [Configure OTA updates (Chinese)](/docs/bringup-17/#ota-updates). The [quick start](/en/guide/#configure-ota-updates) also covers the configuration steps.
+
+### Migrate to Soong-only
+
 > [!WARNING]
 > Soong-only is not required to boot uwuAOSP.
 
@@ -43,19 +51,19 @@ UWU_MAINTAINER := Akaza_Akari
 
 To migrate to Soong-only, uwuAOSP recommends the following changes:
 
-### Migrate to uwu_prebuilt_image
+#### Migrate to uwu_prebuilt_image
 
 At the end of Phase 1, uwuCLI will ask whether to write the Phase 1 changes. After they are written, uwuCLI will ask whether to convert the radio image integration method (if your device adds firmware images using `$(call add-radio-file,...)`).
 
 This step is required if you want to enable Soong-only.
 
-### Migrate to uwu_kernel
+#### Migrate to uwu_kernel
 
 Follow the [uwu_kernel migration guide](https://uwuaosp.uwuniverse.org/docs/soong-only/uwu_kernel/migration.html).
 
 For more details, see the [uwu_kernel documentation](https://uwuaosp.uwuniverse.org/docs/soong-only/uwu_kernel/).
 
-### Check for packages blocking the migration to Soong-only
+#### Check for packages blocking the migration to Soong-only
 
 After running lunch, run:
 
