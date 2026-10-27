@@ -1,11 +1,12 @@
 ---
 title: uwuAOSP 17.0.100
-description: uwuAOSP 17.0.100 release notes covering clipboard access, desktop settings, and Uni
+description: uwuAOSP 17.0.100
 aside: false
 outline: false
+changelogBranch: uwu-17.0.100
 ---
 
-<ReleaseBlog locale="en-US" mode="article" />
+<ReleaseBlog locale="en-US" mode="article" release="uwu-17.0.100" />
 
 After months of porting and refinement, uwuAOSP 17.0.100 is ready to build and explore. Based on AOSP `android-17.0.0_r1`, it brings back familiar features from 16.2 and adds new choices. This update begins with something easy to overlook: which apps can access your clipboard.
 
@@ -14,7 +15,7 @@ After months of porting and refinement, uwuAOSP 17.0.100 is ready to build and e
 After you copy some text, which apps may read it? Should an app ask before replacing it? [Clipboard access controls](/en/docs/ClipboardAccess/) manage reading and writing separately. Each app can be set to ask, allow, or deny. The prompt identifies the app and its request. A decision becomes a saved rule only when you select “Remember this action.”
 
 <figure class="uwu-release-media">
-  <img src="/images/uwu-17.0.100/clipboard.png" alt="Chrome asking to write to the clipboard, with Deny, Allow, and Remember this action controls" loading="lazy" />
+  <img src="/images/changelogs/uwu-17.0.100/assets/clipboard.png" alt="Chrome asking to write to the clipboard, with Deny, Allow, and Remember this action controls" loading="lazy" />
   <figcaption>The prompt shown before an app writes to the clipboard. Reading and writing have separate decisions.</figcaption>
 </figure>
 
@@ -25,23 +26,23 @@ Manual copy and paste still use Android's existing path. [App sensor access](/en
 The home screen's [at-a-glance area](/en/docs/LauncherAtAGlance/) can show the date, weather, alarms, timers, and currently playing music. Quickstep also offers grid, icon, and search settings. Its icon page lets you choose a home-screen icon pack. Some launcher features were inspired by or ported from Lawnchair; thank you to its community.
 
 <figure class="uwu-release-media">
-  <img src="/images/uwu-17.0.100/launcher-settings.png" alt="Quickstep general settings" loading="lazy" />
-  <img src="/images/uwu-17.0.100/launcher-icons.png" alt="Icon pack option in Quickstep icon settings" loading="lazy" />
+  <img src="/images/changelogs/uwu-17.0.100/assets/launcher-settings.png" alt="Quickstep general settings" loading="lazy" />
+  <img src="/images/changelogs/uwu-17.0.100/assets/launcher-icons.png" alt="Icon pack option in Quickstep icon settings" loading="lazy" />
   <figcaption>Quickstep's home-screen settings and icon-pack option.</figcaption>
 </figure>
 
 [Custom fonts](/en/docs/CustomFonts/) can import a single file or let you choose from a ZIP archive. Preview Chinese, English, numbers, and Japanese before applying a font. Restoring the default also clears imported font files.
 
 <figure class="uwu-release-media">
-  <img src="/images/uwu-17.0.100/fonts.png" alt="CookieRun font preview with Chinese, English, numbers, and Japanese on a tablet" loading="lazy" />
+  <img src="/images/changelogs/uwu-17.0.100/assets/fonts.png" alt="CookieRun font preview with Chinese, English, numbers, and Japanese on a tablet" loading="lazy" />
   <figcaption>Preview a font before applying it across the system.</figcaption>
 </figure>
 
 [System icons](/en/docs/SystemIcons/) can switch between the default style and PUI. The PUI assets originate from 天伞桜 and are now built from source as system overlays.
 
 <figure class="uwu-release-media">
-  <img src="/images/uwu-17.0.100/pui-quick-settings.png" alt="Quick Settings with PUI icons" loading="lazy" />
-  <img src="/images/uwu-17.0.100/pui-about-device.png" alt="About device page with PUI styling" loading="lazy" />
+  <img src="/images/changelogs/uwu-17.0.100/assets/pui-quick-settings.png" alt="Quick Settings with PUI icons" loading="lazy" />
+  <img src="/images/changelogs/uwu-17.0.100/assets/pui-about-device.png" alt="About device page with PUI styling" loading="lazy" />
   <figcaption>PUI in Quick Settings and system pages.</figcaption>
 </figure>
 
@@ -53,10 +54,9 @@ With USB-C, HDMI, or a supported virtual display, [External desktop](/en/docs/Ex
 
 In two clean-build records from this test machine, Make took 5h 19m 04s and Uni took 3h 43m 04s. That is 1h 36m less elapsed time, or about 30.1%. The host has an Intel Core Ultra 5 125H, 14 cores and 18 threads, and 32 GB of RAM; Uni ran with `-j18`. These are separate builds, so source state and system load may affect the comparison.
 
-<div class="uwu-build-compare" role="group" aria-label="Clean build time comparison">
-  <div><span>Make · clean build</span><strong>5:19:04</strong></div>
-  <div><span>Uni · clean build</span><strong>3:43:04</strong></div>
-</div>
+| Make · clean build | Uni · clean build |
+| --- | --- |
+| 5:19:04 | 3:43:04 |
 
 The chart below comes from a different successful Uni build. It shows CPU, available RAM, swap-out, and I/O wait during its final phase. It is not a second-by-second trace of the two clean builds above.
 

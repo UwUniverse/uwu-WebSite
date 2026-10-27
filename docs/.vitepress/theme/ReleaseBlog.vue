@@ -1,59 +1,65 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withBase } from 'vitepress'
+import releaseNotes from '../generated-changelogs.json'
 
 const props = defineProps<{
   locale: 'zh-CN' | 'zh-TW' | 'en-US'
   mode: 'index' | 'article'
+  release?: string
 }>()
+
+type ReleaseLocale = {
+  date: string
+  image: string
+  sections: [string, string][]
+}
+type Release = {
+  branch: string
+  version: string
+  locales: Partial<Record<typeof props.locale, ReleaseLocale>>
+}
+const releases = computed(() => (releaseNotes as Release[]).filter((entry) => entry.locales[props.locale]))
+const release = computed(() => props.release
+  ? releases.value.find((entry) => entry.branch === props.release)
+  : releases.value[0])
 
 const copy = {
   'zh-CN': {
     indexTitle: '目录',
-    date: '2026-09',
     action: '阅读更新',
     back: '返回更新日志',
     scroll: '向下阅读',
-    sections: [
-      ['隐私与安全', 'privacy-and-control'],
-      ['更多个性化', 'daily-use'],
-      ['构建优化', 'for-maintainers'],
-      ['感谢与参与', 'thanks-and-contributing']
-    ]
+    archive: '往期更新',
+    empty: '暂无更新日志'
   },
   'zh-TW': {
     indexTitle: '目錄',
-    date: '2026-09',
     action: '閱讀更新',
     back: '返回更新日誌',
     scroll: '向下閱讀',
-    sections: [
-      ['隱私與安全', 'privacy-and-control'],
-      ['更多個人化', 'daily-use'],
-      ['建置優化', 'for-maintainers'],
-      ['感謝與參與', 'thanks-and-contributing']
-    ]
+    archive: '歷次更新',
+    empty: '尚無更新日誌'
   },
   'en-US': {
     indexTitle: 'Contents',
-    date: '2026-09',
     action: 'Read the update',
     back: 'Back to the blog',
     scroll: 'Scroll to read',
-    sections: [
-      ['Privacy & security', 'privacy-and-control'],
-      ['More personalization', 'daily-use'],
-      ['Build optimization', 'for-maintainers'],
-      ['Contributors', 'thanks-and-contributing']
-    ]
+    archive: 'Previous updates',
+    empty: 'No release notes yet'
   }
 } as const
 
-const text = copy[props.locale]
+const text = computed(() => ({
+  ...copy[props.locale],
+  date: release.value?.locales[props.locale]?.date ?? '',
+  sections: release.value?.locales[props.locale]?.sections ?? []
+}))
 const referenceEntry = '[1]———————————————隐私与安全'
 const referenceDashes = referenceEntry.match(/—+/)?.[0].length ?? 15
-const sectionLeaders = ref(text.sections.map(() => '—'.repeat(referenceDashes)))
-const sectionLeaderStyles = ref(text.sections.map(() => ({ letterSpacing: '0px' })))
+const sectionLeaders = ref(text.value.sections.map(() => '—'.repeat(referenceDashes)))
+const sectionLeaderStyles = ref(text.value.sections.map(() => ({ letterSpacing: '0px' })))
 const tocEntryWidth = ref('')
 const tocElement = ref<HTMLElement | null>(null)
 let tocResizeObserver: ResizeObserver | undefined
@@ -160,6 +166,13 @@ const scheduleTocUpdate = () => {
   tocResizeFrame = requestAnimationFrame(updateTocLeaders)
 }
 
+watch(text, async () => {
+  sectionLeaders.value = text.value.sections.map(() => '—'.repeat(referenceDashes))
+  sectionLeaderStyles.value = text.value.sections.map(() => ({ letterSpacing: '0px' }))
+  await nextTick()
+  scheduleTocUpdate()
+})
+
 onMounted(async () => {
   await nextTick()
   await document.fonts.ready
@@ -179,20 +192,23 @@ onBeforeUnmount(() => {
   if (tocResizeFrame) cancelAnimationFrame(tocResizeFrame)
 })
 
-const prefix = props.locale === 'zh-CN' ? '' : props.locale === 'zh-TW' ? '/zh-tw' : '/en'
-const indexHref = withBase(`${prefix}/blog/`)
-const articleHref = withBase(`${prefix}/blog/uwu-17.0.100/`)
-const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
+const prefix = computed(() => props.locale === 'zh-CN' ? '' : props.locale === 'zh-TW' ? '/zh-tw' : '/en')
+const indexHref = computed(() => withBase(`${prefix.value}/blog/`))
+const articleHref = computed(() => withBase(`${prefix.value}/blog/${release.value?.branch ?? ''}/`))
+const imageSrc = computed(() => {
+  const image = release.value?.locales[props.locale]?.image
+  return image ? withBase(image) : ''
+})
 </script>
 
 <template>
   <div :class="['uwu-release-page', `uwu-release-page--${locale}`, { 'uwu-release-page--index': mode === 'index' }]">
-    <header class="uwu-release-hero">
-      <img class="uwu-release-hero__art" :src="imageSrc" alt="" />
+    <header v-if="release" class="uwu-release-hero">
+      <img v-if="imageSrc" class="uwu-release-hero__art" :src="imageSrc" alt="" />
       <div class="uwu-release-hero__inner">
         <a v-if="mode === 'article'" class="uwu-release-hero__back" :href="indexHref">← {{ text.back }}</a>
         <p class="uwu-release-hero__date">{{ text.date }}</p>
-        <h1><span>uwuAOSP</span><span>17.0.100</span></h1>
+        <h1><span>uwuAOSP</span><span>{{ release.version }}</span></h1>
         <nav ref="tocElement" class="uwu-release-toc" :aria-label="text.indexTitle">
           <a v-for="([label, id], index) in text.sections" :key="id" :href="mode === 'index' ? `${articleHref}#${id}` : `#${id}`" :style="tocEntryWidth ? { width: tocEntryWidth } : undefined">
             <span class="uwu-release-toc__number">[{{ index + 1 }}]</span>
@@ -204,5 +220,27 @@ const imageSrc = withBase('/images/uwu-17.0.100-hero.png')
       <a v-if="mode === 'index'" class="uwu-release-hero__more" :href="articleHref">{{ text.action }} <span aria-hidden="true">↗</span></a>
       <span v-else class="uwu-release-hero__more">{{ text.scroll }} <span aria-hidden="true">↓</span></span>
     </header>
+    <p v-else>{{ text.empty }}</p>
+    <nav v-if="mode === 'index' && releases.length > 1" class="uwu-release-archive" :aria-label="text.archive">
+      <h2>{{ text.archive }}</h2>
+      <a v-for="entry in releases.slice(1)" :key="entry.branch" :href="withBase(`${prefix}/blog/${entry.branch}/`)">
+        <span>uwuAOSP {{ entry.version }}</span>
+        <time>{{ entry.locales[locale]?.date }}</time>
+      </a>
+    </nav>
   </div>
 </template>
+
+<style scoped>
+.uwu-release-archive {
+  padding: 2rem clamp(1.5rem, 5vw, 5rem);
+}
+.uwu-release-archive a {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+</style>

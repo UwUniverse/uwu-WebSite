@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { execFileSync } from 'node:child_process'
+import './sync-changelogs.mjs'
 
 const workspace = process.cwd()
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'uwuaosp-upstream-'))

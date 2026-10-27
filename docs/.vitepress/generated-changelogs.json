@@ -1,0 +1,75 @@
+[
+  {
+    "branch": "uwu-17.0.100",
+    "version": "17.0.100",
+    "source": "25bb0024f4a7de2a7bca649cb8eb05f2480039bf",
+    "locales": {
+      "zh-CN": {
+        "date": "2026-09-25",
+        "image": "/images/changelogs/uwu-17.0.100/assets/uwu-17.0.100-hero.png",
+        "sections": [
+          [
+            "剪贴板权限",
+            "privacy-and-control"
+          ],
+          [
+            "桌面与外观",
+            "daily-use"
+          ],
+          [
+            "构建与维护",
+            "for-maintainers"
+          ],
+          [
+            "感谢与参与",
+            "thanks-and-contributing"
+          ]
+        ]
+      },
+      "zh-TW": {
+        "date": "2026-09-25",
+        "image": "/images/changelogs/uwu-17.0.100/assets/uwu-17.0.100-hero.png",
+        "sections": [
+          [
+            "剪貼簿權限",
+            "privacy-and-control"
+          ],
+          [
+            "桌面與外觀",
+            "daily-use"
+          ],
+          [
+            "建置與維護",
+            "for-maintainers"
+          ],
+          [
+            "感謝與參與",
+            "thanks-and-contributing"
+          ]
+        ]
+      },
+      "en-US": {
+        "date": "2026-09-25",
+        "image": "/images/changelogs/uwu-17.0.100/assets/uwu-17.0.100-hero.png",
+        "sections": [
+          [
+            "Clipboard access",
+            "privacy-and-control"
+          ],
+          [
+            "Desktop and appearance",
+            "daily-use"
+          ],
+          [
+            "Builds and maintenance",
+            "for-maintainers"
+          ],
+          [
+            "Thanks and contributions",
+            "thanks-and-contributing"
+          ]
+        ]
+      }
+    }
+  }
+]
