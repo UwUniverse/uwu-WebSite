@@ -10,4 +10,4 @@
 
 - [TG Community Updates](https://t.me/uwuCommunityUpdate114)
 - 你可以把你的构建结果通过 TG off topic 转发给 @管理员，发送到 Community 频道。
-- [TG 群组](https://t.me/+qMXkya4CEdc5YmU1)
+- [TG 群组](https://t.me/+edXsC71yT1RlMjM1)

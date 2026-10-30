@@ -10,4 +10,4 @@
 
 - [TG Community Updates](https://t.me/uwuCommunityUpdate114)
 - You can forward your build results through TG off topic to @administrator for posting in the Community channel.
-- [TG group](https://t.me/+qMXkya4CEdc5YmU1)
+- [TG group](https://t.me/+edXsC71yT1RlMjM1)
