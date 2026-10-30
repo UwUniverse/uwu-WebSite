@@ -292,10 +292,6 @@ export const upstreamDocsSidebars = [
 ]
 export const upstreamManifestBranches = [
   {
-    "text": "manifest/uwu-app-controls",
-    "file": "manifest-uwu-app-controls"
-  },
-  {
     "text": "uwu-16.2",
     "file": "uwu-16.2"
   },
